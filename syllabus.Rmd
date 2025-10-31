@@ -1,0 +1,185 @@
+####################
+## Course         ##
+####################
+
+Linear Models
+
+PS 405
+
+Winter 2026
+
+Department of Political Science \
+Weinberg College of Arts and Sciences
+
+####################
+## Professor      ##
+####################
+
+Jaye Seawright
+
+j-seawright@northwestern.edu
+
+312 Scott Hall 
+
+Office Hours Tuesdays 3-5pm
+
+#########################
+## Key Dates and Times ##
+#########################
+
+Class meets:
+
+  Monday and Wednesday, 11:00 to 12:20
+
+  Scott Hall 212
+
+# Basic Course Information
+
+This course is about linear models (regression), which involve a set of techniques that show up across nearly all areas of statistics. Regression models are used as a powerful tool to describe data, have value for forecasting, and are sometimes pressed into service for work in theory-testing and causal inference. Across these use cases, linear models are everywhere in political science.
+
+We will talk about regression as a tool for data summary; discuss ideas about generalization and significance tests in the context of these models; develop skills with common graphical displays; clarify key assumptions and explore available tests of assumptions; practice interpreting the results of regressions; and discuss when/if regression can speak to causal questions. In each of these areas, we will connect our quest for understanding with hands-on statistical computing work.
+
+At the end of this course, you will be able to:
+
+
+Students will understand and be able to explain the core math of how linear regression produces estimates. Students will be able to use R statistical software to estimate linear regressions and related techniques, and will be able to clearly and correctly explain the results. Students will be able to explain the various measures of uncertainty reported in conjunction with regression estimates, and choose one or more measures to best characterize a given set of results. They will be able to conduct and interpret significance tests involving regression and related models. Students will be able to develop graphs and tables suitable for professional academic use in communicating statistical results. Finally, students will be able to explain what regression results teach us about political science questions.
+
+-   Understand and explain the core math of how linear regression produces estimates.
+
+-   Use R statistical software to estimate linear regressions and related techniques, and clearly and correctly explain the results.
+
+-   Explain the various measures of uncertainty reported in conjunction with regression estimates, and choose one or more measures to best characterize a given set of results.
+
+-   Conduct and interpret significance tests involving regression and related models.
+
+-   Develop graphs and tables suitable for professional academic use in communicating statistical results.
+
+-   Explain what regression results teach us about political science questions.
+
+Grades will be based on weekly problem sets (30% total), three in-class quizzes (30% total), and a final summative problem set (40% total). Problem sets will combine explorations of conceptual understanding, some mathematical analysis, and computer work (with and without real-world data). For the weekly problem sets, students are welcome to form study groups and work together but must complete and submit their own work. For quizzes and the final summative problem set, the expectation is that each person will work alone.
+
+Two textbooks are the primary references for this course, along with other materials linked in this syllabus, all of which are available for free online. The books are *Regression and Other Stories*,  by Andrew Gelman, Jennifer Hill, and Aki Vehtar at [https://users.aalto.fi/%7Eave/ROS.pdf](https://users.aalto.fi/%7Eave/ROS.pdf) and *A User’s Guide to Statistical Inference and Regression* by Matthew Blackwell at [https://mattblackwell.github.io/gov2002-book/](https://mattblackwell.github.io/gov2002-book/).
+
+# Northwestern University Syllabus Standards
+
+This course follows the [Northwestern University Syllabus Standards](https://www.registrar.northwestern.edu/registration-graduation/northwestern-university-syllabus-standards.html). Students are responsible for familiarizing themselves with this information.
+
+# Course Schedule and Readings
+
+This schedule is subject to changes (minor or major) depending on how
+long each topic actually takes us to cover, as well as on the needs of
+the class.
+
+Jan. 5.
+
+Introduction, overview, benchmark quiz.
+
+Jan. 7.
+
+Starting with regression.
+
+Gelman, Hill, and Vehtari Chapter 1.
+
+https://smcclatchy.github.io/r-pub-quality-graphics/03-scatterplot/
+
+Jan. 12.
+
+Regression as a model I.
+
+Blackwell 5, 5.1, 5.2.
+
+Jan. 14.
+
+Regression as a model II.
+
+Blackwell 5, 5.1, 5.2.
+
+https://www.williamfranko.com/post/rtutorial/#regression
+
+Jan. 21.
+
+Approximating CEFs and equalling them.
+
+Blackwell 5.3.
+
+Jan. 26.
+
+Interpreting coefficients. Multiple regression.
+
+Blackwell 5.4, 5.5.
+
+Jan. 28.
+
+Omitted variable bias. Nonlinearity.
+
+Blackwell 5.6, 5.7, 5.8.
+
+Feb. 2.
+
+Deriving OLS.
+
+Blackwell 6, 6.1.
+
+Feb. 4.
+
+Model fit, matrix form, and multicollinearity.
+
+Blackwell 6.2, 6.3, 6.4.
+
+Feb. 9.
+
+Projection, outliers, and influence.
+
+Blackwell 6.6, 6.7, 6.8, 6.9, 6.10.
+
+Feb. 11.
+
+Significance tests.
+
+Blackwell Chapter 7.
+
+Feb. 16.
+
+Multiple comparisons.
+
+https://egap.org/resource/10-things-to-know-about-multiple-comparisons/
+
+Feb. 18.
+
+Statistical power.
+
+Gelman, Hill, and Vehtari Chapter 16
+
+Feb. 23.
+
+Interactions.
+
+Gelman, Hill, and Vehtari Chapter 10
+
+Feb. 25.
+
+Transformations.
+
+Gelman, Hill, and Vehtari Chapter 12
+
+March 2.
+
+Diagnostics.
+
+Gelman, Hill, and Vehtari Chapter 11
+
+March 4.
+
+Robust standard errors.
+
+https://library.virginia.edu/data/articles/understanding-robust-standard-errors
+
+March 9.
+
+Preparing regression tables.
+
+https://libguides.princeton.edu/R-stargazer
+
+https://tilburgsciencehub.com/topics/visualization/data-visualization/regression-results/model-summary/
+
+https://www.danieldsjoberg.com/gtsummary/articles/tbl_regression.html
