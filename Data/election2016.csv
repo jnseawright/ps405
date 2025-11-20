@@ -1,4 +1,4 @@
-﻿State,Clinton (D),Trump (R),Others,Clinton %,Trump %,Others %,Dem '12 Margin,Dem '16 Margin,Margin Shift,Total '12 Votes,Total '16 Votes,Raw Votes vs. '12
+﻿State,ClintonCount,TrumpCount,OtherCount,ClintonShare,TrumpShare,OtherShare,D12Margin,D16Margin,Shift,Turnout12,Turnout16,MarginShift
 Alabama,"729,547","1,318,255","75,570",34.40%,62.10%,3.60%,-22.20%,-27.70%,-5.50%,"2,074,338","2,123,372",2.40%
 Alaska,"116,454","163,387","38,767",36.60%,51.30%,12.20%,-14.00%,-14.70%,-0.70%,"300,495","318,608",6.00%
 Arizona,"1,161,167","1,252,401","159,597",45.10%,48.70%,6.20%,-9.10%,-3.50%,5.50%,"2,299,254","2,573,165",11.90%
