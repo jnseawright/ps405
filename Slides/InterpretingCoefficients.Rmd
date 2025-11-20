@@ -1,0 +1,310 @@
+---
+title: "6: Interpreting coefficients. Multiple regression."
+subtitle: "Linear Models"
+author: "<large>Jaye Seawright</large>"
+institute: "<small>Northwestern Political Science</small>" 
+date: "Jan. 26, 2026"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+  
+---
+class: center, middle
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+# Initializes
+library(RefManageR)
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(nlme)
+library(jtools)
+library(mice)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear", # Bibliography style
+           max.names = 3, # Max author names displayed in bibliography
+           sorting = "nyt", #Name, year, title sorting
+           cite.style = "authoryear", # citation style
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer,MnSymbol)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size = "1.6rem"
+)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+We have a theorem that, if the conditional expectation function is linear, then it equals the population OLS regression.
+
+---
+
+What is a *theorem*?
+
+---
+
+Our theorem posits that the CEF is linear:
+
+$$E(y|x_{i}) = a + b x_{i}$$
+for some values of $a$ and $b$.
+
+---
+
+Key property number one of the CEF:
+
+$$E(y_{i} - E(y_{i}|x_{i})) = 0$$
+
+---
+###The CEF Error
+
+* For any case $i$, the actual outcome $Y_{i}$ will almost never be exactly equal to our prediction $E(Y_{i}|X_{i})$.
+
+* The difference is the CEF error: $Y_{i} - E(Y_{i}|X_{i})$
+
+---
+
+* At the population level, we have an unlimited collection of these errors. Some are positive, some are negative.
+
+* Question: What happens if we take the average of all these errors? $E(Y_{i} - E(Y_{i}|X_{i}))$ = ?
+
+---
+
+* Why must the errors average to zero? Because if they didn't, our predictor wouldn't be the best one!
+
+---
+
+Thought Experiment:
+
+* Suppose for a moment that $E(Y_{i} - E(Y_{i}|X_{i})) = c$, where $c > 0$.
+
+* This would mean that, on average, our predictor E[Y_i|X_i] is systematically too low by the amount c.
+
+* If we knew this, we could create a better predictor! We could just add c to our old one: New Predictor = $E(Y_{i}|X_{i}) + c$
+
+* This new predictor would have a smaller average error. But we defined $E(Y|X)$ as the best predictor! (This is called proof by contradiction.)
+
+---
+
+There's a better proof that relies on some probability theory:
+
+$E(Y_{i} - E(Y_{i}|X_{i})) = E(Y_{i}) - E(Y_{i}|X_{i})$
+
+$E(Y_{i}) - E(Y_{i}|X_{i}) = E(Y_{i}) - E(Y_{i}) = 0$
+
+---
+
+Key property number two of the CEF:
+
+$$E((y_{i} - E(y_{i}|x_{i})) x_{i}) = 0$$
+
+---
+
+What we're suggesting here is that the CEF error times $x_{i}$ is equal to zero in expectation.
+
+---
+
+Imagine a seesaw, with values of $x_{i}$ being locations further left or right from the axis and values of the CEF error representing weights. 
+
+What would happen if there was a large cluster of weights on one side or the other?
+
+---
+###Does the CEF Error Have Useful Information?
+
+If the CEF error is related to $x_{i}$, that means there is information in the error that could still have been predicted by $x$ but wasn't. 
+
+The best available predictor wouldn't allow that.
+
+---
+
+Thought Experiment:
+
+* Suppose $E((y_{i} - E(y_{i}|x_{i})) * x_{i}) = c$, where $c > 0$.
+
+* This means that when $x_i$ is large, our errors tend to be positive (our predictions are too low), and when $x_i$ is small, our errors tend to be negative (our predictions are too high).
+
+* We could then build a better predictor by adding a small multiple of $x_i$ to our old one:
+
+* New Predictor = $E(Y_{i}|x_{i}) + \delta * x_{i}$
+
+---
+
+Now, let's go back to our theorem.
+
+$$E(y|x_{i}) = a + b x_{i}$$
+
+$$E(y_{i} - E(y_{i}|x_{i})) = 0$$
+
+$$E((y_{i} - E(y_{i}|x_{i})) x_{i}) = 0$$
+
+---
+
+$$E(y_{i} - a + b x_{i}) = 0$$
+$$a = E(y_{i}) - E(x_{i}) b$$
+
+---
+
+$$E((y_{i} - a + b x_{i}) x_{i}) = 0$$
+
+$$E((y_{i} - E(y_{i}) + E(x_{i}) b + b x_{i}) x_{i}) = 0$$
+
+$$E((y_{i} - E(y_{i}))x_{i} - (x_{i} b - E(x_{i}) b) x_{i}) = 0$$
+
+---
+
+$$b = \frac{E((y_{i} - E(y_{i}))x_{i})}{E((x_{i} - E(x_{i})) x_{i})} = \frac{cov(x,y)}{var(y)}$$
+---
+
+So the CEF equals the BLP when the CEF is linear.
+
+---
+
+What happens when the CEF isn't linear?
+
+---
+
+* The relationship between campaign spending and vote share likely has diminishing returns: the first million dollars matters more than the tenth million.
+
+* The relationship between education and social mobility plausibly follows an S-curve, with small gains at low education levels, rapid acceleration, then plateauing at higher levels.
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+# Load required packages
+library(ggplot2)
+library(dplyr)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate simulated data for campaign spending vs vote share
+n <- 200
+spending <- runif(n, 0, 10)  # Campaign spending in millions
+
+# True CEF: diminishing returns relationship (logarithmic)
+true_cef <- function(x) {
+  35 + 25 * (1 - exp(-0.5 * x))  # More steep initial growth, clear plateau
+}
+
+vote_share <- true_cef(spending) + rnorm(n, 0, 3)  # Add some noise
+
+# Create data frame
+campaign_data <- data.frame(spending = spending, vote_share = vote_share)
+
+# Fit linear model (BLP)
+blp_model <- lm(vote_share ~ spending, data = campaign_data)
+
+# Create the plot
+ggplot(campaign_data, aes(x = spending, y = vote_share)) +
+    geom_point(alpha = 0.6, color = "steelblue") +
+    stat_smooth(method = "lm", formula = y ~ x, se = FALSE, 
+                color = "red", linewidth = 1.5, linetype = "solid") +
+    labs(title = "Campaign Spending vs Vote Share with BLP",
+         subtitle = "BLP: The Best Linear Headline for a Curved Relationship",
+         x = "Campaign Spending (Millions $)",
+         y = "Vote Share (%)",
+         caption = "Red line shows the Best Linear Predictor (BLP)") +
+    theme_minimal(base_size = 14) +
+    theme(plot.title = element_text(face = "bold"),
+          plot.subtitle = element_text(color = "red", face = "italic"))
+```
+
+---
+###How to proceed?
+
+1. Model the complex, true relationship with flexible methods
+
+2. Use a simple linear model that gives us one clear, interpretable number
+
+---
+
+The BLP preserves the same crucial properties we saw in the CEF:
+
+* $E(e) = 0$ (Errors average to zero across all observations)
+
+* $E(e * X) = 0$ (Errors are uncorrelated with the independent variable)
+
+---
+
+Even when the true relationship is curved, the BLP finds the line that makes prediction errors balanced across all values of X.
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+# Create prediction data
+pred_data <- data.frame(spending = seq(0, 10, length.out = 300))
+pred_data$true_value <- true_cef(pred_data$spending)
+pred_data$blp_pred <- predict(blp_model, newdata = pred_data)
+
+# Identify over- and under-prediction regions
+pred_data$region <- ifelse(pred_data$blp_pred > pred_data$true_value, 
+                          "Over-prediction", "Under-prediction")
+
+ggplot() +
+  # Shaded regions for over/under prediction
+  geom_ribbon(data = pred_data, 
+              aes(x = spending, 
+                  ymin = pmin(true_value, blp_pred), 
+                  ymax = pmax(true_value, blp_pred),
+                  fill = region), 
+              alpha = 0.3) +
+  # True CEF curve
+  geom_line(data = pred_data, aes(x = spending, y = true_value), 
+            color = "darkgreen", linewidth = 1.2, linetype = "solid") +
+  # BLP line
+  geom_line(data = pred_data, aes(x = spending, y = blp_pred), 
+            color = "red", linewidth = 1.2, linetype = "dashed") +
+  # Scatter points
+  geom_point(data = campaign_data, aes(x = spending, y = vote_share),
+             alpha = 0.5, color = "steelblue") +
+  # Labels and theme
+  labs(title = "BLP Approximation with Prediction Errors",
+       subtitle = "Green curve = True CEF, Red dashed line = BLP",
+       x = "Campaign Spending (Millions $)",
+       y = "Vote Share (%)",
+       fill = "Prediction Error") +
+  scale_fill_manual(values = c("Over-prediction" = "red", 
+                               "Under-prediction" = "blue")) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "bottom",
+        plot.title = element_text(face = "bold"))
+```
+
+---
+
+Let $Y = \text{Vote share}$, $X = \text{Campaign spending (millions)}$
+
+What the BLP gives us:
+
+* A single "average effect" of campaign spending across all spending levels
+
+* It will over-predict for extremely low-spending and extremely high-spending campaigns
+
+* It will under-predict for medium-spending campaigns
+
+* But overall, the errors balance out, with no linear information left in the residuals

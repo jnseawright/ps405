@@ -1,0 +1,334 @@
+---
+title: "2: Starting with Regression"
+subtitle: "Linear Models"
+author: "<large>Jaye Seawright</large>"
+institute: "<small>Northwestern Political Science</small>" 
+date: "Jan. 7, 2026"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+  
+---
+class: center, middle
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+# Initializes
+library(RefManageR)
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(nlme)
+library(jtools)
+library(hrbrthemes)
+library(mice)
+library(knitr)
+library(renderthis)
+
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear", # Bibliography style
+           max.names = 3, # Max author names displayed in bibliography
+           sorting = "nyt", #Name, year, title sorting
+           cite.style = "authoryear", # citation style
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer,MnSymbol)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size = "1.6rem"
+)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+
+Imagine someone interested in predicting U.S. presidential election results based on economic performance.
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+library(tidyverse)
+library(rosdata)
+data("hibbs")
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+econvoteplot <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+     geom_text(size = 3) +
+     scale_x_continuous(labels = function(x) paste0(x, "%")) +
+     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     labs(title = "Forecasting the Election from the Economy",
+          x = "Average recent growth in personal income",
+          y = "Incumbent party's vote share") +
+     theme_minimal()
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+econvoteplot 
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+econvoteplot.line <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+     geom_text(size = 3) +
+     scale_x_continuous(labels = function(x) paste0(x, "%")) +
+     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     labs(title = "Forecasting the Election from the Economy",
+          x = "Average recent growth in personal income",
+          y = "Incumbent party's vote share") +
+     geom_smooth(method = "lm") +
+     theme_minimal()
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplot.line
+```
+
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvote.lm <- lm(vote ~ growth, data = hibbs)
+```
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+library(rstanarm)
+```
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvote.lm.bayes <- stan_glm(vote ~ growth, data = hibbs)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+library(modelsummary)
+library(kableExtra)
+
+econvote.summary <- modelsummary( list("Economic Voting Model" = econvote.lm),
+             output = "kableExtra",
+             stars = TRUE,
+             statistic = "std.error",  
+             coef_rename = TRUE,
+             escape = FALSE,
+             gof_map = "all") %>%      
+  kable_styling(
+    font_size = 24,                    # Even larger font
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  )
+```
+
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvote.summary
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvote.bayes.summary <- modelsummary( list("Bayesian Voting Model" = econvote.lm.bayes),
+             output = "kableExtra",
+             stars = TRUE,
+             statistic = "conf.int",  
+             coef_rename = TRUE,
+             escape = FALSE,
+             gof_map = "all") %>%      
+  kable_styling(
+    font_size = 24,                    # Even larger font
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  )
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvote.bayes.summary
+```
+
+---
+
+A large literature in political science worries that Republicans and Democrats are treated differently in terms of economic voting.
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+hibbs$inc_party_candidate
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+hibbs$inc_party <- 1*(hibbs$inc_party_candidate %in% c("Johnson", "Humphrey", "Carter", "Clinton", "Gore", "Obama"))
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+econvoteplotparty <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+     geom_text(aes(color = as.factor(inc_party)), size = 3) +
+     scale_x_continuous(labels = function(x) paste0(x, "%")) +
+     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     labs(title = "Forecasting the Election from the Economy",
+          x = "Average recent growth in personal income",
+          y = "Incumbent party's vote share") +
+     scale_color_manual(
+       values = c("1" = "#0015BC",  # Classic Democratic blue
+                "0" = "#DE0100") # Classic Republican red
+       ) +
+     theme_minimal()
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplotparty
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+econvoteplotparty.line <- ggplot(hibbs, aes(x = growth, y = vote, color = as.factor(inc_party))) +
+     geom_point() +
+     scale_x_continuous(labels = function(x) paste0(x, "%")) +
+     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     labs(title = "Forecasting the Election from the Economy",
+          x = "Average recent growth in personal income",
+          y = "Incumbent party's vote share") +
+     scale_color_manual(
+       values = c("1" = "#0015BC",  # Classic Democratic blue
+                "0" = "#DE0100") # Classic Republican red
+       ) +
+     geom_smooth(method = "lm") +
+     theme_minimal()
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplotparty.line
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteparty.lm <- lm(vote ~ growth + inc_party, data = hibbs)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econparty.summary <- modelsummary( list("Economic Voting Model" = econvoteparty.lm),
+             output = "kableExtra",
+             stars = TRUE,
+             statistic = "std.error",  
+             coef_rename = TRUE,
+             escape = FALSE,
+             gof_map = "all") %>%      
+  kable_styling(
+    font_size = 24,                    # Even larger font
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  )
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econparty.summary
+```
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvotepartyinteract.lm <- lm(vote ~ growth + inc_party + growth:inc_party, data = hibbs)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econinteract.summary <- modelsummary( list("Economic Voting Model" = econvotepartyinteract.lm),
+             output = "kableExtra",
+             stars = TRUE,
+             statistic = "std.error",  
+             coef_rename = TRUE,
+             escape = FALSE,
+             gof_map = "all") %>%      
+  kable_styling(
+    font_size = 24,                    # Even larger font
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  )
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econinteract.summary
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+library(interplot)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econ.interplot <- interplot(m = econvotepartyinteract.lm, var1 = "growth", var2 = "inc_party") + 
+  xlab('Party (1 for Democrats)') +
+  ylab('Marginal Effect of Income Growth') +
+  ggtitle('Interaction between Party and Economics as Predictors of Elections') +
+  theme(plot.title = element_text(face='bold'))
+```
+
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econ.interplot
+```
+
+---
+###Goals
+
+People can and do pursue a lot of different goals with regression.
+
+---
+###Goals
+
+1. Summarizing relationships
+2. Prediction
+3. Theory testing
+4. Causal inference

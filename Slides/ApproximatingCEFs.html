@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>5: Approximating CEFs and Equalling Them</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-01-21" />
+    <script src="ApproximatingCEFs_files/header-attrs-2.30/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 5: Approximating CEFs and Equalling Them
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### Jan. 21, 2026
+]
+
+---
+
+class: center, middle
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+We have a theorem that, if the conditional expectation function is linear, then it equals the population OLS regression.
+
+---
+
+What is a *theorem*?
+
+---
+
+Our theorem posits that the CEF is linear:
+
+`$$E(y|x_{i}) = a + b x_{i}$$`
+for some values of `\(a\)` and `\(b\)`.
+
+---
+
+Key property number one of the CEF:
+
+`$$E(y_{i} - E(y_{i}|x_{i})) = 0$$`
+
+---
+###The CEF Error
+
+* For any case `\(i\)`, the actual outcome `\(Y_{i}\)` will almost never be exactly equal to our prediction `\(E(Y_{i}|X_{i})\)`.
+
+* The difference is the CEF error: `\(Y_{i} - E(Y_{i}|X_{i})\)`
+
+---
+
+* At the population level, we have an unlimited collection of these errors. Some are positive, some are negative.
+
+* Question: What happens if we take the average of all these errors? `\(E(Y_{i} - E(Y_{i}|X_{i}))\)` = ?
+
+---
+
+* Why must the errors average to zero? Because if they didn't, our predictor wouldn't be the best one!
+
+---
+
+Thought Experiment:
+
+* Suppose for a moment that `\(E(Y_{i} - E(Y_{i}|X_{i})) = c\)`, where `\(c &gt; 0\)`.
+
+* This would mean that, on average, our predictor E[Y_i|X_i] is systematically too low by the amount c.
+
+* If we knew this, we could create a better predictor! We could just add c to our old one: New Predictor = `\(E(Y_{i}|X_{i}) + c\)`
+
+* This new predictor would have a smaller average error. But we defined `\(E(Y|X)\)` as the best predictor! (This is called proof by contradiction.)
+
+---
+
+There's a better proof that relies on some probability theory:
+
+`\(E(Y_{i} - E(Y_{i}|X_{i})) = E(Y_{i}) - E(Y_{i}|X_{i})\)`
+
+`\(E(Y_{i}) - E(Y_{i}|X_{i}) = E(Y_{i}) - E(Y_{i}) = 0\)`
+
+---
+
+Key property number two of the CEF:
+
+`$$E((y_{i} - E(y_{i}|x_{i})) x_{i}) = 0$$`
+
+---
+
+What we're suggesting here is that the CEF error times `\(x_{i}\)` is equal to zero in expectation.
+
+---
+
+Imagine a seesaw, with values of `\(x_{i}\)` being locations further left or right from the axis and values of the CEF error representing weights. 
+
+What would happen if there was a large cluster of weights on one side or the other?
+
+---
+###Does the CEF Error Have Useful Information?
+
+If the CEF error is related to `\(x_{i}\)`, that means there is information in the error that could still have been predicted by `\(x\)` but wasn't. 
+
+The best available predictor wouldn't allow that.
+
+---
+
+Thought Experiment:
+
+* Suppose `\(E((y_{i} - E(y_{i}|x_{i})) * x_{i}) = c\)`, where `\(c &gt; 0\)`.
+
+* This means that when `\(x_i\)` is large, our errors tend to be positive (our predictions are too low), and when `\(x_i\)` is small, our errors tend to be negative (our predictions are too high).
+
+* We could then build a better predictor by adding a small multiple of `\(x_i\)` to our old one:
+
+* New Predictor = `\(E(Y_{i}|x_{i}) + \delta * x_{i}\)`
+
+---
+
+Now, let's go back to our theorem.
+
+`$$E(y|x_{i}) = a + b x_{i}$$`
+
+`$$E(y_{i} - E(y_{i}|x_{i})) = 0$$`
+
+`$$E((y_{i} - E(y_{i}|x_{i})) x_{i}) = 0$$`
+
+---
+
+`$$E(y_{i} - a + b x_{i}) = 0$$`
+`$$a = E(y_{i}) - E(x_{i}) b$$`
+
+---
+
+`$$E((y_{i} - a + b x_{i}) x_{i}) = 0$$`
+
+`$$E((y_{i} - E(y_{i}) + E(x_{i}) b + b x_{i}) x_{i}) = 0$$`
+
+`$$E((y_{i} - E(y_{i}))x_{i} - (x_{i} b - E(x_{i}) b) x_{i}) = 0$$`
+
+---
+
+`$$b = \frac{E((y_{i} - E(y_{i}))x_{i})}{E((x_{i} - E(x_{i})) x_{i})} = \frac{cov(x,y)}{var(y)}$$`
+---
+
+So the CEF equals the BLP when the CEF is linear.
+
+---
+
+What happens when the CEF isn't linear?
+
+---
+
+* The relationship between campaign spending and vote share likely has diminishing returns: the first million dollars matters more than the tenth million.
+
+* The relationship between education and social mobility plausibly follows an S-curve, with small gains at low education levels, rapid acceleration, then plateauing at higher levels.
+
+---
+
+&lt;img src="ApproximatingCEFs_files/figure-html/unnamed-chunk-2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+###How to proceed?
+
+1. Model the complex, true relationship with flexible methods
+
+2. Use a simple linear model that gives us one clear, interpretable number
+
+---
+
+The BLP preserves the same crucial properties we saw in the CEF:
+
+* `\(E(e) = 0\)` (Errors average to zero across all observations)
+
+* `\(E(e * X) = 0\)` (Errors are uncorrelated with the independent variable)
+
+---
+
+Even when the true relationship is curved, the BLP finds the line that makes prediction errors balanced across all values of X.
+
+---
+
+&lt;img src="ApproximatingCEFs_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+Let `\(Y = \text{Vote share}\)`, `\(X = \text{Campaign spending (millions)}\)`
+
+What the BLP gives us:
+
+* A single "average effect" of campaign spending across all spending levels
+
+* It will over-predict for extremely low-spending and extremely high-spending campaigns
+
+* It will under-predict for medium-spending campaigns
+
+* But overall, the errors balance out, with no linear information left in the residuals
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
