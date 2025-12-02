@@ -1,0 +1,126 @@
+---
+title: "7: Omitted variable bias. Nonlinearity"
+subtitle: "Linear Models"
+author: "<large>Jaye Seawright</large>"
+institute: "<small>Northwestern Political Science</small>" 
+date: "Jan. 28, 2026"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+  
+---
+class: center, middle
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+# Initializes
+library(RefManageR)
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(nlme)
+library(jtools)
+library(mice)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+library(stringr)
+
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear", # Bibliography style
+           max.names = 3, # Max author names displayed in bibliography
+           sorting = "nyt", #Name, year, title sorting
+           cite.style = "authoryear", # citation style
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer,MnSymbol)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size = "1.6rem"
+)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+
+library(readr)
+
+```
+
+Consider the following two linear predictors:
+
+$$y = \beta_0 + \beta_1x_1 + \beta_2x_2 + u$$
+
+$$y = \beta^*_0 + \beta^*_1x_1 + u^*$$
+
+---
+
+How does $\beta^*_1x_1$ relate to $\beta_1x_1$?
+
+---
+
+Remember the regression formula:
+
+$$\beta^*_1 = \frac{\text{Cov}(x_1, y)}{\text{Var}(x_1)}$$
+
+---
+
+Let's plug in our more complicated linear predictor:
+
+$$\beta^*_1 = \frac{\text{Cov}(X_1, \beta_0 + \beta_1x_1 + \beta_2x_2 + u)}{\text{Var}(x_1)}$$
+
+---
+
+Covariance is linear, so we can simplify:
+
+$$\scriptsize\beta^*_1 = \frac{\text{Cov}(x_1, \beta_0) + \text{Cov}(x_1, \beta_1x_1) + \text{Cov}(x_1, \beta_2x_2) + \text{Cov}(x_1, u)}{\text{Var}(x_1)}$$
+
+---
+
+1. $\text{Cov}(X_1, \beta_0) = 0$ because $\beta_0$ is a constant.
+
+2. $\text{Cov}(X_1, \beta_1x_1) = \beta_1 \text{Var} (x_1)$
+
+3. $\text{Cov}(x_1, \beta_2x_2) = \beta_2 \text{Cov}(x_1, x_2)$
+
+4. $\text{Cov}(x_1, u) = 0$ because that's the error.
+
+---
+
+$$\beta^*_1 = \frac{\beta_1 \text{Var} (x_1) + \beta_2 \text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$
+
+$$\beta^*_1 = \frac{\beta_1 \text{Var} (x_1)}{\text{Var}(x_1)} + \frac{\beta_2 \text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$
+
+$$\beta^*_1 = \beta_1 + \beta_2 \frac{\text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$
+
+---
+
+This term:
+
+$$\beta_2 \frac{\text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$
+
+is the coefficient for $x_2$ times the coefficient in a regression of $x_2$ on $x_1$.
+
+---
+
+If we think of the larger linear predictor, with both $x$ variables as in some sense the "true" model, then this difference between the models is a bias, with the smaller model being worse by the amount shown on the previous slide.
+
+People call this *omitted variable bias.*

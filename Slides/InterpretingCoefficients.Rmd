@@ -35,6 +35,7 @@ library(mice)
 library(knitr)
 library(modelsummary)
 library(kableExtra)
+library(stringr)
 
 BibOptions(check.entries = FALSE,
            bib.style = "authoryear", # Bibliography style
@@ -59,252 +60,161 @@ style_mono_accent(
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE)
-```
 
-We have a theorem that, if the conditional expectation function is linear, then it equals the population OLS regression.
+library(readr)
 
----
+usterrorism <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/usterrorism.csv")
 
-What is a *theorem*?
+election2016 <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/election2016.csv")
 
----
+stateattacklist <- table(usterrorism$provstate[usterrorism$iyear>2015])
 
-Our theorem posits that the CEF is linear:
+election2016$Stateterrorism <- 0
 
-$$E(y|x_{i}) = a + b x_{i}$$
-for some values of $a$ and $b$.
-
----
-
-Key property number one of the CEF:
-
-$$E(y_{i} - E(y_{i}|x_{i})) = 0$$
-
----
-###The CEF Error
-
-* For any case $i$, the actual outcome $Y_{i}$ will almost never be exactly equal to our prediction $E(Y_{i}|X_{i})$.
-
-* The difference is the CEF error: $Y_{i} - E(Y_{i}|X_{i})$
-
----
-
-* At the population level, we have an unlimited collection of these errors. Some are positive, some are negative.
-
-* Question: What happens if we take the average of all these errors? $E(Y_{i} - E(Y_{i}|X_{i}))$ = ?
-
----
-
-* Why must the errors average to zero? Because if they didn't, our predictor wouldn't be the best one!
-
----
-
-Thought Experiment:
-
-* Suppose for a moment that $E(Y_{i} - E(Y_{i}|X_{i})) = c$, where $c > 0$.
-
-* This would mean that, on average, our predictor E[Y_i|X_i] is systematically too low by the amount c.
-
-* If we knew this, we could create a better predictor! We could just add c to our old one: New Predictor = $E(Y_{i}|X_{i}) + c$
-
-* This new predictor would have a smaller average error. But we defined $E(Y|X)$ as the best predictor! (This is called proof by contradiction.)
-
----
-
-There's a better proof that relies on some probability theory:
-
-$E(Y_{i} - E(Y_{i}|X_{i})) = E(Y_{i}) - E(Y_{i}|X_{i})$
-
-$E(Y_{i}) - E(Y_{i}|X_{i}) = E(Y_{i}) - E(Y_{i}) = 0$
-
----
-
-Key property number two of the CEF:
-
-$$E((y_{i} - E(y_{i}|x_{i})) x_{i}) = 0$$
-
----
-
-What we're suggesting here is that the CEF error times $x_{i}$ is equal to zero in expectation.
-
----
-
-Imagine a seesaw, with values of $x_{i}$ being locations further left or right from the axis and values of the CEF error representing weights. 
-
-What would happen if there was a large cluster of weights on one side or the other?
-
----
-###Does the CEF Error Have Useful Information?
-
-If the CEF error is related to $x_{i}$, that means there is information in the error that could still have been predicted by $x$ but wasn't. 
-
-The best available predictor wouldn't allow that.
-
----
-
-Thought Experiment:
-
-* Suppose $E((y_{i} - E(y_{i}|x_{i})) * x_{i}) = c$, where $c > 0$.
-
-* This means that when $x_i$ is large, our errors tend to be positive (our predictions are too low), and when $x_i$ is small, our errors tend to be negative (our predictions are too high).
-
-* We could then build a better predictor by adding a small multiple of $x_i$ to our old one:
-
-* New Predictor = $E(Y_{i}|x_{i}) + \delta * x_{i}$
-
----
-
-Now, let's go back to our theorem.
-
-$$E(y|x_{i}) = a + b x_{i}$$
-
-$$E(y_{i} - E(y_{i}|x_{i})) = 0$$
-
-$$E((y_{i} - E(y_{i}|x_{i})) x_{i}) = 0$$
-
----
-
-$$E(y_{i} - a + b x_{i}) = 0$$
-$$a = E(y_{i}) - E(x_{i}) b$$
-
----
-
-$$E((y_{i} - a + b x_{i}) x_{i}) = 0$$
-
-$$E((y_{i} - E(y_{i}) + E(x_{i}) b + b x_{i}) x_{i}) = 0$$
-
-$$E((y_{i} - E(y_{i}))x_{i} - (x_{i} b - E(x_{i}) b) x_{i}) = 0$$
-
----
-
-$$b = \frac{E((y_{i} - E(y_{i}))x_{i})}{E((x_{i} - E(x_{i})) x_{i})} = \frac{cov(x,y)}{var(y)}$$
----
-
-So the CEF equals the BLP when the CEF is linear.
-
----
-
-What happens when the CEF isn't linear?
-
----
-
-* The relationship between campaign spending and vote share likely has diminishing returns: the first million dollars matters more than the tenth million.
-
-* The relationship between education and social mobility plausibly follows an S-curve, with small gains at low education levels, rapid acceleration, then plateauing at higher levels.
-
----
-
-```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
-# Load required packages
-library(ggplot2)
-library(dplyr)
-
-# Set seed for reproducibility
-set.seed(123)
-
-# Generate simulated data for campaign spending vs vote share
-n <- 200
-spending <- runif(n, 0, 10)  # Campaign spending in millions
-
-# True CEF: diminishing returns relationship (logarithmic)
-true_cef <- function(x) {
-  35 + 25 * (1 - exp(-0.5 * x))  # More steep initial growth, clear plateau
+for (i in 1:nrow(election2016)){
+    if (election2016$State[i] %in% names(stateattacklist))
+        election2016$Stateterrorism[i] <- stateattacklist[election2016$State[i] ==names(stateattacklist)]
 }
 
-vote_share <- true_cef(spending) + rnorm(n, 0, 3)  # Add some noise
+election2016$TrumpShare <- as.numeric(str_replace(election2016$TrumpShare, "%", ""))
 
-# Create data frame
-campaign_data <- data.frame(spending = spending, vote_share = vote_share)
+election2016$D12Margin <- as.numeric(str_replace(election2016$D12Margin, "%", ""))
 
-# Fit linear model (BLP)
-blp_model <- lm(vote_share ~ spending, data = campaign_data)
+library(plotly)
+library(dplyr)
 
-# Create the plot
-ggplot(campaign_data, aes(x = spending, y = vote_share)) +
-    geom_point(alpha = 0.6, color = "steelblue") +
-    stat_smooth(method = "lm", formula = y ~ x, se = FALSE, 
-                color = "red", linewidth = 1.5, linetype = "solid") +
-    labs(title = "Campaign Spending vs Vote Share with BLP",
-         subtitle = "BLP: The Best Linear Headline for a Curved Relationship",
-         x = "Campaign Spending (Millions $)",
-         y = "Vote Share (%)",
-         caption = "Red line shows the Best Linear Predictor (BLP)") +
-    theme_minimal(base_size = 14) +
-    theme(plot.title = element_text(face = "bold"),
-          plot.subtitle = element_text(color = "red", face = "italic"))
+
+blp.multivariate <- lm(Stateterrorism ~ TrumpShare + D12Margin, data = election2016)
+
+
+trump_range <- seq(min(election2016$TrumpShare, na.rm = TRUE), 
+                   max(election2016$TrumpShare, na.rm = TRUE), length.out = 20)
+margin_range <- seq(min(election2016$D12Margin, na.rm = TRUE), 
+                    max(election2016$D12Margin, na.rm = TRUE), length.out = 20)
+
+grid <- expand.grid(TrumpShare = trump_range, D12Margin = margin_range)
+grid$Stateterrorism <- predict(blp.multivariate, newdata = grid)
+
+
+p <- plot_ly() %>%
+    
+    add_trace(data = election2016, 
+              x = ~TrumpShare, y = ~D12Margin, z = ~Stateterrorism,
+              type = 'scatter3d', mode = 'markers',
+              marker = list(size = 5, color = 'blue', opacity = 0.7),
+              name = 'Actual Data') %>%
+   
+    add_trace(data = grid,
+              x = ~TrumpShare, y = ~D12Margin, z = ~Stateterrorism,
+              type = 'mesh3d', 
+              opacity = 0.5, color = 'orange',
+              name = 'Regression Plane') %>%
+    layout(scene = list(
+        xaxis = list(title = 'Trump Vote Share'),
+        yaxis = list(title = '2012 Margin'),
+        zaxis = list(title = 'State Terrorism Incidents'),
+        camera = list(eye = list(x = 1.5, y = 1.5, z = 1.5))
+    ),
+    title = 'Multivariate Regression: Terrorism ~ TrumpShare + D12Margin')
+
+
 ```
 
----
-###How to proceed?
-
-1. Model the complex, true relationship with flexible methods
-
-2. Use a simple linear model that gives us one clear, interpretable number
+Suppose we have a best linear predictor of a CEF. What do the $a$ and $b$ numbers mean?
 
 ---
 
-The BLP preserves the same crucial properties we saw in the CEF:
-
-* $E(e) = 0$ (Errors average to zero across all observations)
-
-* $E(e * X) = 0$ (Errors are uncorrelated with the independent variable)
-
----
-
-Even when the true relationship is curved, the BLP finds the line that makes prediction errors balanced across all values of X.
-
----
-
-```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
-# Create prediction data
-pred_data <- data.frame(spending = seq(0, 10, length.out = 300))
-pred_data$true_value <- true_cef(pred_data$spending)
-pred_data$blp_pred <- predict(blp_model, newdata = pred_data)
-
-# Identify over- and under-prediction regions
-pred_data$region <- ifelse(pred_data$blp_pred > pred_data$true_value, 
-                          "Over-prediction", "Under-prediction")
-
-ggplot() +
-  # Shaded regions for over/under prediction
-  geom_ribbon(data = pred_data, 
-              aes(x = spending, 
-                  ymin = pmin(true_value, blp_pred), 
-                  ymax = pmax(true_value, blp_pred),
-                  fill = region), 
-              alpha = 0.3) +
-  # True CEF curve
-  geom_line(data = pred_data, aes(x = spending, y = true_value), 
-            color = "darkgreen", linewidth = 1.2, linetype = "solid") +
-  # BLP line
-  geom_line(data = pred_data, aes(x = spending, y = blp_pred), 
-            color = "red", linewidth = 1.2, linetype = "dashed") +
-  # Scatter points
-  geom_point(data = campaign_data, aes(x = spending, y = vote_share),
-             alpha = 0.5, color = "steelblue") +
-  # Labels and theme
-  labs(title = "BLP Approximation with Prediction Errors",
-       subtitle = "Green curve = True CEF, Red dashed line = BLP",
-       x = "Campaign Spending (Millions $)",
-       y = "Vote Share (%)",
-       fill = "Prediction Error") +
-  scale_fill_manual(values = c("Over-prediction" = "red", 
-                               "Under-prediction" = "blue")) +
-  theme_minimal(base_size = 14) +
-  theme(legend.position = "bottom",
-        plot.title = element_text(face = "bold"))
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+ggplot(election2016, aes(x=TrumpShare, y=Stateterrorism)) + 
+     geom_point() + xlab("Trump State Vote Share 2016") + ylab("Terrorism Incidents in State Since 2016") + geom_smooth(method="lm", se=FALSE)
 ```
 
 ---
 
-Let $Y = \text{Vote share}$, $X = \text{Campaign spending (millions)}$
+Let's imagine that our sample approximation of the BLP is exactly right. 
 
-What the BLP gives us:
+---
 
-* A single "average effect" of campaign spending across all spending levels
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+blp.lm <- lm(Stateterrorism ~ TrumpShare, data=election2016)
+blp.lm
+```
 
-* It will over-predict for extremely low-spending and extremely high-spending campaigns
+---
 
-* It will under-predict for medium-spending campaigns
+What does it mean that $a = 17.6841$ and $b = -0.2111$?
 
-* But overall, the errors balance out, with no linear information left in the residuals
+---
+
+$$E(y|x_{i}) = a + b x_{i}$$
+
+$$a + b x_{i} = E(y|x_{i})$$
+
+$$a = E(y|x_{i}) - b x_{i}$$
+
+Let $x_{i} = 0$. Then:
+
+$$a = E(y|x_{i})$$.
+
+---
+
+So we would expect to see an average of 17.6841 in states where Trump got no votes.
+
+---
+
+$$E(y|x_{i}) = a + b x_{i}$$
+
+Suppose that $x_{j} = x_{i} + 1$. What is $E(y|x_{j}) - E(y|x_{i})$?
+
+---
+
+$$E(y|x_{j}) - E(y|x_{i}) = (a + b x_{j}) - (a + b x_{i})$$
+$$E(y|x_{j}) - E(y|x_{i}) = a + b x_{j} - a - b x_{i}$$
+$$E(y|x_{j}) - E(y|x_{i}) = b x_{j} - b x_{i}$$
+$$E(y|x_{j}) - E(y|x_{i}) = b (x_{j} - x_{i})$$
+$$E(y|x_{j}) - E(y|x_{i}) = b (1)$$
+$$E(y|x_{j}) - E(y|x_{i}) = b$$
+
+---
+
+So if there was a cluster of states where Trump got 49 percent of the vote, and another cluster of states where Trump got 50 percent of the vote, we would expect that second cluster to average 0.2111 fewer terrorist attacks since 2015 compared to the first cluster.
+
+---
+
+How does this change if we add a control variable?
+
+---
+
+$$E(y|x_{1,i}, x_{2,i}) = a + b_{1} x_{1,i} + b_{2} x_{2,i}$$
+
+---
+
+Nothing really changes about $a$.
+
+---
+
+Let's treat $x_{2}$ as a control variable and $x_{1}$ as the variable of interest.
+
+Suppose that $x_{1,j} = x_{1,i} + 1$. What is $E(y|x_{1,j},x_{2}) - E(y|x_{i},x_{2})$?
+
+---
+
+$$E(y|x_{j}) - E(y|x_{i}) = (a + b_{1} x_{1,j} + b_{2} x_{2}) - (a + b_{1} x_{1,i} + b_{2}x_{2})$$
+$$E(y|x_{j}) - E(y|x_{i}) = a + b_{1} x_{1,j} + b_{2} x_{2} - a - b_{1} x_{1,i} - b_{2}x_{2}$$
+$$E(y|x_{j}) - E(y|x_{i}) = b_{1} x_{1,j} - b_{1} x_{1,i}$$
+$$E(y|x_{j}) - E(y|x_{i}) = b_{1} (x_{1,j} - x_{1,i})$$
+$$E(y|x_{j}) - E(y|x_{i}) = b_{1} (1)$$
+$$E(y|x_{j}) - E(y|x_{i}) = b_{1}$$
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+p
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+blp.multivariate <- lm(Stateterrorism ~ TrumpShare + D12Margin, data=election2016)
+blp.multivariate
+```
