@@ -1,0 +1,58 @@
+#######################
+## Problem Set 4     ##
+#######################
+
+
+####################
+## Problem 1      ##
+####################
+
+Define omitted variable bias. Give a formula for where it comes from, and explain what the symbols in that formula mean.
+
+####################
+## Problem 2      ##
+####################
+
+What are the potential consequences, at the population level, of using a BLP to study a nonlinear CEF?
+
+####################
+## Problem 3      ##
+####################
+
+Return to the regressions you ran in Problem 3 last week. Interpret the differences between them in terms of omitted variable bias. Does this interpretation mean that one or the other of the models is the true model? Does it mean that one model is better than the other?
+
+####################
+## Problem 4      ##
+####################
+
+We are going to generate some simulated data to study two different situations.
+
+First, we will set up a trio of simulated variables where x1 and x2 are correlated, and y depends on both.
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+set.seed(789)
+n <- 1000
+x1 <- rnorm(n)
+x2 <- 0.7*x1 + rnorm(n)  # x2 correlated with x1 but not y
+y <- 2 + 1.5*x1 + 2*x2 + rnorm(n) # y depends on x1 and x2
+```
+
+Run regressions predicting y on the basis of x1 with and without x2. Explain the differences in results in terms of omitted variable bias.
+
+Second, we will set up a trio of simulated variables where x2 is correlated with x1 and y, but y only depends on x1.
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+set.seed(789)
+n <- 1000
+x1 <- rnorm(n)
+x2 <- 0.7*x1 - 1.5*y + rnorm(n)  # x2 correlated with x1 but not y
+y <- 2 + 1.5*x1 + rnorm(n) # y depends on x1 and x2
+```
+
+Run regressions predicting y on the basis of x1 with and without x2. Explain the differences in results in terms of omitted variable bias.
+
+Do these simulations suggest that eliminating omitted variable bias will always help us find the  regression coefficients we're interested in? Explain your answer.
+
+Please submit your completed assignment at:
+
+[https://canvas.northwestern.edu/courses/245562/assignments/1676748](https://canvas.northwestern.edu/courses/245562/assignments/1676748)

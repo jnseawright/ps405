@@ -1,0 +1,283 @@
+---
+title: "9: Model Fit, Matrix Form, and Multicollinearity."
+subtitle: "Linear Models"
+author: "<large>Jaye Seawright</large>"
+institute: "<small>Northwestern Political Science</small>" 
+date: "Feb. 4, 2026"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+  
+---
+class: center, middle
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+# Initializes
+library(RefManageR)
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(nlme)
+library(jtools)
+library(mice)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+library(stringr)
+
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear", # Bibliography style
+           max.names = 3, # Max author names displayed in bibliography
+           sorting = "nyt", #Name, year, title sorting
+           cite.style = "authoryear", # citation style
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer,MnSymbol)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size = "1.6rem"
+)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+
+library(readr)
+turnout <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv")
+
+```
+
+Our linear estimates are going to "miss" in various ways at various levels.
+
+---
+
+When we're at the population level, the prediction won't exactly equal the CEF for every level of $X$, which is why we include $\epsilon$, which we often call the modeling error, or the error term.
+
+---
+
+When we're at the level of estimation, the linear regression estimate won't exactly equal the observed value of our data $Y_i$ for every data point $i$, which is why we include $e_i$, the difference between our regression and the data, which we often call the residual.
+
+---
+
+The residual is not the same thing as the modeling error!
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+library(tidyverse)
+library(rosdata)
+data("hibbs")
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvote.lm <- lm(vote ~ growth, data = hibbs)
+summary(econvote.lm)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+econvoteplot.line <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+     geom_text(size = 3) +
+     scale_x_continuous(labels = function(x) paste0(x, "%")) +
+     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     labs(title = "Forecasting the Election from the Economy",
+          x = "Average recent growth in personal income",
+          y = "Incumbent party's vote share") +
+     geom_smooth(method = "lm") +
+     theme_minimal()
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplot.line
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplot.resids <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+    geom_smooth(method = "lm", se = TRUE) +
+    # Add vertical residual lines
+    geom_segment(aes(xend = growth, yend = predict(lm(vote ~ growth, data = hibbs))), 
+                 color = "maroon", alpha = 1, linetype = "dashed", linewidth=1) +
+    geom_text(size = 3) +
+    scale_x_continuous(labels = function(x) paste0(x, "%")) +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    labs(title = "Forecasting the Election from the Economy",
+         x = "Average recent growth in personal income",
+         y = "Incumbent party's vote share") +
+    theme_minimal()
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplot.resids
+```
+
+---
+
+If we add up all the residuals from a regression, is that a useful measure of the model's fit?
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+sum(econvote.lm$resid)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+sum(econvote.lm$resid^2)
+```
+
+But what does this number *mean*?
+
+---
+
+Consider a regression with no explanatory variables.
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplot.constant <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+    geom_smooth(method = "lm", formula = y ~ 1, se = TRUE) +
+    # Add vertical residual lines
+    geom_segment(aes(xend = growth, yend = predict(lm(vote ~ 1, data = hibbs))), 
+                 color = "navy", alpha = 1, linetype = "dashed", linewidth=1) +
+    geom_text(size = 3) +
+    scale_x_continuous(labels = function(x) paste0(x, "%")) +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    labs(title = "Forecasting the Election from the Economy",
+         x = "Average recent growth in personal income",
+         y = "Incumbent party's vote share") +
+    theme_minimal()
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteplot.constant
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+econvoteconstant.lm <- lm(vote ~ 1, data = hibbs)
+sum(econvoteconstant.lm$resid^2)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+sum(econvote.lm$resid^2)/sum(econvoteconstant.lm$resid^2)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+1 - sum(econvote.lm$resid^2)/sum(econvoteconstant.lm$resid^2)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+summary(econvote.lm)
+```
+
+---
+
+$$R^2 = 1 - \frac{\text{RSS}}{\text{TSS}}$$
+
+---
+
+Recall the matrix form of the regression model:
+
+$$Y = \mathbb{X} \beta + \epsilon$$
+
+---
+
+$$Y = \begin{pmatrix}
+Y_1 \\ Y_2 \\ \vdots \\ Y_N
+\end{pmatrix}$$
+
+---
+
+$$\mathbb{X} = \begin{pmatrix}
+1 & X_{11} & X_{12} & \cdots & X_{1K} \\ 1 & X_{21} & X_{22} & \cdots & X_{2K} \\ \vdots & \vdots & \vdots & \vdots & \vdots  \\ 1 & X_{N1} & X_{N2} & \cdots & X_{NK}
+\end{pmatrix}$$
+
+---
+
+$$\beta = \begin{pmatrix}
+\text{Intercept} \\ \beta_1 \\ \vdots \\ \beta_{K}
+\end{pmatrix}$$
+
+---
+
+$$e = \begin{pmatrix}
+e_1 \\ e_2 \\ \vdots \\ e_n
+\end{pmatrix}$$
+
+---
+
+$$\hat\beta_{OLS} = (\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}^TY$$
+
+---
+
+$$\hat Y = \mathbb{X} \hat\beta_{OLS}$$
+
+---
+
+$$Y - \hat Y = e$$
+
+---
+
+In order for $\hat\beta_{OLS}$ to be defined, we need to be able to compute $(\mathbb{X}^T\mathbb{X})^{-1}$. A matrix can be inverted when it is *positive definite*, which is a property from matrix algebra.
+
+A necessary condition for a matrix to be positive definite is that the columns of the matrix are *linearly independent*.
+
+---
+
+If we can multiply or divide one or more of the $X$ variables by some constant and then add them together, and the result exactly equals another $X$ variable, then we have a matrix that is linearly dependent, and regression will fail.
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+hibbs$doublegrowth <- hibbs$growth * 2
+econvote.fail <- lm(vote ~ growth + doublegrowth, data = hibbs)
+summary(econvote.fail)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+hibbs$earlyyear <- hibbs$year <1980
+hibbs$lateyear <- hibbs$year >= 1980
+econvote.fail <- lm(vote ~ growth + earlyyear + lateyear, data = hibbs)
+summary(econvote.fail)
+```
+

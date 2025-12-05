@@ -1,0 +1,36 @@
+#######################
+## Problem Set 3     ##
+#######################
+
+
+####################
+## Problem 1      ##
+####################
+
+In a multiple regression model, $Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \epsilon$, interpret $\beta_1$.
+
+####################
+## Problem 2      ##
+####################
+
+Prove that the CEF is the best predictor of Y given X in the mean-squared error sense.
+
+####################
+## Problem 3      ##
+####################
+
+Install the poliscidata library, so that you can access the "states" dataset:
+
+```{r, echo = TRUE, eval=FALSE, out.width="70%", fig.retina = 1, fig.align='center'}
+install.packages("poliscidata")
+library(poliscidata)
+head(states)
+```
+
+Using the states data, run a bivariate regression predicting voter turnout (vep12_turnout) on the basis of income (prcapinc). Also run a multivariate regression predicting voter turnout (vep12_turnout) on the basis of income (prcapinc), religiosity (religiosity), and age distribution (over64).
+
+What can you say about the CEFs that we are trying to model in each of these two cases? Do the results show meaningful similarities and/or differences in ways that suggest insights about the CEFs? Are there issues you notice that might raise problems with these models?
+
+Please submit your completed assignment at:
+
+[https://canvas.northwestern.edu/courses/245562/assignments/1676747](https://canvas.northwestern.edu/courses/245562/assignments/1676747)

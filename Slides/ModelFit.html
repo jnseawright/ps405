@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>9: Model Fit, Matrix Form, and Multicollinearity.</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-02-04" />
+    <script src="ModelFit_files/header-attrs-2.30/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 9: Model Fit, Matrix Form, and Multicollinearity.
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### Feb. 4, 2026
+]
+
+---
+
+class: center, middle
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+Our linear estimates are going to "miss" in various ways at various levels.
+
+---
+
+When we're at the population level, the prediction won't exactly equal the CEF for every level of `\(X\)`, which is why we include `\(\epsilon\)`, which we often call the modeling error, or the error term.
+
+---
+
+When we're at the level of estimation, the linear regression estimate won't exactly equal the observed value of our data `\(Y_i\)` for every data point `\(i\)`, which is why we include `\(e_i\)`, the difference between our regression and the data, which we often call the residual.
+
+---
+
+The residual is not the same thing as the modeling error!
+
+---
+
+
+``` r
+library(tidyverse)
+```
+
+```
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ forcats   1.0.1     ✔ tibble    3.3.0
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+## ✔ purrr     1.2.0     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ nlme::collapse()         masks dplyr::collapse()
+## ✖ mice::filter()           masks dplyr::filter(), stats::filter()
+## ✖ kableExtra::group_rows() masks dplyr::group_rows()
+## ✖ dplyr::lag()             masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+```
+
+``` r
+library(rosdata)
+data("hibbs")
+```
+
+---
+
+
+``` r
+econvote.lm &lt;- lm(vote ~ growth, data = hibbs)
+summary(econvote.lm)
+```
+
+```
+## 
+## Call:
+## lm(formula = vote ~ growth, data = hibbs)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.9929 -0.6674  0.2556  2.3225  5.3094 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  46.2476     1.6219  28.514 8.41e-14 ***
+## growth        3.0605     0.6963   4.396  0.00061 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.763 on 14 degrees of freedom
+## Multiple R-squared:  0.5798,	Adjusted R-squared:  0.5498 
+## F-statistic: 19.32 on 1 and 14 DF,  p-value: 0.00061
+```
+
+---
+
+
+``` r
+econvoteplot.line &lt;- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+     geom_text(size = 3) +
+     scale_x_continuous(labels = function(x) paste0(x, "%")) +
+     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     labs(title = "Forecasting the Election from the Economy",
+          x = "Average recent growth in personal income",
+          y = "Incumbent party's vote share") +
+     geom_smooth(method = "lm") +
+     theme_minimal()
+```
+
+---
+
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+&lt;img src="ModelFit_files/figure-html/unnamed-chunk-5-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+
+---
+
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+&lt;img src="ModelFit_files/figure-html/unnamed-chunk-7-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+If we add up all the residuals from a regression, is that a useful measure of the model's fit?
+
+---
+
+
+``` r
+sum(econvote.lm$resid)
+```
+
+```
+## [1] -8.437695e-15
+```
+
+---
+
+
+``` r
+sum(econvote.lm$resid^2)
+```
+
+```
+## [1] 198.2727
+```
+
+But what does this number *mean*?
+
+---
+
+Consider a regression with no explanatory variables.
+
+---
+
+
+
+---
+
+&lt;img src="ModelFit_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+``` r
+econvoteconstant.lm &lt;- lm(vote ~ 1, data = hibbs)
+sum(econvoteconstant.lm$resid^2)
+```
+
+```
+## [1] 471.905
+```
+
+---
+
+
+``` r
+sum(econvote.lm$resid^2)/sum(econvoteconstant.lm$resid^2)
+```
+
+```
+## [1] 0.4201538
+```
+
+---
+
+
+``` r
+1 - sum(econvote.lm$resid^2)/sum(econvoteconstant.lm$resid^2)
+```
+
+```
+## [1] 0.5798462
+```
+
+---
+
+
+``` r
+summary(econvote.lm)
+```
+
+```
+## 
+## Call:
+## lm(formula = vote ~ growth, data = hibbs)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.9929 -0.6674  0.2556  2.3225  5.3094 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  46.2476     1.6219  28.514 8.41e-14 ***
+## growth        3.0605     0.6963   4.396  0.00061 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.763 on 14 degrees of freedom
+## Multiple R-squared:  0.5798,	Adjusted R-squared:  0.5498 
+## F-statistic: 19.32 on 1 and 14 DF,  p-value: 0.00061
+```
+
+---
+
+`$$R^2 = 1 - \frac{\text{RSS}}{\text{TSS}}$$`
+
+---
+
+Recall the matrix form of the regression model:
+
+`$$Y = \mathbb{X} \beta + \epsilon$$`
+
+---
+
+`$$Y = \begin{pmatrix}
+Y_1 \\ Y_2 \\ \vdots \\ Y_N
+\end{pmatrix}$$`
+
+---
+
+`$$\mathbb{X} = \begin{pmatrix}
+1 &amp; X_{11} &amp; X_{12} &amp; \cdots &amp; X_{1K} \\ 1 &amp; X_{21} &amp; X_{22} &amp; \cdots &amp; X_{2K} \\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots  \\ 1 &amp; X_{N1} &amp; X_{N2} &amp; \cdots &amp; X_{NK}
+\end{pmatrix}$$`
+
+---
+
+`$$\beta = \begin{pmatrix}
+\text{Intercept} \\ \beta_1 \\ \vdots \\ \beta_{K}
+\end{pmatrix}$$`
+
+---
+
+`$$e = \begin{pmatrix}
+e_1 \\ e_2 \\ \vdots \\ e_n
+\end{pmatrix}$$`
+
+---
+
+`$$\hat\beta_{OLS} = (\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}^TY$$`
+
+---
+
+`$$\hat Y = \mathbb{X} \hat\beta_{OLS}$$`
+
+---
+
+`$$Y - \hat Y = e$$`
+
+---
+
+In order for `\(\hat\beta_{OLS}\)` to be defined, we need to be able to compute `\((\mathbb{X}^T\mathbb{X})^{-1}\)`. A matrix can be inverted when it is *positive definite*, which is a property from matrix algebra.
+
+A necessary condition for a matrix to be positive definite is that the columns of the matrix are *linearly independent*.
+
+---
+
+If we can multiply or divide one or more of the `\(X\)` variables by some constant and then add them together, and the result exactly equals another `\(X\)` variable, then we have a matrix that is linearly dependent, and regression will fail.
+
+---
+
+
+``` r
+hibbs$doublegrowth &lt;- hibbs$growth * 2
+econvote.fail &lt;- lm(vote ~ growth + doublegrowth, data = hibbs)
+summary(econvote.fail)
+```
+
+```
+## 
+## Call:
+## lm(formula = vote ~ growth + doublegrowth, data = hibbs)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.9929 -0.6674  0.2556  2.3225  5.3094 
+## 
+## Coefficients: (1 not defined because of singularities)
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   46.2476     1.6219  28.514 8.41e-14 ***
+## growth         3.0605     0.6963   4.396  0.00061 ***
+## doublegrowth       NA         NA      NA       NA    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.763 on 14 degrees of freedom
+## Multiple R-squared:  0.5798,	Adjusted R-squared:  0.5498 
+## F-statistic: 19.32 on 1 and 14 DF,  p-value: 0.00061
+```
+
+---
+
+
+``` r
+hibbs$earlyyear &lt;- hibbs$year &lt;1980
+hibbs$lateyear &lt;- hibbs$year &gt;= 1980
+econvote.fail &lt;- lm(vote ~ growth + earlyyear + lateyear, data = hibbs)
+summary(econvote.fail)
+```
+
+```
+## 
+## Call:
+## lm(formula = vote ~ growth + earlyyear + lateyear, data = hibbs)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -8.2182 -0.9894 -0.0878  2.4180  4.9154 
+## 
+## Coefficients: (1 not defined because of singularities)
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    46.4518     1.6703  27.810 5.74e-13 ***
+## growth          3.3250     0.7906   4.206  0.00103 ** 
+## earlyyearTRUE  -1.6135     2.1534  -0.749  0.46702    
+## lateyearTRUE        NA         NA      NA       NA    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.824 on 13 degrees of freedom
+## Multiple R-squared:  0.5972,	Adjusted R-squared:  0.5353 
+## F-statistic: 9.639 on 2 and 13 DF,  p-value: 0.002709
+```
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

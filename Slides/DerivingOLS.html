@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>7: Omitted variable bias. Nonlinearity</title>
+    <title>8: Deriving OLS</title>
     <meta charset="utf-8" />
     <meta name="author" content="Jaye Seawright" />
-    <meta name="date" content="2026-01-28" />
-    <script src="OmittedVariableBias_files/header-attrs-2.30/header-attrs.js"></script>
+    <meta name="date" content="2026-02-02" />
+    <script src="DerivingOLS_files/header-attrs-2.30/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -13,7 +13,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# 7: Omitted variable bias. Nonlinearity
+# 8: Deriving OLS
 ]
 .subtitle[
 ## Linear Models
@@ -25,7 +25,7 @@ class: center, middle, inverse, title-slide
 ### <small>Northwestern Political Science</small>
 ]
 .date[
-### Jan. 28, 2026
+### Feb. 2, 2026
 ]
 
 ---
@@ -48,103 +48,70 @@ pre[class] {
 
 
 
-Consider the following two linear predictors:
+* Up until this point, we've been thinking about models and parameters operating at the population level.
 
-`$$y = \beta_0 + \beta_1x_1 + \beta_2x_2 + u$$`
-
-`$$y = \beta^*_0 + \beta^*_1x_1 + u^*$$`
+* To do empirical research, we're going to have to estimate: use finite amounts of data to come up with best guesses about population statistics.
 
 ---
 
-How does `\(\beta^*_1x_1\)` relate to `\(\beta_1x_1\)`?
+*Plug-in principle:*
+
+In a formula for a model of interest, replace population moments with their sample equivalents.
+
+(E.g., replace expectations with sample means, replace covariances with sample covariances, replace variances with sample variances...)
 
 ---
 
-Remember the regression formula:
+Remember the regression model:
 
-`$$\beta^*_1 = \frac{\text{Cov}(x_1, y)}{\text{Var}(x_1)}$$`
+`$$y = \beta_0 + \beta_1x_1 + \epsilon$$`
 
----
+Let's assume `\(y\)` and `\(x_1\)` both have mean 0, so that `\(\beta_0\)` disappears.
 
-Let's plug in our more complicated linear predictor:
+`$$y = \beta_1x_1 + \epsilon$$`
 
-`$$\beta^*_1 = \frac{\text{Cov}(X_1, \beta_0 + \beta_1x_1 + \beta_2x_2 + u)}{\text{Var}(x_1)}$$`
-
----
-
-Covariance is linear, so we can simplify:
-
-`$$\scriptsize\beta^*_1 = \frac{\text{Cov}(x_1, \beta_0) + \text{Cov}(x_1, \beta_1x_1) + \text{Cov}(x_1, \beta_2x_2) + \text{Cov}(x_1, u)}{\text{Var}(x_1)}$$`
+Our approach is to choose `\(\beta_1\)` to minimize `\(\text{E}(y - \beta_1x_1)^2\)`.
 
 ---
 
-1. `\(\text{Cov}(X_1, \beta_0) = 0\)` because `\(\beta_0\)` is a constant.
+To minimize `\(\text{E}(y - \beta_1x_1)^2\)`, we take its derivative with respect to `\(\beta_1\)` and set the result equal to zero.
 
-2. `\(\text{Cov}(X_1, \beta_1x_1) = \beta_1 \text{Var} (x_1)\)`
+`$$\frac{\partial \text{E}(y - \beta_1x_1)^2}{\partial \beta_1} = 0$$`
+`$$\text{E}(2(y - \beta_1x_1)(-x_1)) = 0$$`
+`$$\text{E}(-2 x_1 y + 2\beta_1x_1^2) = 0$$`
+`$$\text{E}(-2 x_1 y) + \text{E}(2\beta_1x_1^2) = 0$$`
+`$$-2\text{E}(x_1 y) + 2\beta_1\text{E}(x_1^2) = 0$$`
+---
 
-3. `\(\text{Cov}(x_1, \beta_2x_2) = \beta_2 \text{Cov}(x_1, x_2)\)`
+`$$-2\text{E}(x_1 y) + 2\beta_1\text{E}(x_1^2) = 0$$`
 
-4. `\(\text{Cov}(x_1, u) = 0\)` because that's the error.
+`$$-\text{E}(x_1 y) + \beta_1\text{E}(x_1^2) = 0$$`
+
+
+`$$-\text{cov}(x_1, y) + \beta_1\text{var}(x_1) = 0$$`
+`$$\beta_1\text{var}(x_1) = \text{cov}(x_1, y)$$`
+`$$\beta_1^* = \frac{\text{cov}(x_1, y)}{\text{var}(x_1)}$$`
+Then our plug-in principle estimate is:
+
+`$$\hat\beta = \frac{\sum_{i=1}^{N}(x_i * y_i)}{\sum_{i=1}^{N}(x_i^2)}$$`
 
 ---
 
-`$$\beta^*_1 = \frac{\beta_1 \text{Var} (x_1) + \beta_2 \text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$`
+For multivariate models, the process of the argument is basically the same, but the setup uses matrix algebra and calculus. As we'll discuss a couple more times, the regression model in matrix form looks like this:
 
-`$$\beta^*_1 = \frac{\beta_1 \text{Var} (x_1)}{\text{Var}(x_1)} + \frac{\beta_2 \text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$`
+`$$Y = \mathbb{X} \beta + \epsilon$$`
 
-`$$\beta^*_1 = \beta_1 + \beta_2 \frac{\text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$`
-
----
-
-This term:
-
-`$$\beta_2 \frac{\text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$`
-
-is the coefficient for `\(x_2\)` times the coefficient in a regression of `\(x_2\)` on `\(x_1\)`.
+Here, `\(Y\)` and \epsilon are `\(N\)` by 1 vectors. `\(\mathbb{X}\)` is an `\(N\)` by `\(k\)` matrix, where `\(k\)` is one plus the number of independent variables in the regression. Finally, `\(\beta\)` is a `\(k\)` by 1 vector of coefficients (including the intercept).
 
 ---
 
-If we think of the larger linear predictor, with both `\(x\)` variables as in some sense the "true" model, then this difference between the models is a bias, with the smaller model being worse by the amount shown on the previous slide.
+It will turn out that the plug-in estimate here is:
 
-People call this *omitted variable bias.*
-
----
-
-
-``` r
-head(turnout)
-```
-
-```
-## # A tibble: 6 × 4
-##    Year Turnout Temperature   GDP
-##   &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;
-## 1  1828    0.58          NA   881
-## 2  1832    0.55          NA  1155
-## 3  1836    0.58          NA  1896
-## 4  1840    0.8           NA  1672
-## 5  1844    0.79          NA  1629
-## 6  1848    0.73          NA  2139
-```
+`$$\hat\beta = (\sum_{i=1}^N \mathbf{X}_{i}\mathbf{X}_{i}^T)^{-1}(\sum_{i=1}^N\mathbf{X}_{i}\mathbf{Y}_{i})$$`
 
 ---
 
-
-``` r
-lm(Turnout ~ GDP, data=turnout)
-```
-
-```
-## 
-## Call:
-## lm(formula = Turnout ~ GDP, data = turnout)
-## 
-## Coefficients:
-## (Intercept)          GDP  
-##   6.499e-01   -4.975e-09
-```
-
----
+Consider our turnout regressions from a bit back:
 
 
 ``` r
@@ -172,21 +139,16 @@ summary(lm(Turnout ~ GDP, data=turnout))
 ## F-statistic: 5.222 on 1 and 48 DF,  p-value: 0.02677
 ```
 
+
 ---
 
 
 ``` r
-lm(Turnout ~ GDP + Temperature, data=turnout)
+with(turnout, cov(Turnout, GDP, use="complete")/var(GDP, use="complete"))
 ```
 
 ```
-## 
-## Call:
-## lm(formula = Turnout ~ GDP + Temperature, data = turnout)
-## 
-## Coefficients:
-## (Intercept)          GDP  Temperature  
-##   5.751e-01   -3.525e-09    9.409e-04
+## [1] -4.975207e-09
 ```
 
 ---
@@ -221,137 +183,134 @@ summary(lm(Turnout ~ GDP + Temperature, data=turnout))
 
 
 ``` r
--4.975e-09 - (-3.525e-09)
+xmat &lt;- as.matrix(with(turnout, data.frame(Intercept=1, GDP=GDP, Temperature=Temperature)))
+yvec &lt;- turnout$Turnout
+xmat
 ```
 
 ```
-## [1] -1.45e-09
+##       Intercept      GDP Temperature
+##  [1,]         1      881          NA
+##  [2,]         1     1155          NA
+##  [3,]         1     1896          NA
+##  [4,]         1     1672          NA
+##  [5,]         1     1629          NA
+##  [6,]         1     2139          NA
+##  [7,]         1     2864          NA
+##  [8,]         1     4022          NA
+##  [9,]         1     3839          NA
+## [10,]         1     6467          NA
+## [11,]         1     7060          NA
+## [12,]         1     8520          NA
+## [13,]         1     7910        51.5
+## [14,]         1    10510        48.6
+## [15,]         1    10970        51.0
+## [16,]         1    12420        53.0
+## [17,]         1    14300        51.2
+## [18,]         1    13300        51.6
+## [19,]         1    18700        53.9
+## [20,]         1    22900        51.8
+## [21,]         1    27700        50.1
+## [22,]         1    39400        50.9
+## [23,]         1    48300        51.1
+## [24,]         1    91500        51.3
+## [25,]         1    84700        51.5
+## [26,]         1    97000        50.7
+## [27,]         1    58500        48.2
+## [28,]         1    83100        52.2
+## [29,]         1   100400        53.8
+## [30,]         1   211400        49.4
+## [31,]         1   261600        50.6
+## [32,]         1   351600        51.1
+## [33,]         1   428200        51.5
+## [34,]         1   515300        51.9
+## [35,]         1   649800        48.3
+## [36,]         1   892700        50.3
+## [37,]         1  1213000        52.3
+## [38,]         1  1783000        51.6
+## [39,]         1  2732000        52.8
+## [40,]         1  3772000        51.0
+## [41,]         1  4881000        53.3
+## [42,]         1  6256000        53.6
+## [43,]         1  7817000        54.3
+## [44,]         1  9817000        53.7
+## [45,]         1 11734000        52.1
+## [46,]         1 14706538        51.9
+## [47,]         1 16068805        56.6
+## [48,]         1 18525933        56.2
+## [49,]         1 21751238        55.7
+## [50,]         1 28708161        55.5
 ```
 
----
+``` r
+yvec
+```
 
-One question we might reasonably have is whether the relationship between GDP and turnout is actually linear.
+```
+##  [1] 0.58 0.55 0.58 0.80 0.79 0.73 0.70 0.79 0.81 0.74 0.78 0.71 0.82 0.79 0.78
+## [16] 0.79 0.75 0.79 0.73 0.65 0.65 0.59 0.62 0.49 0.49 0.57 0.53 0.57 0.59 0.53
+## [31] 0.52 0.63 0.60 0.64 0.63 0.63 0.57 0.56 0.55 0.55 0.51 0.56 0.50 0.52 0.57
+## [46] 0.58 0.55 0.56 0.63 0.58
+```
+
 
 ---
 
 
 ``` r
-turnoutlm &lt;- lm(Turnout ~ GDP, data=turnout)
+xmat &lt;- xmat[13:nrow(xmat),]
+yvec &lt;- yvec[13:length(yvec)]
 ```
 
 ---
 
 
 ``` r
-plot(turnoutlm, which = 1)
+t(xmat)%*%xmat
 ```
 
-&lt;img src="OmittedVariableBias_files/figure-html/unnamed-chunk-9-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
+```
+##               Intercept          GDP  Temperature
+## Intercept          38.0 1.538179e+08       1976.1
+## GDP         153817885.0 2.501400e+15 8374162782.9
+## Temperature      1976.1 8.374163e+09     102911.9
+```
 
 ``` r
-turnoutlm.nonlinear &lt;- lm(Turnout ~ GDP + I(GDP^2) + I(GDP^3), data=turnout)
-```
-
----
-
-
-``` r
-summary(turnoutlm.nonlinear)
+t(xmat)%*%yvec
 ```
 
 ```
-## 
-## Call:
-## lm(formula = Turnout ~ GDP + I(GDP^2) + I(GDP^3), data = turnout)
-## 
-## Residuals:
-##       Min        1Q    Median        3Q       Max 
-## -0.175003 -0.049561 -0.004461  0.061803  0.151498 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  6.689e-01  1.531e-02  43.685  &lt; 2e-16 ***
-## GDP         -4.591e-08  1.371e-08  -3.350  0.00162 ** 
-## I(GDP^2)     3.769e-15  1.440e-15   2.616  0.01198 *  
-## I(GDP^3)    -7.973e-23  3.613e-23  -2.207  0.03237 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.09022 on 46 degrees of freedom
-## Multiple R-squared:  0.2682,	Adjusted R-squared:  0.2204 
-## F-statistic: 5.618 on 3 and 46 DF,  p-value: 0.002286
+##                     [,1]
+## Intercept         23.170
+## GDP         87519078.090
+## Temperature     1203.719
 ```
 
 ---
 
 
 ``` r
-library(ggplot2)
-library(ggExtra)
-
-beta0 &lt;- turnoutlm.nonlinear$coefficients[1]  # Intercept
-beta1 &lt;- turnoutlm.nonlinear$coefficients[2] # GDP
-beta2 &lt;- turnoutlm.nonlinear$coefficients[3]  # GDP^2
-beta3 &lt;- turnoutlm.nonlinear$coefficients[4] # GDP^3
-
-gdp_seq &lt;- seq(min(turnout$GDP), max(turnout$GDP), length.out = 1000) 
-
-tempdensity &lt;- data.frame(simgdp = runif(1000,min(turnout$GDP),1e+07), simturnout = sample(turnout$Turnout, 1000, replace=TRUE))
-
-# Calculate predicted turnout using the cubic polynomial
-turnout_pred &lt;- beta0 + 
-                beta1 * gdp_seq + 
-                beta2 * gdp_seq^2 + 
-                beta3 * gdp_seq^3
-
-# Create data frame for plotting
-plot_data &lt;- data.frame(GDP = gdp_seq, Turnout = turnout_pred)
-
-# Create the plot
-turnoutplot &lt;- ggplot(plot_data, aes(x = GDP, y = Turnout)) +
-  geom_line(linewidth = 1.2, color = "steelblue") +
-  labs(
-    title = "Hypothetical Nonlinear CEF: Turnout ~ GDP",
-    x = "GDP",
-    y = "Predicted Turnout"
-  ) +
-  geom_point(data=tempdensity, aes(x=simgdp, y=simturnout), alpha = 0) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 9),
-    panel.grid.minor = element_blank()
-  ) +
-  scale_y_continuous(limits = c(min(turnout_pred) - 0.1, max(turnout_pred) + 0.1),
-                     breaks = seq(0, 1, by = 0.1))
+solve(t(xmat)%*%xmat, tol=1e-20)
 ```
 
----
+```
+##                 Intercept           GDP   Temperature
+## Intercept    3.519096e+01  1.349966e-07 -6.867170e-01
+## GDP          1.349966e-07  1.067320e-15 -2.679037e-09
+## Temperature -6.867170e-01 -2.679037e-09  1.341396e-02
+```
 
-&lt;img src="OmittedVariableBias_files/figure-html/unnamed-chunk-13-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+``` r
+solve(t(xmat)%*%xmat, tol=1e-20)%*%t(xmat)%*%yvec
+```
 
----
-
-&lt;img src="OmittedVariableBias_files/figure-html/unnamed-chunk-14-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
-&lt;img src="OmittedVariableBias_files/figure-html/unnamed-chunk-15-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
-&lt;img src="OmittedVariableBias_files/figure-html/unnamed-chunk-16-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
-&lt;img src="OmittedVariableBias_files/figure-html/unnamed-chunk-17-1.png" width="70%" style="display: block; margin: auto;" /&gt;
-
----
-
-&lt;img src="OmittedVariableBias_files/figure-html/unnamed-chunk-18-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+```
+##                      [,1]
+## Intercept    5.750768e-01
+## GDP         -3.524858e-09
+## Temperature  9.408781e-04
+```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

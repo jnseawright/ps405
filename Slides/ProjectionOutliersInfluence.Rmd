@@ -1,0 +1,264 @@
+---
+title: "10: Projection, Outliers, and Influence."
+subtitle: "Linear Models"
+author: "<large>Jaye Seawright</large>"
+institute: "<small>Northwestern Political Science</small>" 
+date: "Feb. 9, 2026"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+  
+---
+class: center, middle
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+# Initializes
+library(RefManageR)
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(nlme)
+library(jtools)
+library(mice)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+library(stringr)
+
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear", # Bibliography style
+           max.names = 3, # Max author names displayed in bibliography
+           sorting = "nyt", #Name, year, title sorting
+           cite.style = "authoryear", # citation style
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer,MnSymbol)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size = "1.6rem"
+)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+
+library(readr)
+turnout <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv")
+
+```
+
+```{r, echo = FALSE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+library(plotly)
+turnouttrim <- na.omit(turnout)
+turnouttrim$GDP <- log(turnouttrim$GDP)
+
+model <- lm(Turnout ~ Temperature + GDP, data = turnouttrim)
+
+x_vals <- seq(min(turnouttrim$Temperature), max(turnouttrim$Temperature), length.out = 30)
+y_vals <- seq(min(turnouttrim$GDP), max(turnouttrim$GDP), length.out = 30)
+
+grid_data <- expand.grid(Temperature = x_vals, GDP = y_vals)
+
+grid_data$Turnout_pred <- predict(model, newdata = grid_data)
+
+z_matrix <- matrix(grid_data$Turnout_pred, 
+                   nrow = length(y_vals),  # Rows = GDP values
+                   ncol = length(x_vals),  # Columns = Temperature values
+                   byrow = TRUE)  # THIS IS CRITICAL
+
+fig <- plot_ly() %>%
+    
+    # Add regression plane with correct orientation
+    add_surface(
+        x = x_vals,  # Temperature
+        y = y_vals,  # GDP  
+        z = z_matrix,  # Turnout predictions
+        opacity = 0.6,
+        colorscale = list(c(0, "#6495ED"), c(1, "#6495ED")),  # Cornflower blue
+        showscale = FALSE,
+        name = "Regression Plane",
+        contours = list(
+            z = list(show = TRUE, width = 1, color = "white", highlight = FALSE)
+        )
+    ) %>%
+    
+    # Add observed points
+    add_trace(
+        data = turnouttrim,
+        x = ~Temperature,
+        y = ~GDP,
+        z = ~Turnout,
+        type = "scatter3d",
+        mode = "markers",
+        marker = list(size = 5, color = "#1E3A8A", symbol = "circle", line = list(color = "white", width = 1)),
+        name = "Observed"
+    ) %>%
+    
+    # Add predicted points
+    add_trace(
+        data = turnouttrim,
+        x = ~Temperature,
+        y = ~GDP,
+        z = ~predict(model),
+        type = "scatter3d",
+        mode = "markers",
+        marker = list(size = 4, color = "#B22222", symbol = "diamond"),
+        name = "Predicted"
+    )
+
+n_points <- min(20, nrow(turnouttrim))
+for(i in 1:n_points) {
+    fig <- fig %>%
+        add_trace(
+            x = c(turnouttrim$Temperature[i], turnouttrim$Temperature[i]),
+            y = c(turnouttrim$GDP[i], turnouttrim$GDP[i]),
+            z = c(turnouttrim$Turnout[i], predict(model)[i]),
+            type = "scatter3d",
+            mode = "lines",
+            line = list(color = "gray", width = 1.5, dash = "dash"),
+            showlegend = ifelse(i == 1, TRUE, FALSE),
+            name = ifelse(i == 1, "Residuals", NA)
+        )
+}
+
+fig <- fig %>%
+    layout(
+        title = list(
+            text = "Multiple Regression: Turnout Projected onto Temperature+GDP Space",
+            font = list(size = 14)
+        ),
+        scene = list(
+            xaxis = list(title = "Temperature"),
+            yaxis = list(title = "GDP"),
+            zaxis = list(title = "Turnout"),
+            camera = list(
+                eye = list(x = 1.5, y = -1.5, z = 1)
+            ),
+            aspectmode = "cube"
+        ),
+        margin = list(l = 0, r = 0, b = 0, t = 40)
+    )
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+fig
+```
+
+---
+
+$$\hat Y = \mathbb{X} \hat\beta$$
+
+$$\hat\beta= (\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}^TY$$
+
+$$\hat Y = \mathbb{X} (\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}^TY$$
+
+We call $(\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}$ the *projection matrix* ($\mathbb{P_X}$) or the *hat matrix* ($\mathbb{H}$).
+
+---
+
+One common concern we have in regression is that one or another observation may be throwing the results off (due to measurement error or other idiosyncracies). We can try to operationalize this by looking at how much regression results change if we leave out one observation.
+
+---
+
+Define $\hat \beta_{-i}$ to be the regression results omitting observation $i$. Then, we are interested in cases with a large $|\hat \beta_{-i} - \hat \beta|$.
+
+---
+
+When will cases have large scores of $|\hat \beta_{-i} - \hat \beta|$?
+
+---
+
+1. Cases with $\mathbf{X}_i$ near $\bar{\mathbf{X}}$ have low *leverage* because regression with an intercept minimizes squared residuals subject to passing through $(\bar{\mathbf{X}},\bar{\mathbf{y}})$. Imagine a seesaw pivoted at its center—weights near the pivot have less effect on its tilt than weights at the ends. Similarly, observations near the multidimensional mean provide less 'leverage' to change regression coefficients.
+
+---
+
+2. The size of the residual in the full model is also a key component of the influence an observation has on the regression. Observations with large residuals are often called *outliers*.
+
+---
+
+We can measure the leverage of an observation as $h_{ii}$, which is the $i$th diagonal entry in the projection matrix $\mathbb{P_X}$.
+
+---
+
+We can just use residuals as measures of outliers, but it won't get us very far because our model is built to minimize them.
+
+---
+
+Instead, we can calculate the leave-one-out prediction error, where we run a regression dropping a case and see how the error looks:
+
+$$\hat \beta_{-i} = \hat \beta - (\mathbb{X}^T\mathbb{X})^{-1}\mathbf{X}_i \tilde e_{i}$$
+where $\tilde e_{i} = \frac{\hat e_{i}}{1 - h_{ii}}$.
+
+---
+
+A common question is how much the regression coefficient(s) change when dropping an observation, which we measure with $DFBETA_i$:
+
+$$\hat \beta - \hat \beta_{-i} = (\mathbb{X}^T\mathbb{X})^{-1}\mathbf{X}_i \tilde e_{i}$$
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+turnouttrim <- na.omit(turnout)
+turnoutlm <- lm(Turnout ~ Temperature + GDP, data = turnouttrim)
+dfbeta(turnoutlm)
+```
+
+---
+  
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+summary(turnoutlm)
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+dfbetas_vals <- data.frame(dfbetas(turnoutlm))
+
+# Plot
+library(ggplot2)
+dfbetasplot <- ggplot(dfbetas_vals) +
+  geom_point(aes(x = 1:nrow(dfbetas_vals), y = Temperature)) +
+  geom_segment(aes(x = 1:nrow(dfbetas_vals), xend = 1:nrow(dfbetas_vals), y = 0, yend = Temperature),
+               color = 'cornflowerblue') +
+  geom_hline(yintercept = c(2, -2) / sqrt(nrow(dfbetas_vals)), color = 'salmon') +
+  labs(x = 'Observation index', y = 'DFBETAS',
+       title = paste0('DFBETAS values for coefficient of ', colnames(dfbetas_vals)[2]),
+       subtitle = 'Thresholds are at \u00B1(2\u00F7\u221An)') +
+  geom_text(aes(x = 1:nrow(dfbetas_vals), y = ifelse(Temperature > 0, Temperature + .05, Temperature - .05),
+                label = ifelse(abs(Temperature) > (2/sqrt(nrow(dfbetas_vals))),
+                               paste0(round(Temperature, digits = 2), 
+                               ' (', 1:nrow(dfbetas_vals), ')'), '')))
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+dfbetasplot
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+print(turnouttrim,n=15)
+```

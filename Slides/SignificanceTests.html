@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>11: Significance Tests.</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-02-11" />
+    <script src="SignificanceTests_files/header-attrs-2.30/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 11: Significance Tests.
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### Feb. 11, 2026
+]
+
+---
+
+class: center, middle
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+Our sample estimate `\(\hat \beta_{OLS}\)` is not usually going to be exactly the same as the population best linear predictor. Why should we use `\(\hat \beta_{OLS}\)` when we know it will usually be wrong?
+
+---
+
+1. We don't know the population-level best linear predictor, and we usually don't have any good way of accessing it.
+
+2. `\(\hat \beta_{OLS}\)` may not be exactly equal to the population-level best linear predictor in most individual applications, but it still has some good statistical properties that we can discuss.
+
+---
+
+Assume:
+
+1. `\((Y_i,\mathbf{X}_i)\)` are iid random vectors.
+
+2. `\(\text{E}(Y^2) &lt; \infty\)`
+
+3. `\(\text{E}(||\mathbf{X}||^2) &lt; \infty\)`
+
+4. `\(\text{E}(\mathbf{X} \mathbf{X}^T)\)` is positive definite
+
+---
+
+These four assumptions mean:
+
+1. Our observations are independent draws from the overall population, and don't depend on each other.
+
+2. The outcome variable has a distribution with finite mean and variance.
+
+3. The right-hand-side variables have finite means, variances, and covariances.
+
+4. There is no linear dependence or perfect multicollinearity.
+
+---
+
+Recall that:
+
+`$$\hat \beta_{OLS} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^TY$$`
+
+The best linear predictor represents `\(Y\)` as:
+
+`$$Y = \mathbf{X} \beta + \epsilon$$`
+Let's insert the formula for `\(Y\)` from the BLP into the formula for `\(\hat \beta_{OLS}\)`:
+
+`$$\hat \beta_{OLS} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{X} \beta + \epsilon)$$`
+
+---
+
+Now, let's multiply terms through:
+
+`$$\hat \beta_{OLS} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X} \beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\epsilon$$`
+
+We see that `\((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{X} = I\)`, which is the matrix equivalent of terms in the top and bottom of a fraction canceling out. So:
+
+`$$\hat \beta_{OLS} = \beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\epsilon$$`
+
+---
+
+What can we say about the estimation error part, `\((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\epsilon\)`?
+
+Let's look at what happens to the sample average of `\(\mathbf{X}^T\mathbf{X}\)` as the sample size gets very large.
+
+Because we have assumed that the observations are independent and identically distributed, because we have assumed that the `\(\mathbf{X}\)` variables have finite moments, and because we have assumed that `\(\text{E}(\mathbf{X} \mathbf{X}^T)\)` is positive definite, the law of large numbers applies.
+
+---
+
+This means that the sample average will tend to converge to the population value as the sample size goes to infinity.
+
+`$$\frac{1}{n}\sum_{i=1}^{n}\mathbf{X_i}\mathbf{X_i}^T \overset{p}{\to} \text{E}(\mathbf{X} \mathbf{X}^T)$$`
+
+And we know that `\(\text{E}(\mathbf{X} \mathbf{X}^T)\)` is just some constant matrix.
+
+---
+
+We still have to think about the second part, `\(\mathbf{X}^T\epsilon\)`.
+
+For the same reasons as before, the law of large numbers applies here, and we can analyze the sample average as the sample size goes to infinity:
+
+`$$\frac{1}{n}\sum_{i=1}^{n}\mathbf{X_i}^T\epsilon_{i} \overset{p}{\to} \text{E}(\mathbf{X} \epsilon)$$`
+
+But remember that we created the best linear predictor on purpose so that the errors of prediction, `\(\epsilon\)`, will have no linear relationship with `\(\mathbf{X}\)`. That is to say, by construction, `\(\text{E}(\mathbf{X} \epsilon) = 0\)`.
+
+For that reason, 
+
+`$$\frac{1}{n}\sum_{i=1}^{n}\mathbf{X_i}^T\epsilon_{i} \overset{p}{\to} 0$$`
+---
+
+Putting the two pieces together, we have the result that, as the sample size goes to infinity, the estimation error in `\(\hat \beta_{OLS}\)` converges in probability to the product of (the inverse of) a constant positive definite matrix and zero. This product, in turn, is going to turn out to be zero. Under the four assumptions discussed earlier, this gives us:
+
+`$$\hat \beta_{OLS} \overset{p}{\to} \beta$$`
+
+People call this property *consistency*.
+
+---
+
+What about the distribution of the estimation errors?
+
+We can use the *central limit theorem*.
+
+Setup:
+
+1. We have i.i.d. random vectors `\(Z_1, Z_2, \ldots,Z_n\)`.
+
+2. We are interested in a function of the data `\(g(Z)\)` such that `\(\text{E}g(Z)=0\)` and therefore `\(\text{Var}(g(Z))=\text{E}g(Z)g(Z)^T\)`
+
+3. `\(\text{E}(||g(Z_{i})||^2) &lt; \infty\)`
+
+Implication:
+
+`$$\frac{1}{\sqrt{n}}\sum_{i=1}^{n}g(Z_{i}) \overset{d}{\to} \mathcal{N}(0,\text{Var}(g(Z)))$$`
+
+---
+
+Let's apply the central limit theorem to our errors of estimation. We will connect the theorem to our situation as follows.
+
+* Our i.i.d. random vectors `\(Z_{i}\)` are made up of observations of `\((Y_{i},\mathbf{X}_{i})\)`.
+
+* Our function `\(G(Z_{i}) = X_{i} \epsilon_{i}\)`, which we can do because `\(X_{i}\)` is part of `\(Z\)` and `\(\epsilon_{i}\)` comes from regression, which can be calculated with the data from `\(Z\)`.
+
+---
+
+Then the theorem implies:
+
+`$$\frac{1}{\sqrt{n}}\sum_{i=1}^{n}(X_{i} \epsilon_{i}) \overset{d}{\to} \mathcal{N}(0,\text{Var}(X_{i} \epsilon_{i}))$$`
+
+Doing the matrix math, it turns out that we can connect this back to what we really care about, the OLS estimator:
+
+`$$\sqrt{n}(\hat \beta_{OLS} - \beta) \overset{d}{\to} \mathcal{N}(0,\text{E}(X_{i} X_{i}^T)^{-1} \text{E}(e_i^2 X_{i} X_{i}^T)\text{E}(X_{i} X_{i}^T)^{-1}$$`
+
+This is all very enlightening, but without estimates of the key quantities, it may not be too useful.
+
+---
+
+The expression `\(\text{E}(X_{i} X_{i}^T)^{-1} \text{E}(e_i^2 X_{i} X_{i}^T)\text{E}(X_{i} X_{i}^T)^{-1}\)` is a bit unwieldy.
+
+* `\(V = \text{E}(X_{i} X_{i}^T)^{-1} \text{E}(e_i^2 X_{i} X_{i}^T)\text{E}(X_{i} X_{i}^T)^{-1}\)`
+
+* `\(Q_{\mathbf{X} \mathbf{X}} = \text{E}(X_{i} X_{i}^T)\)`
+
+* `\(\Omega = \text{E}(e_i^2 X_{i} X_{i}^T)\)`
+
+`$$V = Q_{\mathbf{X} \mathbf{X}}^{-1} \Omega Q_{\mathbf{X} \mathbf{X}}^{-1}$$`
+---
+
+Let's create plug-in estimates of `\(Q_{\mathbf{X} \mathbf{X}}\)` and `\(\Omega\)`.
+
+`$$Q_{\mathbf{X} \mathbf{X}} = \text{E}(X_{i} X_{i}^T)$$`
+
+`$$\hat Q_{\mathbf{X} \mathbf{X}} = \frac{1}{n} \sum_{i=1}^{n} (X_{i} X_{i}^T)$$`
+
+---
+
+`$$\Omega = \text{E}(e_i^2 X_{i} X_{i}^T)$$`
+
+`$$\hat \Omega = \frac{1}{n} \sum_{i=1}^{n}(\hat e_i^2 X_{i} X_{i}^T)$$`
+
+---
+
+Under very similar conditions to the assumptions we've been working with so far, the law of large numbers will produce the result that:
+
+`$$\hat Q_{\mathbf{X} \mathbf{X}} \overset{p}{\to} Q_{\mathbf{X} \mathbf{X}}$$`
+
+`$$\hat \Omega \overset{p}{\to} \Omega$$`
+
+Thus, we can reasonably use:
+
+`$$\hat V = \hat Q_{\mathbf{X} \mathbf{X}}^{-1} \hat \Omega \hat Q_{\mathbf{X} \mathbf{X}}^{-1}$$`
+
+as an estimate of the variance of `\(\hat \beta_{OLS}\)`.
+
+---
+
+So what do we do with this? A whole variance matrix is a lot of information, usually, and may not give easy-to-understand answers about the precision of the estimates we care about the most.
+
+Usually, people focus on the *standard error* of one coefficient (or one at a time, etc.).
+
+---
+
+`$$\text{se} (\hat\beta_{j}) = \sqrt{\frac{(\hat V_{\beta})_{j j}} {n}}$$`
+
+---
+
+We can test hypotheses (usually in social science as follows):
+
+`$$H_{0} : \beta_{j} = 0$$`
+`$$H_{1} : \beta_{j} \neq 0$$`
+
+---
+
+`$$\frac{\hat \beta_{j}}{\text{se} (\hat\beta_{j})}\overset{d}{\to} \mathcal{N}(0,1)$$`
+
+So, with very large samples, we can compare estimates of this ratio to the standard normal distribution and reject `\(H_{0}\)` when we get very small probability numbers.
+
+---
+
+
+``` r
+library(rqog)
+library(lmtest)
+```
+
+```
+## Loading required package: zoo
+```
+
+```
+## 
+## Attaching package: 'zoo'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric
+```
+
+``` r
+library(sandwich)
+qogts &lt;- read_qog(which_data="standard", data_type = "time-series")
+```
+
+```
+## Local file not found. 
+## Downloading QoG qog_std_ts_jan23.csv data 
+## from http://www.qogdata.pol.gu.se/data/qog_std_ts_jan23.csv
+## in file: C:\Users\jws780\AppData\Local\Temp\RtmpeCBjol/rqog/qog_std_ts_jan23.csv
+```
+
+```
+## Reading cache file C:\Users\jws780\AppData\Local\Temp\RtmpeCBjol/rqog/qog_std_ts_jan23.csv
+```
+
+``` r
+deminternet.lm &lt;- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)), data=qogts)
+robust_deminternet_vcov &lt;- vcovHC(deminternet.lm, type = "HC3")
+coeftest(deminternet.lm, vcov = robust_deminternet_vcov)
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##                                 Estimate  Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)                  -0.21524978  0.04712686 -4.5675 5.133e-06 ***
+## wdi_broadb                    0.00769191  0.00048312 15.9212 &lt; 2.2e-16 ***
+## I(log(wdi_gdpcappppcon2017))  0.06360825  0.00558316 11.3929 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+``` r
+library(estimatr)
+deminternet.robust &lt;- lm_robust(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)), data=qogts, se_type = "HC3")
+summary(deminternet.robust)
+```
+
+```
+## 
+## Call:
+## lm_robust(formula = vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)), 
+##     data = qogts, se_type = "HC3")
+## 
+## Standard error type:  HC3 
+## 
+## Coefficients:
+##                               Estimate Std. Error t value  Pr(&gt;|t|)  CI Lower
+## (Intercept)                  -0.215250  0.0471269  -4.567 5.133e-06 -0.307654
+## wdi_broadb                    0.007692  0.0004831  15.921 7.087e-55  0.006745
+## I(log(wdi_gdpcappppcon2017))  0.063608  0.0055832  11.393 1.786e-29  0.052661
+##                               CI Upper   DF
+## (Intercept)                  -0.122846 3035
+## wdi_broadb                    0.008639 3035
+## I(log(wdi_gdpcappppcon2017))  0.074555 3035
+## 
+## Multiple R-squared:  0.3295 ,	Adjusted R-squared:  0.3291 
+## F-statistic:  1149 on 2 and 3035 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+Suppose we don't have a very large, almost infinite sample. What then?
+
+Perhaps it's true that the actual CEF is linear! Let's assume the following:
+
+`$$Y = \mathbf{X}\beta + \epsilon$$`
+
+`$$\text{E}(\epsilon | \mathbf{X}) = 0$$`
+
+Let's also impose that `\(\text{E}(X X^T) &gt; 0\)` and is invertible, i.e., positive definite.
+
+---
+
+Then we can say some more serious stuff about `\(\hat \beta_{OLS}\)` for finite samples.
+
+To start with,
+
+`$$\text{E}(\hat \beta_{OLS}|\mathbf{X}) = \beta$$`
+
+Remember that:
+
+`$$\hat \beta_{OLS} = \beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\epsilon$$`
+
+Let's take the conditional expectation of `\(\hat \beta_{OLS}\)` given `\(\mathbf{X}\)`:
+
+`$$\text{E}(\hat \beta_{OLS}|\mathbf{X}) = \text{E}(\beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\epsilon | \mathbf{X})$$`
+
+`$$\text{E}(\hat \beta_{OLS}|\mathbf{X}) = \beta + \text{E}((\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\epsilon | \mathbf{X})$$`
+
+`$$\text{E}(\hat \beta_{OLS}|\mathbf{X}) = \beta + (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T \text{E}(\epsilon | \mathbf{X})$$`
+
+`$$\text{E}(\hat \beta_{OLS}|\mathbf{X}) = \beta + 0$$`
+
+---
+
+Variance estimation and significance testing follow the same logic as under very large samples.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

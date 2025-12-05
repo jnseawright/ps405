@@ -1,0 +1,44 @@
+#######################
+## Problem Set 2     ##
+#######################
+
+
+####################
+## Problem 1      ##
+####################
+
+Define, in your own words, the conditional expectation function and the best linear predictor. How are these two ideas related, and in what ways are they different?
+
+####################
+## Problem 2      ##
+####################
+
+Consider the multivariate BLP:
+
+$$m(\mathbb{X}) = \beta_{0} + \beta_{1} X_{1} + \beta_{2} X_{2} + \cdots + \beta_{k} X_{k}$$ 
+
+Explain what each of the symbols used in the expression above would usually mean.
+
+####################
+## Problem 3      ##
+####################
+
+Explain the regularity conditions for the BLP to exist, and for each, give an example of a situation in which it would fail.
+
+####################
+## Problem 4      ##
+####################
+
+Let's consider the widely studied relationship between wealth and democracy. Load data from the Quality of Governance dataset:
+
+```{r, echo = TRUE, eval=FALSE, out.width="90%", fig.retina = 1, fig.align='center'}
+devtools::install_github("ropengov/rqog")
+library(rqog)
+qogts <- read_qog(which_data = "standard", data_type = "time-series")
+```
+
+Put together a useful visualization of the relationship between wealth (wdi_gdpcappppcon2017) and democracy (vdem_libdem). Based on this visualization, what do you suspect are the key features of the CEF relating wealth to democracy? 
+
+Please submit your completed assignment at:
+
+[https://canvas.northwestern.edu/courses/245562/assignments/1676715](https://canvas.northwestern.edu/courses/245562/assignments/1676715)
