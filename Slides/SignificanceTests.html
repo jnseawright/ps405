@@ -152,6 +152,8 @@ Setup:
 
 3. `\(\text{E}(||g(Z_{i})||^2) &lt; \infty\)`
 
+---
+
 Implication:
 
 `$$\frac{1}{\sqrt{n}}\sum_{i=1}^{n}g(Z_{i}) \overset{d}{\to} \mathcal{N}(0,\text{Var}(g(Z)))$$`
@@ -270,11 +272,11 @@ qogts &lt;- read_qog(which_data="standard", data_type = "time-series")
 ## Local file not found. 
 ## Downloading QoG qog_std_ts_jan23.csv data 
 ## from http://www.qogdata.pol.gu.se/data/qog_std_ts_jan23.csv
-## in file: C:\Users\jws780\AppData\Local\Temp\RtmpeCBjol/rqog/qog_std_ts_jan23.csv
+## in file: C:\Users\jws780\AppData\Local\Temp\RtmpYdeVqL/rqog/qog_std_ts_jan23.csv
 ```
 
 ```
-## Reading cache file C:\Users\jws780\AppData\Local\Temp\RtmpeCBjol/rqog/qog_std_ts_jan23.csv
+## Reading cache file C:\Users\jws780\AppData\Local\Temp\RtmpYdeVqL/rqog/qog_std_ts_jan23.csv
 ```
 
 ``` r
@@ -364,6 +366,52 @@ Let's take the conditional expectation of `\(\hat \beta_{OLS}\)` given `\(\mathb
 
 Variance estimation and significance testing follow the same logic as under very large samples.
 
+---
+
+Let's add a new assumption, and impose that all of the errors in our regression have identical variance:
+
+`$$\text{E}(e_{i}^2|\mathbf{X_{i}}) = \text{E}(e_{i}^2) = \sigma^2$$`
+
+This assumption has the ever-popular name of *homoskedasticity*.
+
+---
+
+If we stack this assumption on top of our linear CEF assumptions, it turns out that there's a simpler way to get the variance of `\(\hat \beta_{OLS}:\)`
+
+`$$\text{Var}(\hat \beta_{OLS} | \mathbf{X}) = \sigma^2 (\mathbf{X}^T\mathbf{X})^{-1}$$`
+
+We can estimate `\(\sigma^2\)`:
+
+`$$\hat \sigma^2 = \frac{1}{n - k - 1}\sum_{i=1}^{n}\hat e_{i}^2$$`
+
+Furthermore, under these assumptions, there is no linear unbiased estimator with lower variance than `\(\hat \beta_{OLS}\)`.
+
+---
+
+One last assumption. Let's suppose that our error terms are exactly normally distributed:
+
+`$$e_{i} | \mathbf{X_{i}} \sim \mathcal{N}(0,\sigma^2)$$`
+Then it will turn out that:
+
+`$$\hat \beta_{OLS} | \mathbf{X_{i}} \sim\mathcal{N}(\beta,\sigma^2 (\mathbf{X}^T\mathbf{X})^{-1})$$`
+
+`$$\frac{\hat \beta_{j}- \beta_{j}} {(\hat V_{\hat \beta})_{JJ}/\sqrt{n}} \sim t_{n-k-1}$$`
+
+---
+
+So, let's review.
+
+1. We can make a very strong argument for using regression with few assumptions when we have large samples.
+
+2. If our large samples also involve independent, identically distributed draws from the population, we can make a very strong argument for setting up significance tests without adding many assumptions at all.
+
+3. If our sample isn't that large but the CEF is linear and we meet the other assumptions, regression will work well on average and we can still do significance tests.
+
+---
+
+4. If we add homoskedasticity, we get simpler estimates of standard errors and the result that regression is the best linear unbiased estimator (BLUE).
+
+5. If we assume that errors are conditionally normally distributed, we get exact distributions for test statistics.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
