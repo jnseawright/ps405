@@ -1,0 +1,189 @@
+---
+title: "12: Multiple Comparisons."
+subtitle: "Linear Models"
+author: "<large>Jaye Seawright</large>"
+institute: "<small>Northwestern Political Science</small>" 
+date: "Feb. 16, 2026"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+  
+---
+class: center, middle
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+# Initializes
+library(RefManageR)
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(nlme)
+library(jtools)
+library(mice)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+library(stringr)
+
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear", # Bibliography style
+           max.names = 3, # Max author names displayed in bibliography
+           sorting = "nyt", #Name, year, title sorting
+           cite.style = "authoryear", # citation style
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer,MnSymbol)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size = "1.6rem"
+)
+```
+
+Last time, we saw that researchers test regression results by rejecting $H_{0}$ when the probability associated with it is very low. By convention, there are thresholds at 0.05, 0.01, and 0.001 about which people get emotional.
+
+---
+
+Consider the probability of getting a heads on a coin toss.
+
+Now consider [this](https://www.youtube.com/watch?v=gOwLEVQGbrM).
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+set.seed(42)  # For reproducibility
+single_experiment <- rbinom(17, size = 1, prob = 0.5)
+cat("Number of heads in one experiment:", sum(single_experiment), "\n")
+cat("Probability of 17 heads: ", 0.5^17, " (1 in", round(1/0.5^17), ")\n")
+```
+
+---
+
+All right, but what if I flip the coin as many times as I want and count streaks after the fact?
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+set.seed(123)
+found_perfect_streak <- FALSE
+experiments_run <- 0
+
+while(!found_perfect_streak) {
+  experiments_run <- experiments_run + 1
+  current_experiment <- rbinom(17, size = 1, prob = 0.5)
+  if(sum(current_experiment) == 17) {
+    found_perfect_streak <- TRUE
+    cat("Found 17 heads after", experiments_run, "experiments\n")
+    cat("That's", experiments_run * 17, "total coin flips\n")
+  }
+}
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+set.seed(42)
+n_experiments <- 1000
+results <- replicate(n_experiments, sum(rbinom(17, 1, 0.5)))
+
+max_heads <- max(results)
+cat("In", n_experiments, "experiments, the maximum heads was:", max_heads, "\n")
+cat("Probability of getting at least", max_heads, "heads by chance:",
+    mean(results >= max_heads), "\n")
+```
+
+---
+###The Multiple Comparisons Problem
+
+Every significance test we carry out is [a chance to falsely conclude that a relationship is meaningful due to chance](https://xkcd.com/882/).
+
+---
+
+If we aren't careful, most times that we pay attention to multiple significance tests related to the same data and the same problem, we are at risk of finding false precision in our results.
+
+---
+###Why This Happens
+
+Remember that we noted 0.05 as a probability level in significance tests that leads to excitement. This is often written as $\alpha = 0.05$. If our significance test has been done well, meeting the assumptions we talked about last time, the probability of getting a result of 0.05 or less on a single significance test that corresponds with a population regression slope that is actually 0 is 0.05.
+
+So this won't happen very often, and if we have a single result below this level, we can treat it seriously with meaningful confidence.
+
+---
+
+However, suppose that we carry out 20 independent significance tests --- including 20 unrelated independent variables in our regression, for example. Now, we can think of each significance test as being like a coin flip in our example above. The chance of finding at least one heads --- at least one value randomly below 0.05 even though the population regression slope is zero --- is going to be much higher than 0.05:
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+1 - (0.95)^20
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+n_tests <- 1:50
+prob_at_least_one <- 1 - (0.95)^n_tests
+
+plot(n_tests, prob_at_least_one, type = "l", 
+     xlab = "Number of Independent Tests", 
+     ylab = "Probability of ≥1 False Positive",
+     main = "The Multiple Testing Problem",
+     col = "darkred", lwd = 2)
+abline(h = 0.05, lty = 2, col = "gray")
+abline(v = 20, lty = 2, col = "gray")
+text(20, 0.7, "20 tests: 64% risk", pos = 4)
+```
+
+---
+
+We have two main measures of failure when carrying out multiple comparisons:
+
+1. The *family-wide error rate*, which is the probability of incorrectly rejecting even one null hypothesis.
+
+2. The *false discovery rate*, which is the expected proportion of false discoveries (i.e., findings for which we reject the null hypothesis) among all discoveries.
+
+---
+###Family-Wide Error Rate
+
+$$\text{FWER} = \text{Pr}(\text{at least one false positive})$$
+Intuition: “What’s the chance that any of my ‘significant’ findings is just noise?”
+
+Use case: When you need strong control over false positives across all tests (e.g., confirmatory studies, many RCTs).
+
+---
+###False-Discovery Rate
+
+$$\text{FDR} = \text{E}(\frac{\text{False Positives}}{\text{All Positives}})$$
+
+---
+###Bonferroni
+
+The first and simplest way to correct the family-wide error rate is the Bonferroni correction: just divide $\alpha$ by the number of tests you're carrying out.
+
+Suppose our target significance level is $\alpha$ and we're carrying out $m$ total tests. Then the Bonferroni correction is to set our actual target significance level for each individual test at $\frac{\alpha}{m}$ but interpret the results as still just implying a family-wide error rate of not more than $\alpha$.
+
+---
+
+To see why, consider our example of 20 independent tests from earlier. We want $\alpha = 0.05$, so our Bonferroni-corrected target will be $\frac{0.05}{20} = 0.0025$.
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
+1 - (1 - 0.0025)^20
+```
+
+---
+
+If our tests are not independent, the Bonferroni correction will typically be too conservative.
