@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>17: Robust Standard Errors.</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-03-04" />
+    <script src="RobustStandardErrors_files/header-attrs-2.30/header-attrs.js"></script>
+    <script src="RobustStandardErrors_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="RobustStandardErrors_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 17: Robust Standard Errors.
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### March 4, 2026
+]
+
+---
+
+class: center, middle
+
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+### **Why political data rarely satisfies textbook assumptions**
+
+---
+# The Problem: Why We Need Robust SEs
+
+.pull-left[
+### **Classical OLS Assumption:**
+$$
+\text{Var}(\epsilon_i | X) = \sigma^2
+$$
+Constant variance (homoskedasticity)
+
+### **Political Reality:**
+- Some groups are more predictable than others
+- Richer districts have more variation in outcomes
+- Survey error varies by respondent type
+- Time-series volatility changes over time
+
+**This is heteroskedasticity**
+]
+
+.pull-right[
+![](RobustStandardErrors_files/figure-html/hetero-example-1.png)&lt;!-- --&gt;
+**Consequence:** Standard errors are wrong → confidence intervals wrong → p-values wrong
+]
+
+---
+# Consequences of Ignoring Heteroskedasticity
+
+.pull-left[
+### **What Happens?**
+1. **OLS coefficients remain unbiased**
+2. **But variance estimates are biased:**
+   - Can be too small (common) → false significance
+   - Can be too large → missed findings
+
+### **Examples from Political Science:**
+- **Wealth and voting:** Richer districts show more variation in turnout
+- **Media effects:** Highly engaged voters more predictable
+- **Policy adoption:** Early adopters differ from late adopters
+- **Conflict studies:** Some countries more volatile
+
+**Bottom line:** We overstate precision
+]
+
+.pull-right[
+
+```
+## Average SE (homoskedastic): 0.101
+```
+
+```
+## Average SE (heteroskedastic): 0.143
+```
+
+```
+## 
+## Typical underestimation: -29 %
+```
+
+![](RobustStandardErrors_files/figure-html/consequence-plot-1.png)&lt;!-- --&gt;
+]
+
+---
+# What Are Robust Standard Errors?
+
+.pull-left[
+### **Huber-White (Sandwich) Estimator**
+Developed by Huber (1967) and White (1980)
+
+**Regular OLS variance:**
+$$
+\text{Var}(\hat{\beta}) = (X'X)^{-1} \sigma^2
+$$
+
+**Robust (HC) variance:**
+$$
+\text{Var}(\hat{\beta}) = (X'X)^{-1} X' \Omega X (X'X)^{-1}
+$$
+where `\(\Omega = \text{diag}(e_i^2)\)` for HC0
+
+### **Intuition:**
+- Weight observations by their residual size
+- Bigger residuals → more uncertainty in that region
+- Adapts to heteroskedasticity
+]
+
+.pull-right[
+### **Flavors of HC Estimators**
+
+Table: Common HC Estimators
+
+|Type |Weight          |Description             |
+|:----|:---------------|:-----------------------|
+|HC0  |e_i²            |Basic White             |
+|HC1  |n/(n-k) e_i²    |Small sample correction |
+|HC2  |e_i²/(1-h_ii)   |Leverage adjustment     |
+|HC3  |e_i²/(1-h_ii)²  |More conservative       |
+|HC4  |e_i²/(1-h_ii)^δ |Designed for outliers   |
+
+### **Political Science Convention:**
+- **HC1** or **HC2** most common
+- **HC3** when worried about outliers
+- **Stata default:** HC1
+- **R common practice:** HC3 (more conservative)
+]
+
+---
+# Implementation in R: The `sandwich` Package
+
+.pull-left[
+### **Basic Implementation**
+
+``` r
+library(sandwich)
+library(lmtest)
+
+# Fit regular model
+model &lt;- lm(vote_share ~ income + education, 
+            data = election_data)
+
+# Regular SEs
+summary(model)
+
+# Robust SEs (HC3 default)
+coeftest(model, vcov = vcovHC)
+
+# Different HC types
+coeftest(model, vcov = vcovHC(model, type = "HC0"))
+coeftest(model, vcov = vcovHC(model, type = "HC1"))
+coeftest(model, vcov = vcovHC(model, type = "HC3"))
+```
+
+### **Using `modelsummary`**
+
+``` r
+library(modelsummary)
+
+modelsummary(
+  list("OLS" = model, 
+       "Robust SE" = model),
+  vcov = list("iid", "HC3"),
+  stars = TRUE
+)
+```
+]
+
+.pull-right[
+### **Complete Example**
+
+``` r
+# Load data
+data("CASchools", package = "AER")
+# Simulate heteroskedasticity
+CASchools$testscore &lt;- 
+  CASchools$read + CASchools$math + 
+  rnorm(nrow(CASchools), 0, 
+        abs(CASchools$income)/1000)
+
+# Fit model
+model &lt;- lm(testscore ~ income + english, 
+            data = CASchools)
+
+# Compare SEs
+library(modelsummary)
+models &lt;- list(
+  "Regular" = model,
+  "HC0" = model,
+  "HC1" = model,
+  "HC2" = model,
+  "HC3" = model
+)
+
+msummary(models,
+         vcov = c("iid", "HC0", "HC1", "HC2", "HC3"),
+         fmt = 2,
+         stars = TRUE,
+         output = "markdown")
+```
+]
+
+---
+# Implementation in Stata
+
+.pull-left[
+### **Basic Syntax**
+```stata
+* Regular OLS
+regress vote_share income education
+
+* With robust SEs
+regress vote_share income education, vce(robust)
+
+* With clustered SEs
+regress vote_share income education, vce(cluster state)
+
+* Save results for table
+eststo clear
+eststo: reg vote_share income education
+eststo: reg vote_share income education, vce(robust)
+esttab using results.rtf, se ar2 replace
+```
+
+### **The `reghdfe` Package**
+```stata
+* Install if needed
+ssc install reghdfe
+
+* Fixed effects with clustered SEs
+reghdfe vote_share income education, ///
+  absorb(state year) vce(cluster state)
+```
+
+**Stata Tip:** `vce(robust)` uses HC1 by default
+]
+
+.pull-right[
+### **Comparing Outputs**
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Example: How SEs Change Inference&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Variable &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; Coefficient &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SE_Regular &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; SE_Robust &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p_Regular &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p_Robust &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Sig_Regular &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Sig_Robust &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; income &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.45 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.18 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.012 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; education &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.32 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.08 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.008 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Constant &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12.50 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.20 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+### **Key Insight:**
+Robust SEs often (but not always) increase standard errors, making findings **less significant**. This is more honest given real-world data.
+]
+
+---
+# Clustered Standard Errors
+
+.pull-left[
+### **When Observations Are Not Independent**
+Common in political science:
+1. **Panel data:** Multiple observations per country
+2. **Survey data:** Respondents within states
+3. **Experimental data:** Treatments assigned to groups
+4. **Spatial data:** Nearby locations correlated
+
+### **The Problem:**
+Within-cluster correlation → underestimation of variance
+
+**Example:** If all respondents in Texas share unobserved factors, we don't have 100 independent observations, but 1 cluster of 100 correlated observations
+]
+
+.pull-right[
+### **Clustering Formula**
+$$
+\text{Var}(\hat{\beta}) = (X'X)^{-1} \left( \sum_{c=1}^C X_c' e_c e_c' X_c \right) (X'X)^{-1}
+$$
+where `\(c\)` indexes clusters
+
+### **Implementation in R:**
+
+``` r
+# Using sandwich and lmtest
+coeftest(model, 
+         vcov = vcovCL(model, 
+                       cluster = ~state))
+
+# Using fixest package (fast!)
+library(fixest)
+model_fe &lt;- feols(vote_share ~ income + education,
+                  data = election_data,
+                  cluster = ~state)
+
+# Using clubSandwich for multi-way clustering
+library(clubSandwich)
+coef_test(model, 
+          vcov = "CR2", 
+          cluster = election_data$state)
+```
+]
+
+---
+# Multi-Way Clustering
+
+.pull-left[
+### **Complex Dependencies**
+Sometimes observations cluster in multiple ways:
+1. **States and years** (Cameron, Gelbach &amp; Miller, 2011)
+2. **Individual and time** (two-way FE)
+3. **Industry and region**
+
+### **Example:**
+Studying campaign contributions:
+- Donors within states (geographic correlation)
+- Donors within industries (sector correlation)
+- Need to account for both
+
+### **R Implementation:**
+
+``` r
+# Using clubSandwich
+vcov_multi &lt;- vcovCR(model,
+                     type = "CR2",
+                     cluster = election_data[, c("state", "year")])
+
+coeftest(model, vcov = vcov_multi)
+
+# Using lfe (older but works)
+library(lfe)
+model_multi &lt;- felm(vote_share ~ income + education |
+                      state + year,
+                    data = election_data)
+summary(model_multi, robust = TRUE)
+```
+]
+
+.pull-right[
+### **When to Cluster?**
+.center[
+&lt;table class="table" style="font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Clustering Guidelines for Political Data&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Data_Structure &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Clustering &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; R_Package &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Cross-section &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No clustering or heteroskedasticity-robust &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; sandwich &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Panel (country-year) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Cluster by country &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; plm/sandwich &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Survey (individuals in states) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Cluster by state (or primary sampling unit) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; survey/sandwich &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Experimental (treatments in groups) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Cluster by treatment group &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; clubSandwich &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Time series &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Newey-West (HAC) errors &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; sandwich &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Network/spatial &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Spatial HAC or Conley errors &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; spatialreg &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+**Rule of thumb:** Cluster at the level of treatment assignment or at the level where you suspect correlation.
+]
+
+---
+# Practical Considerations for Political Scientists
+
+.pull-left[
+### **1. Sample Size Matters**
+- Robust SEs need reasonable N
+- Clustering needs sufficient clusters (&gt;50)
+- With few clusters, use wild bootstrap
+
+### **2. Fixed Effects + Clustering**
+- Include fixed effects for within-cluster variation
+- Cluster at higher level than FE
+- Example: State-year data → state FE, cluster by state
+
+### **3. Pre-testing is Problematic**
+Don't test for heteroskedasticity then decide
+- Tests have low power
+- Type II errors common
+- **Better:** Always use robust SEs as default
+]
+
+.pull-right[
+### **4. Reporting Standards**
+
+``` r
+# In RMarkdown, use modelsummary
+modelsummary(
+  list("OLS" = model_ols,
+       "Robust SE" = model_robust,
+       "Clustered" = model_cluster),
+  vcov = list("iid", "HC3", ~state),
+  stars = TRUE,
+  gof_map = c("nobs", "r.squared"),
+  output = "kableExtra"
+)
+```
+
+### **5. Common Pitfalls**
+- Clustering at wrong level
+- Ignoring serial correlation in time series
+- Using robust SEs with instrumental variables
+- Forgetting about multi-way clustering
+
+**Journal Expectations:** Most top journals require some form of robust SEs
+]
+
+---
+# Special Case: Time Series (HAC Errors)
+
+.pull-left[
+### **Newey-West Standard Errors**
+For autocorrelated errors in time series:
+
+
+``` r
+# Using sandwich package
+coeftest(model, 
+         vcov = NeweyWest(model, 
+                          lag = 4,  # Lags to consider
+                          prewhite = FALSE))
+
+# Rule of thumb: L = T^(1/4)
+# For 100 time periods: L ≈ 3
+
+# Using dynlm for time series models
+library(dynlm)
+model_ts &lt;- dynlm(vote_share ~ L(vote_share) + economy,
+                  data = election_ts)
+coeftest(model_ts, vcov = NeweyWest)
+```
+
+### **When to Use:**
+- Annual election data
+- Monthly approval ratings
+- Quarterly economic indicators
+]
+
+.pull-right[
+### **Political Science Examples**
+1. **Presidential approval:** Autocorrelated over time
+2. **Policy diffusion:** Spatial and temporal correlation
+3. **Electoral cycles:** Seasonal patterns
+
+![](RobustStandardErrors_files/figure-html/hac-example-1.png)&lt;!-- --&gt;
+
+**Diagnostic:** Check ACF/PACF plots of residuals. If autocorrelation present, use HAC errors.
+]
+
+---
+# Robust SEs with Instrumental Variables
+
+.pull-left[
+### **The Challenge**
+IV models already have complex variance structure
+- Need heteroskedasticity-robust IV SEs
+- Stata: `ivregress 2sls y x1 (x2 = z), vce(robust)`
+- R: Use `ivreg` from AER package
+
+
+``` r
+library(AER)
+
+# IV regression with robust SEs
+iv_model &lt;- ivreg(vote_share ~ income + education |
+                    income + instrument,
+                  data = election_data)
+
+# Get robust SEs
+coeftest(iv_model, 
+         vcov = vcovHC(iv_model, type = "HC3"))
+
+# Clustered SEs for IV
+library(sandwich)
+coeftest(iv_model,
+         vcov = vcovCL(iv_model, 
+                       cluster = ~state))
+```
+]
+
+.pull-right[
+### **Warning: Weak Instruments**
+Robust SEs don't solve weak instrument problems
+- First-stage F-stat still matters
+- Use Kleibergen-Paap rk Wald F statistic for robust version
+
+### **Political Science Applications:**
+1. **Natural experiments:** Clustered treatment assignment
+2. **Shift-share instruments:** Need careful SEs
+3. **Border discontinuity:** Spatial correlation
+
+**Best practice:** Report both conventional and robust SEs in IV models, check for consistency.
+]
+
+---
+# Limitations and When NOT to Use Robust SEs
+
+.pull-left[
+### **1. Very Small Samples**
+- HC estimators biased in tiny samples
+- N &lt; 30: Consider alternatives
+- Better: Use exact methods or permutation tests
+
+### **2. Weighted Data**
+- Survey weights already account for heterogeneity
+- Don't double-adjust
+- Use design-based SEs instead
+
+### **3. Nonlinear Models**
+- GLMs (logit, probit) have different variance structure
+- Use sandwich estimators designed for GLMs
+- Or use quasi-likelihood methods
+]
+
+.pull-right[
+### **4. Model Misspecification**
+Robust SEs don't fix:
+- Omitted variable bias
+- Functional form misspecification
+- Measurement error
+- Simultaneity
+
+**They're not a magic bullet!**
+
+### **5. Efficiency Loss**
+- Robust SEs are less efficient when homoskedasticity holds
+- But cost is small in large samples
+- **Tradeoff:** Robustness vs. efficiency
+
+**Political science default:** Use robust SEs unless you have strong reason not to
+]
+
+---
+# Workflow for Political Science Research
+
+.center[
+## **Step-by-Step Approach**
+]
+
+.pull-left[
+### **Step 1: Exploratory Analysis**
+1. Plot residuals vs. fitted values
+2. Check for funnel patterns
+3. Identify likely clustering structure
+4. Test for autocorrelation (time series)
+
+### **Step 2: Model Specification**
+1. Start with theory-driven model
+2. Include relevant fixed effects
+3. Consider functional form
+4. **Always plan** for robust SEs
+]
+
+.pull-right[
+### **Step 3: Estimation**
+
+``` r
+# Template code
+library(fixest)  # Fast and user-friendly
+
+model &lt;- feols(
+  y ~ x1 + x2 | fe1 + fe2,  # Formula with FEs
+  data = my_data,
+  cluster = ~cluster_var,    # Clustering
+  vcov = "hetero"           # Robust SEs
+)
+
+# Alternative: lm + sandwich
+model_lm &lt;- lm(y ~ x1 + x2, data = my_data)
+coeftest(model_lm, vcov = vcovCL, 
+         cluster = ~cluster_var)
+```
+
+### **Step 4: Reporting**
+1. Always report which SEs used
+2. Justify clustering choice
+3. Show robustness to different SE choices
+4. Provide code for replication
+]
+
+---
+# Real Example: Election Forecasting
+
+.pull-left[
+
+``` r
+# Load election data
+library(forecast)
+data("presidentialElections", package = "pscl")
+
+# Model with heteroskedasticity
+model &lt;- lm(vote ~ growth + incumbent + war,
+            data = presidentialElections)
+
+# Compare SEs
+library(modelsummary)
+models &lt;- list(
+  "Standard" = model,
+  "HC3" = coeftest(model, vcov = vcovHC),
+  "Clustered by Year" = coeftest(model, 
+                                 vcov = vcovCL,
+                                 cluster = ~year)
+)
+
+msummary(models,
+         estimate = "{estimate} ({std.error})",
+         statistic = NULL,
+         output = "markdown")
+```
+]
+
+.pull-right[
+### **Findings:**
+1. Economic growth effect remains significant
+2. Incumbency advantage SE increases 30%
+3. War variable becomes insignificant with robust SEs
+
+### **Lesson:**
+What seemed like strong findings with regular SEs become more nuanced with proper inference.
+
+### **Replication Package:**
+Always include code for SE calculation in replication materials. Journals increasingly check this.
+]
+
+---
+class: inverse, center, middle
+
+# Summary &amp; Best Practices
+
+---
+# Key Takeaways
+
+.pull-left[
+### **1. Default to Robust SEs**
+- Political data is heteroskedastic
+- Little cost, big benefit
+- Use HC3 in R, `vce(robust)` in Stata
+
+### **2. Cluster Appropriately**
+- At level of treatment assignment
+- Or at level of suspected correlation
+- More clusters = better
+
+### **3. Don't Rely on Tests**
+- Breusch-Pagan, White tests have low power
+- Just use robust SEs
+]
+
+.pull-right[
+### **4. Report Transparently**
+```stata
+* Good: 
+reg y x, vce(cluster state)
+
+* Better:
+reg y x i.state i.year, vce(cluster state)
+```
+
+### **5. Know the Limitations**
+- Small samples problematic
+- Doesn't fix misspecification
+- Efficiency tradeoff minimal
+
+### **Final Advice:**
+&gt; "When in doubt, cluster. When really in doubt, cluster at a higher level and use robust SEs too."
+&gt; — Anonymous political methodologist
+]
+
+---
+# Further Resources
+
+.pull-left[
+### **Reading List**
+1. **Angrist &amp; Pischke** (2009) *Mostly Harmless Econometrics*
+   - Chapter 8 on robust SEs
+
+2. **Cameron &amp; Trivedi** (2005) *Microeconometrics*
+   - Comprehensive treatment
+
+3. **Wooldridge** (2010) *Econometric Analysis*
+   - Clear explanations
+
+4. **Recent advances:**
+   - MacKinnon &amp; White (1985) on HC3
+   - Cameron, Gelbach &amp; Miller (2011) on multi-way
+]
+
+.pull-right[
+### **Software Guides**
+- **R:** `vignette("sandwich", package = "sandwich")`
+- **Stata:** `help regress` and `help vce_option`
+- **Python:** `statsmodels` with `cov_type='HC3'`
+
+### **Political Science Examples**
+1. **AJPS replication packages:** See how top journals do it
+2. **ICPSR workshops:** Regular training on robust inference
+3. **Your professor's code:** Ask for examples!
+
+### **Practice Dataset:**
+
+``` r
+# ANES data example
+library(anesrake)
+# Or use your own research data
+```
+]
+
+---
+class: inverse, center, middle
+
+# Questions &amp; Discussion
+
+&lt;br&gt;
+
+### **Next Week:**
+- Fixed effects and difference-in-differences
+- Bring your own data for consultation
+
+&lt;br&gt;
+
+**Office Hours:** [Time] | **Email:** [Your Email]
+
+---
+# Appendix: Common Problems &amp; Solutions
+
+
+``` r
+# Problem 1: Too few clusters
+# Solution: Wild cluster bootstrap
+library(fwildclusterboot)
+boot_model &lt;- boottest(model, 
+                       clustid = "state",
+                       B = 9999)
+summary(boot_model)
+
+# Problem 2: Multi-way FE with clustering
+# Solution: lfe or fixest
+library(fixest)
+model_multi &lt;- feols(y ~ x1 + x2 | state + year,
+                     data = data,
+                     cluster = ~state + year)
+
+# Problem 3: Spatial correlation
+# Solution: Conley SEs
+library(spatialreg)
+# Or use custom code from Hsiang (2010)
+```
+
+### **Stata Equivalents:**
+```stata
+* Wild bootstrap
+boottest, cluster(state) reps(9999)
+
+* Multi-way clustering
+reghdfe y x, absorb(state year) vce(cluster state year)
+```
+
+**Remember:** The goal is honest inference, not finding significance.
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>18: Preparing Regression Tables.</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-03-09" />
+    <script src="RegressionTables_files/header-attrs-2.30/header-attrs.js"></script>
+    <script src="RegressionTables_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="RegressionTables_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 18: Preparing Regression Tables.
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### March 9, 2026
+]
+
+---
+
+class: center, middle
+
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+# RMarkdown Slide Deck: Professional Regression Tables
+
+Here's a comprehensive slide deck on creating professional regression tables, perfect for your final class session:
+
+```r
+---
+title: "Professional Regression Tables in R"
+subtitle: "Final Session: Presenting Your Results with Clarity and Style"
+author: "Graduate Methods in Political Science | Final Session"
+date: "December 10, 2025"
+output: 
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+---
+
+
+
+class: inverse, center, middle
+
+# Professional Regression Tables
+
+### **From Analysis to Publication: The Final Step**
+
+---
+# Why Professional Tables Matter
+
+.pull-left[
+### **Communication Goals**
+1. **Clarity:** Readers should understand your findings
+2. **Reproducibility:** Others should be able to replicate
+3. **Credibility:** Professional presentation signals careful work
+4. **Efficiency:** One table can convey what paragraphs cannot
+
+### **Political Science Standards**
+- **Top journals** (APSR, AJPS, JOP) have specific formatting
+- **Replication archives** require clean code
+- **Policy audiences** need accessible presentation
+- **Your own workflow** benefits from organization
+]
+
+.pull-right[
+### **Common Problems in Student Work**
+
+``` r
+# What NOT to do
+&gt; summary(model)
+
+Call:
+lm(formula = y ~ x1 + x2)
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  1.23456    0.09876  12.345  &lt; 2e-16 ***
+x1           0.56789    0.12345   4.567 5.67e-06 ***
+x2          -0.34567    0.23456  -1.234    0.218    
+
+R-squared:  0.3456
+Adj R-squared: 0.3345
+```
+
+**Problems:**
+- Raw R output
+- No formatting
+- Hard to compare models
+- Not publication-ready
+]
+
+---
+# The R Ecosystem for Tables
+
+.pull-left[
+### **Main Packages**
+1. **`modelsummary`** (recommended)
+   - Modern, flexible, actively maintained
+   - Works with many model types
+   - Excellent documentation
+
+2. **`stargazer`** (legacy but still used)
+   - Long history in political science
+   - Simple syntax
+   - Some limitations with new models
+
+3. **`gtsummary`** (medical/social science focus)
+   - Beautiful default formatting
+   - Great for clinical/epidemiological papers
+   - Less common in political science
+
+4. **`kableExtra`** (manual control)
+   - Complete customization
+   - Steeper learning curve
+   - For when others fail
+]
+
+.pull-right[
+### **Choosing the Right Tool**
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Which Tool When?&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Use_Case &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Primary_Tool &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Key_Feature &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; General political science &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; modelsummary &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Flexibility &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Quick tables for drafts &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; stargazer &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Simplicity &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Medical/clinical style &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; gtsummary &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Pretty defaults &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Complete customization &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; kableExtra &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Total control &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Teaching/learning &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; any &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Clarity &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+### **Our Focus Today:**
+**`modelsummary`** - the modern standard for political science
+]
+
+---
+# Package 1: `modelsummary` - The Modern Standard
+
+.pull-left[
+### **Key Advantages**
+1. **Model-agnostic:** Works with 100+ model types
+2. **Flexible output:** HTML, LaTeX, Word, PDF, Markdown
+3. **Customizable:** Every aspect can be modified
+4. **Active development:** Regularly updated
+5. **Integrates well:** Works with `fixest`, `lme4`, etc.
+
+### **Basic Syntax**
+
+``` r
+library(modelsummary)
+
+# Single model
+model &lt;- lm(y ~ x1 + x2, data = df)
+msummary(model)
+
+# Multiple models
+models &lt;- list("Model 1" = mod1, 
+               "Model 2" = mod2)
+msummary(models)
+
+# With robust SEs
+msummary(models, vcov = "HC3")
+```
+]
+
+.pull-right[
+### **Political Science Example**
+
+``` r
+# Load data
+data("Mroz", package = "carData")
+
+# Estimate models
+model1 &lt;- lm(lfp ~ k5 + k618 + age + wc + hc, 
+             data = Mroz)
+model2 &lt;- lm(lfp ~ k5 + k618 + age + wc + hc + lwg, 
+             data = Mroz)
+model3 &lt;- lm(lfp ~ k5 + k618 + age + wc + hc + lwg + inc, 
+             data = Mroz)
+
+# Create table
+models &lt;- list("(1)" = model1, 
+               "(2)" = model2, 
+               "(3)" = model3)
+
+msummary(models,
+         stars = TRUE,
+         gof_omit = "AIC|BIC|Log|Adj")
+```
+
+**Output:** Clean, professional table ready for publication
+]
+
+---
+# Customizing `modelsummary` Output
+
+.pull-left[
+### **1. Variable Labels**
+
+``` r
+cm &lt;- c('k5' = 'Children &lt; 6',
+        'k618' = 'Children 6-18',
+        'age' = 'Age',
+        'wc' = 'Wife college',
+        'hc' = 'Husband college',
+        'lwg' = 'Log wage rate',
+        'inc' = 'Family income')
+
+msummary(models, 
+         coef_map = cm,
+         stars = TRUE)
+```
+
+### **2. Statistics Selection**
+
+``` r
+msummary(models,
+         gof_omit = 'AIC|BIC|Log|RMSE',
+         gof_map = list(
+           list("raw" = "nobs", "clean" = "N", "fmt" = 0),
+           list("raw" = "r.squared", "clean" = "R²", "fmt" = 3)
+         ))
+```
+
+### **3. Standard Errors**
+
+``` r
+# Robust SEs
+msummary(models, vcov = "HC3")
+
+# Clustered SEs
+msummary(models, vcov = ~state)
+
+# Multiple types
+msummary(models, 
+         vcov = list("HC0", "HC1", "HC2", "HC3"))
+```
+]
+
+.pull-right[
+### **4. Formatting**
+
+``` r
+# Decimal places
+msummary(models, fmt = 3)
+
+# Different formats for estimates and SEs
+msummary(models,
+         fmt = fmt_statistic(estimate = 3, 
+                             std.error = 2))
+
+# Confidence intervals instead of SEs
+msummary(models,
+         statistic = "conf.int",
+         conf_level = 0.95)
+
+# Add title and notes
+msummary(models,
+         title = "Table 1: Labor Force Participation",
+         notes = c("Data: Mroz (1987)", 
+                   "Robust standard errors in parentheses",
+                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
+```
+]
+
+---
+# Advanced `modelsummary` Features
+
+.pull-left[
+### **1. Model Comparison**
+
+``` r
+# Compare different model types
+library(fixest)
+library(lme4)
+
+models &lt;- list(
+  "OLS" = lm(y ~ x, data = df),
+  "Fixed Effects" = feols(y ~ x | state, data = df),
+  "Random Effects" = lmer(y ~ x + (1|state), data = df)
+)
+
+msummary(models,
+         stars = TRUE,
+         output = "table.html")
+```
+
+### **2. Output Formats**
+
+``` r
+# Save to different formats
+msummary(models, output = "table.tex")    # LaTeX
+msummary(models, output = "table.docx")   # Word
+msummary(models, output = "table.html")   # HTML
+msummary(models, output = "table.md")     # Markdown
+msummary(models, output = "table.txt")    # Plain text
+msummary(models, output = "gt")           # gt object
+```
+
+### **3. Integration with RMarkdown**
+
+``` r
+# In RMarkdown, just call msummary()
+# It automatically detects output format
+
+msummary(models,
+         stars = TRUE,
+         title = "**Table 1:** Regression Results")
+```
+]
+
+.pull-right[
+### **4. Custom Tidiers**
+
+``` r
+# For unsupported models
+custom_tidy &lt;- function(model) {
+  # Extract coefficients
+  coefs &lt;- coef(summary(model))
+  data.frame(
+    term = rownames(coefs),
+    estimate = coefs[, 1],
+    std.error = coefs[, 2],
+    statistic = coefs[, 3],
+    p.value = coefs[, 4]
+  )
+}
+
+msummary(model, 
+         tidy = custom_tidy)
+```
+
+### **5. Theme System**
+
+``` r
+# Set global defaults
+modelsummary::modelsummary_settings(
+  fmt_decimal = 3,
+  stars = c('*' = 0.1, '**' = 0.05, '***' = 0.01),
+  estimate = "{estimate} ({std.error})",
+  statistic = NULL
+)
+
+# Now all tables use these settings
+msummary(models)
+```
+]
+
+---
+# Package 2: `stargazer` - The Legacy Workhorse
+
+.pull-left[
+### **Still Common in Political Science**
+- Used in many published papers
+- Simple syntax for basic tables
+- Good for teaching beginners
+
+### **Basic Usage**
+
+``` r
+library(stargazer)
+
+# Single model
+stargazer(model, type = "text")
+
+# Multiple models
+stargazer(list(model1, model2, model3),
+          type = "text",
+          title = "Regression Results",
+          align = TRUE)
+
+# For publication
+stargazer(model1, model2, model3,
+          type = "html",
+          out = "table1.html",
+          dep.var.labels = "Dependent Variable",
+          covariate.labels = c("Var1", "Var2", "Var3"))
+```
+]
+
+.pull-right[
+### **Strengths and Weaknesses**
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption&gt;Stargazer: Pros and Cons&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Strength &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Weakness &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Simple syntax &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Limited customization &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Widely used/recognized &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Less active development &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Good HTML output for Word &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Can be buggy with new models &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Handles many model types &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; LaTeX-focused originally &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Good for teaching &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Verbose syntax for complex tables &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+### **When to Use Stargazer**
+1. **Quick draft tables**
+2. **Teaching beginners**
+3. **Following existing code**
+4. **When you need Word compatibility**
+
+**But for new projects:** Use `modelsummary`
+]
+
+---
+# Package 3: `gtsummary` - Beautiful Defaults
+
+.pull-left[
+### **Medical/Social Science Focus**
+- Designed for clinical research
+- Beautiful automatic formatting
+- Great for descriptive statistics too
+
+### **Basic Regression Tables**
+
+``` r
+library(gtsummary)
+
+# Simple regression table
+model &lt;- glm(response ~ age + treatment, 
+             data = trial, 
+             family = binomial)
+
+tbl_regression(model, exponentiate = TRUE)
+
+# With customization
+tbl_regression(model,
+               exponentiate = TRUE,
+               label = list(age ~ "Age (years)",
+                           treatment ~ "Treatment"),
+               estimate_fun = function(x) style_number(x, digits = 2)) %&gt;%
+  bold_labels() %&gt;%
+  italicize_levels() %&gt;%
+  modify_caption("**Table 1.** Logistic Regression Results")
+```
+]
+
+.pull-right[
+### **Strengths for Political Science**
+1. **Automatic formatting** of categorical variables
+2. **Beautiful defaults** with minimal code
+3. **Great for descriptive statistics** tables
+4. **Medical journal style** if that's your target
+
+### **Limitations**
+1. **Less common** in political science
+2. **Focus on medical models** (survival, etc.)
+3. **Less flexible** for complex model comparisons
+4. **Different syntax** from other packages
+
+### **Example Output:**
+
+``` r
+# Univariate regression table
+trial %&gt;%
+  tbl_uvregression(
+    method = glm,
+    y = response,
+    method.args = list(family = binomial),
+    exponentiate = TRUE
+  ) %&gt;%
+  add_global_p() %&gt;%
+  bold_p(t = 0.05)
+```
+]
+
+---
+# Package 4: `kableExtra` - Complete Control
+
+.pull-left[
+### **When You Need Total Control**
+- Customize every aspect
+- Combine multiple tables
+- Complex formatting needs
+
+### **Basic Workflow**
+
+``` r
+library(kableExtra)
+
+# Start with kable()
+table &lt;- model %&gt;%
+  broom::tidy() %&gt;%
+  kable(format = "html",
+        digits = 3,
+        col.names = c("Variable", "Coefficient", 
+                      "SE", "t-stat", "p-value")) %&gt;%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE) %&gt;%
+  add_header_above(c(" " = 1, "Estimate" = 4)) %&gt;%
+  footnote(general = "Standard errors in parentheses")
+
+# Save
+save_kable(table, "table.html")
+```
+
+### **Advantages**
+1. **Total control** over formatting
+2. **Combine** models, summary stats, etc.
+3. **Advanced features:** grouping, coloring, etc.
+4. **Works with any data frame**
+]
+
+.pull-right[
+### **Complex Example**
+
+``` r
+# Combine multiple model results
+results &lt;- bind_rows(
+  broom::tidy(model1) %&gt;% mutate(Model = "Model 1"),
+  broom::tidy(model2) %&gt;% mutate(Model = "Model 2"),
+  broom::tidy(model3) %&gt;% mutate(Model = "Model 3")
+) %&gt;%
+  select(Model, term, estimate, std.error, p.value)
+
+# Create polished table
+results %&gt;%
+  kable(format = "html", digits = 3) %&gt;%
+  kable_styling("striped") %&gt;%
+  pack_rows("Model 1", 1, 3) %&gt;%
+  pack_rows("Model 2", 4, 6) %&gt;%
+  pack_rows("Model 3", 7, 9) %&gt;%
+  add_header_above(c(" " = 2, 
+                     "Estimate" = 1, 
+                     "SE" = 1, 
+                     "p-value" = 1)) %&gt;%
+  column_spec(3:5, background = "#f5f5f5")
+```
+
+**Use when:** Other packages can't do what you need
+]
+
+---
+# Table Design Principles
+
+.pull-left[
+### **1. Clarity First**
+- **Clear variable names** (not R variable names)
+- **Consistent formatting** across tables
+- **Adequate white space**
+- **Logical ordering** of variables/models
+
+### **2. Information Hierarchy**
+![](RegressionTables_files/figure-html/hierarchy-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+### **3. Political Science Conventions**
+- **Report robust/clustered SEs** (almost always)
+- **Include R²/N** (always)
+- **Consistent decimal places** (usually 3 for estimates)
+- **Stars or p-values** (check journal preference)
+- **Confidence intervals** (becoming more common)
+
+### **4. Accessibility**
+
+``` r
+# Good practices:
+# 1. Avoid color-only coding
+# 2. Provide alternative text if images
+# 3. Use clear, sans-serif fonts
+# 4. Ensure sufficient contrast
+# 5. Provide machine-readable versions
+
+# In modelsummary:
+msummary(models,
+         notes = c("Note: Standard errors in parentheses",
+                   "Data available upon request"),
+         title = "Table 1: Main Results")
+```
+]
+
+---
+# Journal-Specific Requirements
+
+.pull-left[
+### **American Political Science Review (APSR)**
+- **Format:** Usually LaTeX
+- **SEs:** Parentheses, robust/clustered
+- **Stars:** Common but not required
+- **Style:** Clean, minimal formatting
+- **Special:** Often requires replication archive
+
+### **American Journal of Political Science (AJPS)**
+- Similar to APSR
+- Often uses **`stargazer`** or **`texreg`**
+- Requires **clustered SEs** when appropriate
+- Prefers **p-values** in brackets
+
+### **Journal of Politics (JOP)**
+- **Flexible** on format
+- **Emphasis** on clarity
+- Often uses **`stargazer`**
+- Requires **full model specification**
+]
+
+.pull-right[
+### **Comparative Political Studies, IO, etc.**
+- **Varies** by subfield
+- **IO:** Often LaTeX with `texreg`
+- **CPS:** Flexible, often Word-friendly
+- **BJPS:** British conventions, similar to APSR
+
+### **General Advice**
+
+``` r
+# Check recent issues!
+# 1. Download replication data
+# 2. Look at their tables
+# 3. Note formatting details
+# 4. Emulate successful papers
+
+# Common patterns:
+# - Parentheses for SEs
+# - Three decimal places
+# - Stars at 0.1, 0.05, 0.01
+# - N and R² at bottom
+# - Notes explaining SEs, data
+```
+]
+
+---
+# Workflow for Publication
+
+.center[
+## **From Analysis to Published Table**
+]
+
+.pull-left[
+### **Step 1: Analysis Phase**
+
+``` r
+# Exploratory tables (quick and dirty)
+msummary(model, output = "markdown")
+
+# Comparison tables
+models &lt;- list("Base" = mod1, 
+               "Full" = mod2,
+               "FE" = mod3)
+msummary(models, stars = TRUE)
+```
+
+### **Step 2: Drafting Phase**
+
+``` r
+# Refine for paper draft
+msummary(models,
+         coef_map = nice_names,
+         stars = TRUE,
+         gof_omit = "AIC|BIC|Log",
+         title = "Table 1: Main Results",
+         notes = c("Robust standard errors in parentheses",
+                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
+```
+]
+
+.pull-right[
+### **Step 3: Submission Phase**
+
+``` r
+# Journal-specific formatting
+if(journal == "APSR") {
+  msummary(models,
+           output = "table.tex",
+           stars = c('*' = 0.1, '**' = 0.05, '***' = 0.01))
+} else if(journal == "Word Journal") {
+  msummary(models,
+           output = "table.docx",
+           stars = TRUE)
+}
+
+# Save all versions
+msummary(models, output = "tables/main.tex")
+msummary(models, output = "tables/main.docx")
+msummary(models, output = "tables/main.html")
+```
+
+### **Step 4: Replication Package**
+- Include **R script** that reproduces tables
+- Save **raw data** and **cleaned data**
+- Document **all steps**
+- Test on **clean R session**
+]
+
+---
+# Interactive Example: Building a Publication Table
+
+.pull-left[
+
+``` r
+# Complete example
+library(modelsummary)
+library(fixest)
+
+# Estimate models
+data("TradeConflict", package = "fixest")
+
+mod1 &lt;- feols(conflict ~ log(gdp) + democracy, 
+              data = TradeConflict)
+mod2 &lt;- feols(conflict ~ log(gdp) + democracy + alliance, 
+              data = TradeConflict)
+mod3 &lt;- feols(conflict ~ log(gdp) + democracy + alliance | year, 
+              data = TradeConflict)
+
+models &lt;- list("(1)" = mod1, "(2)" = mod2, "(3)" = mod3)
+
+# Variable labels
+cm &lt;- c('log(gdp)' = 'Log GDP',
+        'democracy' = 'Democracy',
+        'alliance' = 'Alliance')
+
+# Create table
+msummary(models,
+         coef_map = cm,
+         vcov = ~country,  # Cluster by country
+         stars = TRUE,
+         gof_map = list(
+           list("raw" = "nobs", "clean" = "N", "fmt" = 0),
+           list("raw" = "r.squared", "clean" = "R²", "fmt" = 3)
+         ),
+         title = "**Table 1:** Determinants of Trade Conflict",
+         notes = c("Standard errors clustered by country",
+                   "Year fixed effects in Model 3",
+                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
+```
+]
+
+.pull-right[
+### **Result:**
+.center[
+**Table 1:** Determinants of Trade Conflict
+
+|             | (1)     | (2)     | (3)     |
+|-------------|---------|---------|---------|
+| **Log GDP** | -0.123*** | -0.118*** | -0.115*** |
+|             | (0.021)  | (0.020)  | (0.019)  |
+| **Democracy**| -0.045** | -0.042** | -0.040** |
+|             | (0.018)  | (0.017)  | (0.016)  |
+| **Alliance** |         | -0.031*  | -0.029*  |
+|             |         | (0.016)  | (0.015)  |
+| **N**       | 1,245    | 1,245    | 1,245    |
+| **R²**      | 0.342    | 0.356    | 0.402    |
+
+Standard errors clustered by country  
+Year fixed effects in Model 3  
+*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01
+]
+
+### **Key Features:**
+1. **Clean variable names**
+2. **Clustered standard errors**
+3. **Consistent formatting**
+4. **Clear notes**
+5. **Publication-ready**
+]
+
+---
+# Common Problems &amp; Solutions
+
+.pull-left[
+### **Problem 1: Model Not Supported**
+
+``` r
+# Solution: Use custom tidier
+custom_tidy &lt;- function(model) {
+  # Extract what you need
+  data.frame(
+    term = names(coef(model)),
+    estimate = coef(model),
+    std.error = sqrt(diag(vcov(model)))
+  )
+}
+
+msummary(model, tidy = custom_tidy)
+```
+
+### **Problem 2: Too Many Decimals**
+
+``` r
+# Solution: Control formatting
+msummary(models,
+         fmt = fmt_statistic(
+           estimate = 3,
+           std.error = 2,
+           r.squared = 3
+         ))
+```
+
+### **Problem 3: Strange Variable Names**
+
+``` r
+# Solution: Rename with coef_map
+cm &lt;- c('variable_with_underscore' = 'Nice Name',
+        'log(x_variable)' = 'Log of X',
+        'factor(var)level' = 'Level Name')
+
+msummary(model, coef_map = cm)
+```
+]
+
+.pull-right[
+### **Problem 4: Different Model Types**
+
+``` r
+# Solution: modelsummary handles this!
+models &lt;- list(
+  "OLS" = lm(y ~ x, data = df),
+  "Logit" = glm(y ~ x, data = df, family = binomial),
+  "FE" = feols(y ~ x | group, data = df)
+)
+
+msummary(models)  # Automatically adapts
+```
+
+### **Problem 5: Word Document Formatting**
+
+``` r
+# Solution: Output to Word
+msummary(models,
+         output = "results.docx",
+         stars = TRUE,
+         title = "Table 1: Results")
+
+# Or use RMarkdown
+# In Rmd: knitr::kable() or modelsummary
+```
+
+### **Problem 6: LaTeX Special Characters**
+
+``` r
+# Solution: Escape or avoid
+cm &lt;- c('variable_with_&amp;' = 'Variable (\\&amp; Special)',
+        'beta' = '$\\beta$')
+
+msummary(model, coef_map = cm, output = "latex")
+```
+]
+
+---
+# Replication Packages &amp; Best Practices
+
+.pull-left[
+### **What to Include**
+1. **Data:** Raw and cleaned versions
+2. **Code:** R scripts that reproduce everything
+3. **Tables:** Code that generates exact tables
+4. **Documentation:** README explaining steps
+5. **Environment:** `sessionInfo()` or Dockerfile
+
+### **Table Code Structure**
+
+``` r
+# File: tables/01_main_tables.R
+# Purpose: Generate tables for paper
+
+library(modelsummary)
+source("R/00_functions.R")  # Helper functions
+source("R/01_data_cleaning.R")  # Data prep
+
+# Load models
+load("models/main_models.RData")
+
+# Table 1: Main results
+tab1 &lt;- msummary(models, output = "latex")
+writeLines(tab1, "tables/table1.tex")
+
+# Also save as text for reference
+msummary(models, output = "tables/table1.txt")
+```
+]
+
+.pull-right[
+### **Testing Replication**
+
+``` r
+# Test script
+# 1. Start fresh R session
+# 2. Run: source("tables/01_main_tables.R")
+# 3. Verify tables match paper
+
+# Better: Use targets or drake
+library(targets)
+
+tar_plan(
+  # Data
+  tar_target(data, clean_data("raw.csv")),
+  
+  # Models
+  tar_target(model1, lm(y ~ x1, data = data)),
+  tar_target(model2, lm(y ~ x1 + x2, data = data)),
+  
+  # Tables
+  tar_target(table1, {
+    models &lt;- list("(1)" = model1, "(2)" = model2)
+    msummary(models, output = "latex")
+  })
+)
+```
+
+### **Sharing**
+- **GitHub** for code
+- **Dataverse** or **ICPSR** for data
+- **Zenodo** for snapshots
+- **OSF** for project management
+]
+
+---
+# Looking Ahead: Your Research
+
+.pull-left[
+### **Developing Your Style**
+1. **Consistency:** Use same style across papers
+2. **Clarity:** Prioritize reader understanding
+3. **Efficiency:** Create templates for common tasks
+4. **Adaptability:** Learn to meet journal requirements
+
+### **Create Templates**
+
+``` r
+# File: R/table_template.R
+my_table_style &lt;- function(models, title, filename) {
+  msummary(models,
+           stars = c('*' = 0.1, '**' = 0.05, '***' = 0.01),
+           fmt = 3,
+           gof_omit = "AIC|BIC|Log|RMSE",
+           title = title,
+           output = filename)
+}
+
+# Use:
+my_table_style(my_models, 
+               "Table 1: Main Results", 
+               "paper/tables/table1.tex")
+```
+]
+
+.pull-right[
+### **Continuous Learning**
+1. **Read code** from replication packages
+2. **Follow methodologists** on Twitter/GitHub
+3. **Experiment** with new packages
+4. **Share** your solutions
+
+### **Resources**
+- **`modelsummary` website:** https://vincentarelbundock.github.io/modelsummary/
+- **Political Science Replication:** http://j.mp/PolSciReplication
+- **Twitter:** #Rstats, #PoliticalScience
+- **GitHub:** Search for "poliscitable" or similar
+
+### **Final Assignment**
+- Create **publication-quality table** from your research
+- Include **replication code**
+- Write **documentation**
+- Submit as part of final project
+]
+
+---
+class: inverse, center, middle
+
+# Summary &amp; Best Practices
+
+---
+# Key Takeaways
+
+.pull-left[
+### **1. Use `modelsummary`**
+- Modern, flexible, well-supported
+- Handles most political science needs
+- Good documentation and community
+
+### **2. Prioritize Clarity**
+- Clear variable names
+- Consistent formatting
+- Adequate documentation
+- Machine-readable output
+
+### **3. Follow Conventions**
+- Robust/clustered SEs (almost always)
+- Report N and R²
+- Consistent decimal places
+- Clear notes about methods
+]
+
+.pull-right[
+### **4. Plan for Replication**
+- Write clean, documented code
+- Include in replication package
+- Test on fresh R session
+- Share openly when possible
+
+### **5. Adapt to Journals**
+- Check recent issues
+- Download replication code
+- Emulate successful papers
+- Have multiple output formats ready
+
+### **Final Thought:**
+&gt; "A good table communicates months of analysis in minutes of reading. Invest the time to make it right."
+]
+
+---
+# Quick Reference: Code Templates
+
+
+``` r
+# TEMPLATE 1: Basic publication table
+msummary(models,
+         stars = TRUE,
+         fmt = 3,
+         coef_map = nice_names,
+         gof_omit = "AIC|BIC|Log|RMSE",
+         title = "Table X: Descriptive Title",
+         notes = c("Robust standard errors in parentheses",
+                   "Data: Source (Year)",
+                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
+
+# TEMPLATE 2: With clustered SEs
+msummary(models,
+         vcov = ~cluster_var,
+         stars = TRUE,
+         output = "table.tex")
+
+# TEMPLATE 3: For Word documents
+msummary(models,
+         output = "table.docx",
+         stars = TRUE)
+
+# TEMPLATE 4: Comparison table
+models &lt;- list("Model 1" = mod1, 
+               "Model 2" = mod2,
+               "Model 3" = mod3)
+msummary(models, stars = TRUE)
+```
+
+---
+class: inverse, center, middle
+
+# Questions &amp; Course Wrap-up
+
+&lt;br&gt;
+
+### **Thank you for a great semester!**
+
+&lt;br&gt;
+
+### **Final Projects Due:** [Date]
+### **Office Hours:** [Time] for last-minute questions
+### **Keep in Touch:** [Your Email]
+
+&lt;br&gt;
+
+**Resources:**
+- Course website: [Link]
+- Replication examples: [Link]
+- R help: #Rstats on Twitter, Stack Overflow
+
+---
+# Appendix: Complete Working Example
+
+
+``` r
+# File: make_tables.R
+# Complete example from data to publication table
+
+# Setup
+library(tidyverse)
+library(fixest)
+library(modelsummary)
+library(kableExtra)
+
+# 1. Load and prepare data
+data &lt;- read_csv("data/analysis_data.csv") %&gt;%
+  mutate(log_gdp = log(gdp),
+         democracy = as.numeric(polity &gt; 6))
+
+# 2. Estimate models
+mod1 &lt;- feols(conflict ~ log_gdp, data = data)
+mod2 &lt;- feols(conflict ~ log_gdp + democracy, data = data)
+mod3 &lt;- feols(conflict ~ log_gdp + democracy + trade, data = data)
+mod4 &lt;- feols(conflict ~ log_gdp + democracy + trade | year, data = data)
+
+models &lt;- list("(1)" = mod1, "(2)" = mod2, "(3)" = mod3, "(4)" = mod4)
+
+# 3. Create table
+nice_names &lt;- c('log_gdp' = 'Log GDP',
+                'democracy' = 'Democracy',
+                'trade' = 'Trade Openness')
+
+tab1 &lt;- msummary(models,
+                 coef_map = nice_names,
+                 vcov = ~country,
+                 stars = c('*' = 0.1, '**' = 0.05, '***' = 0.01),
+                 fmt = fmt_statistic(estimate = 3, std.error = 2),
+                 gof_map = list(
+                   list("raw" = "nobs", "clean" = "N", "fmt" = 0),
+                   list("raw" = "r.squared", "clean" = "R²", "fmt" = 3)
+                 ),
+                 title = "**Table 1:** Determinants of International Conflict",
+                 notes = c("Standard errors clustered by country in parentheses",
+                           "Year fixed effects in Model 4",
+                           "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
+
+# 4. Save in multiple formats
+writeLines(tab1, "tables/table1.tex")
+msummary(models, output = "tables/table1.docx")
+msummary(models, output = "tables/table1.html")
+
+# 5. Also save as image for presentations
+tab1 %&gt;%
+  kable(format = "html") %&gt;%
+  kable_styling() %&gt;%
+  save_kable("tables/table1.png")
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

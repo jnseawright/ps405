@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>16: Diagnostics.</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-03-02" />
+    <script src="Diagnostics_files/header-attrs-2.30/header-attrs.js"></script>
+    <script src="Diagnostics_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="Diagnostics_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 16: Diagnostics.
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### March 2, 2026
+]
+
+---
+
+class: center, middle
+
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+### **The Problem**
+- Regression models make strong assumptions
+- Violations can lead to:
+  - **Biased coefficients**
+  - **Invalid inferences**
+  - **Poor predictions**
+- Especially critical for:
+  - Policy evaluation
+  - Election forecasting
+  - Causal inference
+
+.pull-right[
+### **Real Examples**
+
+``` r
+# Election forecasting
+vote_share ~ economy + approval + incumbency
+
+# Policy evaluation
+policy_success ~ spending + implementation + context
+
+# Public opinion
+support ~ demographics + media + events
+```
+**Question:** Can we trust these models?
+]
+
+---
+# Key Assumptions of Regression (in order of importance)
+
+.pull-left[
+### **1. Validity** 
+Data map to research question
+- Outcome measures the phenomenon
+- Model includes relevant predictors
+- Generalizes to target cases
+
+### **2. Representativeness**
+Sample reflects population (conditional on X)
+- Selection on X is OK
+- Selection on Y is problematic
+- Even with "all" data (e.g., all elections)
+]
+
+.pull-right[
+### **3. Additivity &amp; Linearity**
+Predictors combine linearly
+- Most political relationships are nonlinear
+- Age × voting, income × participation
+
+### **4. Independence of Errors**
+No autocorrelation (time/space)
+
+### **5. Equal Variance (Homoscedasticity)**
+Constant prediction uncertainty
+
+### **6. Normality of Errors**
+Least important for estimation
+]
+
+---
+# Validity in Political Research: Examples
+
+![](Diagnostics_files/figure-html/validity-plot-1.png)&lt;!-- --&gt;
+
+**Key Insight:** Most datasets fail perfect validity. The goal is **awareness** and **transparency**.
+
+---
+# Representativeness: Selection Bias
+
+.pull-left[
+### **The Core Issue**
+Selection on Y biases coefficients
+
+
+```
+## Population correlation (ideology, income): 0.086
+```
+
+```
+## Sample correlation (ideology, income): 0.102
+```
+]
+
+.pull-right[
+### **Political Science Examples**
+1. **Survey non-response**
+   - Political interest → participation → survey response
+
+2. **Media coverage**
+   - Extreme cases get coverage → biased perception
+
+3. **Historical records**
+   - Surviving documents ≠ all documents
+
+4. **Elite interviews**
+   - Accessible elites ≠ all elites
+
+### **Solutions**
+- Weighting
+- Selection models
+- Multiple data sources
+]
+
+---
+# Additivity &amp; Linearity: Political Reality is Nonlinear
+
+![](Diagnostics_files/figure-html/nonlinear-plot-1.png)&lt;!-- --&gt;
+
+**Takeaway:** Always check for nonlinearity. Consider transformations or flexible models.
+
+---
+# Diagnostic Tool 1: Residual Plots
+
+.pull-left[
+### **What to Plot**
+
+``` r
+# After fitting model
+fit &lt;- lm(vote_share ~ economy + approval, data = election_data)
+
+# Base R
+plot(fit, which = 1)  # Residuals vs Fitted
+
+# ggplot2
+library(ggplot2)
+election_data$residuals &lt;- resid(fit)
+election_data$fitted &lt;- fitted(fit)
+
+ggplot(election_data, aes(x = fitted, y = residuals)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_smooth(se = FALSE)
+```
+]
+
+.pull-right[
+### **What to Look For**
+.center[
+![](Diagnostics_files/figure-html/residual-patterns-1.png)&lt;!-- --&gt;
+]
+]
+
+---
+# Diagnostic Tool 2: Posterior Predictive Checks
+
+.pull-left[
+### **The Idea**
+1. Fit your model
+2. Simulate new data from it
+3. Compare simulated data to real data
+4. If they look different → model problems
+
+### **Bayesian Implementation**
+
+``` r
+# Using rstanarm
+library(rstanarm)
+fit_bayes &lt;- stan_glm(vote ~ economy + war, 
+                      data = election_data,
+                      family = gaussian(),
+                      seed = 123)
+
+# Generate posterior predictions
+y_rep &lt;- posterior_predict(fit_bayes)
+
+# Compare distributions
+bayesplot::ppc_dens_overlay(election_data$vote, y_rep[1:50, ])
+```
+]
+
+.pull-right[
+![](Diagnostics_files/figure-html/ppc-example-1.png)&lt;!-- --&gt;
+]
+
+---
+# Diagnostic Tool 3: Cross-Validation
+
+.pull-left[
+### **Why CV?**
+- In-sample fit ≠ out-of-sample performance
+- Prevents overfitting
+- Estimates predictive accuracy
+
+### **Types of CV**
+1. **Leave-One-Out (LOO)**
+   - Each observation left out once
+   - Computationally efficient approximation
+
+2. **K-Fold** (e.g., 10-fold)
+   - Random partitions
+   - More stable with outliers
+
+3. **Time-Series CV**
+   - Train on past, test on future
+   - Critical for political forecasting
+]
+
+.pull-right[
+### **Implementation in R**
+
+``` r
+library(rstanarm)
+library(loo)
+
+# Fit Bayesian model
+fit &lt;- stan_glm(vote_share ~ gdp_growth + incumbent,
+                data = election_data)
+
+# LOO Cross-Validation
+loo_result &lt;- loo(fit)
+print(loo_result)
+
+# Compare models
+fit2 &lt;- stan_glm(vote_share ~ gdp_growth + incumbent + war,
+                 data = election_data)
+loo2 &lt;- loo(fit2)
+loo_compare(loo_result, loo2)
+```
+
+### **Interpretation**
+- `elpd_diff`: Difference in expected log predictive density
+- Rule of thumb: `elpd_diff &gt; 4` suggests meaningful difference
+]
+
+---
+# R² and Explained Variance: Political Science Context
+
+.pull-left[
+### **What R² Tells Us**
+- Proportion of variance "explained"
+- Range: 0 (worst) to 1 (best)
+
+### **But in Political Science...**
+- **Low R² is common and OK!**
+- Human behavior is stochastic
+- Many unmeasurable factors
+- Example: Individual voting decisions
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Study &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; R2 &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Interpretation &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Vote choice (individual) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Many factors matter &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Election forecasting (aggregate) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.65 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Structure matters &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Policy adoption &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Context dependent &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Conflict onset &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Hard to predict &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Public opinion shift &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.25 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Media + events matter &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+.pull-right[
+### **Bayesian R²**
+- Accounts for parameter uncertainty
+- More honest assessment
+
+
+``` r
+# Bayesian R² with uncertainty
+bayes_R2(fit)  # Returns posterior distribution
+
+# Plot uncertainty
+r2_dist &lt;- bayes_R2(fit)
+ggplot(data.frame(r2 = r2_dist), aes(x = r2)) +
+  geom_density(fill = "lightblue", alpha = 0.7) +
+  geom_vline(xintercept = median(r2_dist), 
+             linetype = "dashed") +
+  labs(x = "Bayesian R²", y = "Density",
+       title = "Uncertainty in Model Fit")
+```
+
+### **Warning Signs**
+- R² &gt; 0.9 in social science → suspect overfitting
+- R² changes dramatically with small changes → unstable
+]
+
+---
+# Special Issues in Political Data
+
+.pull-left[
+### **1. Time-Series Data**
+- Autocorrelation violates independence
+- **Solutions:**
+  - Lagged dependent variables
+  - ARIMA models
+  - Newey-West standard errors
+
+### **2. Spatial/Clustered Data**
+- States, districts, countries
+- **Solutions:**
+  - Cluster-robust SEs
+  - Multilevel models
+  - Spatial regression
+
+### **3. Censored/Truncated Data**
+- Top-coded income
+- Minimum reporting thresholds
+- **Solutions:**
+  - Tobit models
+  - Selection models
+]
+.pull-right[
+### **4. Measurement Error**
+- Survey response error
+- GDP mismeasurement
+- **Solutions:**
+  - Multiple indicators
+  - Measurement models
+  - Bayesian approaches
+
+### **5. Rare Events**
+- Coups, wars, revolutions
+- **Solutions:**
+  - Rare events logistic
+  - Case-control designs
+  - Qualitative follow-up
+
+### **Political Reality:**
+&gt; "All models are wrong, but some are useful."  
+&gt; — George Box
+]
+
+---
+# Practical Workflow for Political Scientists
+
+.center[
+## **The Diagnostic Pipeline**
+]
+
+.pull-left[
+### **Step 1: Before Modeling**
+1. **Theory-driven variable selection**
+2. **Check data quality**
+3. **Visualize relationships**
+4. **Consider transformations**
+
+### **Step 2: During Modeling**
+1. **Fit multiple specifications**
+2. **Check convergence (Bayesian)**
+3. **Examine residuals**
+4. **Test for nonlinearities**
+]
+
+.pull-right[
+### **Step 3: After Modeling**
+1. **Posterior predictive checks**
+2. **Cross-validation**
+3. **Sensitivity analysis**
+4. **Compare to simpler models**
+
+### **Step 4: Reporting**
+1. **Transparency about assumptions**
+2. **Diagnostic results**
+3. **Model limitations**
+4. **Robustness checks**
+]
+
+---
+# Case Study: Election Forecasting
+
+.pull-left[
+### **The Model**
+
+``` r
+# Simplified forecasting model
+forecast_model &lt;- stan_glm(
+  incumbent_vote ~ 
+    gdp_growth_q2 + 
+    net_approval + 
+    years_in_office +
+    war_indicator,
+  data = historical_elections,
+  prior = normal(0, 2.5),
+  prior_intercept = normal(50, 10)
+)
+```
+]
+
+.pull-right[
+### **Diagnostic Steps**
+1. **Temporal independence?**  
+   → Use time-series CV
+
+2. **Outliers?**  
+   → 1972, 1984 elections different
+
+3. **Structural breaks?**  
+   → Pre/post 1990s politics changed
+
+4. **Predictive accuracy?**  
+   → Compare to fundamentals model
+]
+
+---
+class: inverse, center, middle
+
+# Tools &amp; Software
+
+---
+# R Packages for Regression Diagnostics
+
+.pull-left[
+### **Core Diagnostics**
+
+``` r
+# Plotting
+ggplot2      # General plotting
+ggfortify    # Diagnostic plots for lm/glm
+
+# Bayesian workflow
+rstanarm     # Bayesian regression
+bayesplot    # Bayesian diagnostics
+loo          # Cross-validation
+
+# Specialized
+performance  # Comprehensive model checking
+marginaleffects # Understanding effects
+sjPlot       # Presentation-ready tables
+```
+]
+
+.pull-right[
+### **Political Science Specific**
+
+``` r
+# Time series
+forecast     # Time series forecasting
+vars         # Vector autoregression
+
+# Spatial
+spdep        # Spatial dependence
+splm         # Spatial panel models
+
+# Text as data
+quanteda     # Text analysis
+stm          # Structural topic models
+
+# Causal inference
+MatchIt      # Matching
+ivreg        # Instrumental variables
+```
+]
+
+---
+# Common Pitfalls &amp; How to Avoid Them
+
+.pull-left[
+### **Pitfall 1: Overfitting**
+- **Symptom:** Great in-sample, poor out-of-sample
+- **Solution:** Cross-validation, regularization
+
+### **Pitfall 2: Ignoring Dependencies**
+- **Symptom:** SEs too small, false precision
+- **Solution:** Cluster-robust SEs, multilevel models
+
+### **Pitfall 3: Extrapolation**
+- **Symptom:** Predicting beyond data range
+- **Solution:** Restrict predictions, uncertainty bands
+]
+
+.pull-right[
+### **Pitfall 4: Causal Claims**
+- **Symptom:** "Effect of X on Y" from observational data
+- **Solution:** Explicit causal framework, sensitivity
+
+### **Pitfall 5: Black Box Models**
+- **Symptom:** Can't explain why model works
+- **Solution:** Simpler models, effect plots
+
+### **Political Science Reality:**
+&gt; "It's better to be approximately right than precisely wrong."
+]
+
+---
+# Summary: Key Principles
+
+.pull-left[
+### **1. Assumptions First**
+- Start with validity &amp; representativeness
+- Statistical assumptions come after
+
+### **2. Visualization is Key**
+- See your data
+- See your residuals
+- See your predictions
+
+### **3. Test, Don't Assume**
+- Predictive checks
+- Cross-validation
+- Sensitivity analysis
+]
+
+.pull-right[
+### **4. Embrace Uncertainty**
+- Political phenomena are stochastic
+- Report uncertainty intervals
+- Bayesian approaches help
+
+### **5. Iterate &amp; Improve**
+- No model is perfect
+- Learn from diagnostics
+- Build better models
+
+### **Final Thought:**
+The goal isn't a "perfect" model, but a **useful** and **honest** one for answering political science questions.
+]
+
+---
+class: inverse, center, middle
+
+# Questions &amp; Discussion
+
+&lt;br&gt;
+
+### **Resources:**
+- Book: *Regression and Other Stories* (Ch. 11)
+- Website: https://avehtari.github.io/ROS-Examples/
+- Course materials: [Your link here]
+
+&lt;br&gt;
+
+### **Next Steps:**
+- Try diagnostics on your own data
+- Bring questions to next class
+- Start thinking about final project diagnostics
+
+---
+class: inverse, center, middle
+
+# Appendix: Example Code Walkthrough
+
+---
+# Full Example: Analyzing Election Data
+
+
+``` r
+# Load packages
+library(tidyverse)
+library(rstanarm)
+library(bayesplot)
+library(loo)
+library(performance)
+
+# 1. Load and explore data
+election_data &lt;- read_csv("election_data.csv") %&gt;%
+  mutate(incumbent_vote = incumbent_vote / 100)  # Convert to proportion
+
+# Explore
+ggplot(election_data, aes(x = gdp_growth, y = incumbent_vote)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+# 2. Fit model
+fit &lt;- stan_glm(
+  incumbent_vote ~ gdp_growth + president_approval + years_in_office,
+  data = election_data,
+  family = gaussian(),
+  prior = normal(0, 2.5),
+  prior_intercept = normal(0.5, 0.2),
+  seed = 123
+)
+
+# 3. Diagnostics
+# a. Residuals
+plot(fit, "resid_vs_pred")
+
+# b. Posterior predictive check
+y_rep &lt;- posterior_predict(fit)
+ppc_dens_overlay(election_data$incumbent_vote, y_rep[1:50, ])
+
+# c. Cross-validation
+loo_fit &lt;- loo(fit)
+print(loo_fit)
+
+# d. Check assumptions
+check_model(fit)
+```
+
+---
+# Creating Publication-Ready Diagnostics
+
+
+``` r
+library(patchwork)  # For combining plots
+
+# Create diagnostic figure
+p1 &lt;- ggplot(election_data, aes(x = fitted(fit), y = resid(fit))) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Fitted Values", y = "Residuals", 
+       title = "Residuals vs. Fitted")
+
+p2 &lt;- ggplot(data.frame(resid = resid(fit)), aes(sample = resid)) +
+  stat_qq() + stat_qq_line() +
+  labs(title = "Q-Q Plot of Residuals")
+
+p3 &lt;- bayesplot::mcmc_trace(as.array(fit), pars = c("gdp_growth", 
+                                                    "president_approval"))
+
+# Combine
+(p1 | p2) / p3 +
+  plot_annotation(title = "Model Diagnostics: Election Forecasting Model",
+                  tag_levels = "A")
+
+# Save for publication
+ggsave("model_diagnostics.png", width = 10, height = 8, dpi = 300)
+```
+
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

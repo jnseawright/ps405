@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>15: Transformations.</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-02-25" />
+    <script src="Transformations_files/header-attrs-2.30/header-attrs.js"></script>
+    <script src="Transformations_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="Transformations_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 15: Transformations.
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### Feb. 25, 2026
+]
+
+---
+
+class: center, middle
+
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+Measurement choices can affect regression results in a lot of ways, but we will focus on three:
+
+1. Scaling and intepretation
+
+2. Nonlinear transformations
+
+3. Stabilizing variance
+
+
+---
+###Example
+
+The relationship between GDP and democracy isn't linear.
+
+log(GDP) often works better.
+
+---
+###Linear Transformations: Scaling and Standardizing
+
+The coefficient `\((\beta_j)\)` represents: *"Average change in Y per 1-unit change in X"*
+
+But... 1 unit in what scale? Inches vs. centimeters vs. miles?
+
+---
+
+
+``` r
+# Simulated height-earnings example (from ROS Chapter 12)
+set.seed(123)
+n &lt;- 1000
+height_in &lt;- rnorm(n, mean = 66.6, sd = 3.8)  # height in inches
+height_cm &lt;- height_in * 2.54                  # height in centimeters
+
+# True relationship: earnings increase 6% per SD of height
+earnings &lt;- exp(9.55 + 0.06*scale(height_in)[,1] + rnorm(n, 0, 0.87))
+
+# Compare coefficients
+m_inch &lt;- lm(earnings ~ height_in)
+m_cm &lt;- lm(earnings ~ height_cm)
+
+heightms &lt;- modelsummary(list("Inches" = m_inch, "Centimeters" = m_cm),
+             stars = TRUE, gof_omit = ".*",  output = "kableExtra")%&gt;%
+  kable_styling(font_size = 14)
+```
+
+---
+
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 14px; margin-left: auto; margin-right: auto;" class="table table"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;Inches &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Centimeters &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −27981.301* &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −27981.301* &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (13201.360) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (13201.360) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; height_in &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 742.870*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (197.721) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; height_cm &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 292.469*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (77.843) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
+###Solution: Standardize to make coefficients comparable:
+
+* z-scores: `\((z = (x - \bar{x})/sd(x))\)`
+
+* Gelman's preference: Divide by 2 SDs (makes comparable to binary variables)
+
+---
+
+``` r
+library(rosdata)
+library(modelsummary)
+data(kidiq)  # from ROS package
+
+# Problematic: Main effects at X=0
+m_raw &lt;- lm(kid_score ~ mom_hs + mom_iq + mom_hs:mom_iq, data = kidiq)
+
+# Better: Center continuous variable
+kidiq$c_mom_iq &lt;- kidiq$mom_iq - mean(kidiq$mom_iq)
+m_centered &lt;- lm(kid_score ~ mom_hs + c_mom_iq + mom_hs:c_mom_iq, data = kidiq)
+
+kidiqms &lt;- modelsummary(
+  list("Raw (hard to interpret)" = m_raw, 
+       "Centered (interpretable)" = m_centered),
+  stars = TRUE,  output = "kableExtra"
+) %&gt;%
+  kable_styling(font_size = 12)
+```
+
+
+---
+
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 12px; margin-left: auto; margin-right: auto;" class="table table"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Raw (hard to interpret) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Centered (interpretable) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −11.482 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 85.407*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (13.758) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (2.218) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; mom_hs &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 51.268*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2.841 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (15.338) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (2.427) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; mom_iq &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.969*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.148) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; mom_hs × mom_iq &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.484** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.162) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; c_mom_iq &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.969*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.148) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; mom_hs × c_mom_iq &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.484** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.162) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 434 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 434 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.230 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.230 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.225 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.225 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3745.1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3745.1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3765.5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3765.5 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −1867.543 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −1867.543 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 42.839 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 42.839 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 17.89 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 17.89 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
+
+Interpretation before centering:
+
+    mom_hs coefficient: Effect when mom_iq = 0 (nonsensical!)
+
+After centering:
+
+    mom_hs coefficient: Effect at average mom_iq (meaningful!)
+
+---
+###The Logarithm: Workhorse Transformation
+
+When to Use: Positive variables with right skew (GDP, income, population, campaign spending)
+
+---
+
+Three Common Forms:
+
+`\(log(Y) \sim X\)` (log-linear): "1-unit increase in X → constant % change in Y"
+
+`\(Y \sim log(X)\)` (linear-log): "1% increase in X → constant additive change in Y"
+
+`\(log(Y) \sim log(X)\)` (log-log): Constant elasticity (economics favorite)
+
+---
+
+&lt;img src="Transformations_files/figure-html/unnamed-chunk-6-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+###Interpreting Logged Coefficients
+
+Rule of thumb for small coefficients `\((|\beta| &lt; 0.1)\)`:
+`\(exp(\beta)\approx1+\beta\)`
+
+---
+
+For any coefficient:
+
+
+``` r
+# Example from ROS: earnings ~ height (log scale)
+beta &lt;- 0.06
+percent_change &lt;- (exp(beta) - 1) * 100
+cat("A coefficient of", beta, "on the log scale corresponds to a",
+    round(percent_change, 1), "% increase on the original scale.\n")
+```
+
+```
+## A coefficient of 0.06 on the log scale corresponds to a 6.2 % increase on the original scale.
+```
+
+``` r
+# For larger coefficients
+beta_large &lt;- 0.37
+percent_large &lt;- (exp(beta_large) - 1) * 100
+cat("\nA coefficient of", beta_large, "corresponds to a",
+    round(percent_large, 1), "% increase (not 37%!).")
+```
+
+```
+## 
+## A coefficient of 0.37 corresponds to a 44.8 % increase (not 37%!).
+```
+
+---
+###Always remember:
+
+Predictions on log scale: `\((\hat{\log(y)} = X \beta)\)`
+
+Back to original scale: `\((\hat{y} = \exp(X \beta))\)`
+
+---
+
+
+``` r
+# Prepare data
+library(dplyr)
+library(tidyverse)
+democracy_data &lt;- qogts %&gt;%
+  filter(year == 2020) %&gt;%
+  select(country = cname,
+         libdem = vdem_libdem,
+         gdp_pc = wdi_gdpcappppcon2017) %&gt;%
+  drop_na() %&gt;%
+  filter(gdp_pc &gt; 0, libdem &gt; 0)
+
+# Fit three different models
+m_linear &lt;- lm(libdem ~ gdp_pc, data = democracy_data)
+m_logx &lt;- lm(libdem ~ log(gdp_pc), data = democracy_data) 
+m_loglog &lt;- lm(log(libdem) ~ log(gdp_pc), data = democracy_data)
+
+# Compare
+dem.ms &lt;- modelsummary(
+  list("Linear" = m_linear, 
+       "Log-X" = m_logx, 
+       "Log-Log" = m_loglog),
+  stars = TRUE,
+  gof_map = c("nobs", "r.squared", "rmse"), output="kableExtra"
+)%&gt;%
+  kable_styling(font_size = 14)
+```
+
+
+---
+
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 14px; margin-left: auto; margin-right: auto;" class="table table"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Linear &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;Log-X &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Log-Log &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.300*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.627*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −3.548*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.024) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.136) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.462) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; gdp_pc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.000*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.000) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; log(gdp_pc) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.261*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.049) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 164 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 164 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 164 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.245 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.271 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.148 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.22 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.22 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.73 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
+
+Which is best? Let's check residuals...
+
+
+``` r
+# Residual plots
+p1 &lt;- ggplot(democracy_data, aes(x = gdp_pc, y = resid(m_linear))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(se = FALSE, method = "loess", color = "red") +
+  labs(title = "Linear Model Residuals", x = "GDP per capita", y = "Residuals") +
+  theme_minimal()
+
+p2 &lt;- ggplot(democracy_data, aes(x = log(gdp_pc), y = resid(m_logx))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(se = FALSE, method = "loess", color = "red") +
+  labs(title = "Log-X Model Residuals", x = "log(GDP per capita)", y = "Residuals") +
+  theme_minimal()
+
+p3 &lt;- ggplot(democracy_data, aes(x = log(gdp_pc), y = resid(m_loglog))) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(se = FALSE, method = "loess", color = "red") +
+  labs(title = "Log-Log Model Residuals", x = "log(GDP per capita)", y = "Residuals") +
+  theme_minimal()
+```
+
+---
+
+
+``` r
+(p1 | p2) / p3
+```
+
+&lt;img src="Transformations_files/figure-html/unnamed-chunk-11-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;table class="table table-striped table-hover table-condensed" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Common Statistical Transformations&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Transformation &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; When to Use &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; R Code &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Interpretation &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 5em; font-weight: bold;"&gt; Square root &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Count data, moderate right skew &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; `sqrt(y) ~ x` &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Compresses high values less severely than log &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 5em; font-weight: bold;"&gt; Inverse &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Extreme right skew, rates &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; `1/y ~ x` &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Reciprocal relationship &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 5em; font-weight: bold;"&gt; Polynomial &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; U-shaped relationships &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; `y ~ x + I(x^2)` &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Curvilinear effects (but beware of overfitting!) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 5em; font-weight: bold;"&gt; Logit &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Proportions (0-1) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; `qlogis(p) ~ x` &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Log-odds scale for probabilities &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+
+``` r
+# Visual comparison
+x &lt;- seq(1, 100, length.out = 100)
+df &lt;- data.frame(
+  x = x,
+  linear = 10 + 0.5*x,
+  sqrt = (10 + 0.5*x)^2,  # Inverse of sqrt transform
+  log = exp(2 + 0.03*x)
+)
+
+transformationcomp &lt;- ggplot(df %&gt;% tidyr::pivot_longer(-x), 
+       aes(x = x, y = value, color = name)) +
+  geom_line(linewidth = 1) +
+  scale_color_brewer(palette = "Set1") +
+  labs(title = "Different Transformations Compress High Values Differently",
+       x = "X", y = "Y (original scale)", color = "Transformation") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+---
+
+&lt;img src="Transformations_files/figure-html/unnamed-chunk-13-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+###Transformations vs. Generalized Linear Models (GLMs)
+
+Transformations: Modify data to fit linear model
+
+
+``` r
+lm(log(y) ~ x)  # Log transformation
+```
+
+
+---
+###Transformations vs. Generalized Linear Models (GLMs)
+
+GLMs: Modify model to fit data
+
+
+``` r
+glm(y ~ x, family = poisson)      # Count data
+glm(y ~ x, family = binomial)     # Binary data
+glm(y ~ x, family = Gamma(link="log"))  # Positive continuous
+```
+
+---
+Trade-offs:
+
+1. Transformations: Simpler, easier to explain, works for many continuous outcomes
+
+2. GLMs: More theoretically appropriate for binary/count outcomes
+
+* Gelman &amp; Hill's advice: Start with transformations for continuous outcomes, move to GLMs if needed.
+
+---
+#Building Models with Transformations: A Workflow
+
+
+``` r
+# 1. VISUALIZE the raw relationship
+ggplot(data, aes(x = gdp, y = democracy)) + 
+  geom_point() + 
+  geom_smooth(method = "loess")
+
+# 2. TRY different transformations
+m1 &lt;- lm(democracy ~ gdp, data = data)
+m2 &lt;- lm(democracy ~ log(gdp), data = data)
+m3 &lt;- lm(log(democracy) ~ gdp, data = data)
+m4 &lt;- lm(log(democracy) ~ log(gdp), data = data)
+
+# 3. CHECK residuals (should be patternless)
+plot(resid(m2) ~ predict(m2))  # Ideally: random scatter
+
+# 4. INTERPRET coefficients
+# For m2: effect of 1% GDP increase = beta/100 units democracy
+# For m4: elasticity = beta% democracy change per 1% GDP change
+
+# 5. VALIDATE predictions on original scale
+data$pred_m2 &lt;- predict(m2)
+data$pred_m4 &lt;- exp(predict(m4))  # Remember to exponentiate!
+
+# 6. COMPARE models
+library(performance)
+compare_performance(m1, m2, m3, m4, metrics = c("RMSE", "R2"))
+
+Advanced: Interactions with Transformed Variables
+
+Golden Rule: Center continuous variables before creating interactions!
+```
+
+---
+###Zeros and Negatives
+
+Some transformations fail at certain ranges.
+
+`\(\log(0) = -\infty\)`, `\(\log(\text{negative}) = \text{undefined}\)`
+
+Solutions: 
+  1. `\(\log(x + 1)\)` to eliminate zeros
+  2. asinh(x) (inverse hyperbolic sine), a similar transformation that is defined for negative numbers
+
+
+---
+###When NOT to Transform
+
+1. When original scale is substantively meaningful
+
+2. When transformation obscures more than it reveals
+
+3. Minor improvements in fit aren't worth interpretive complexity
+
+4. When alternative approaches (GLMs, nonparametric models) are better
+
+---
+###Practical R Tools
+
+
+``` r
+# Diagnostic plotting
+library(ggplot2)
+ggplot(data, aes(x = gdp, y = democracy)) + 
+  geom_point() + 
+  geom_smooth(method = "lm") +
+  scale_x_log10() +  # Quick visual check
+  scale_y_log10()
+
+# Model comparison table  
+library(modelsummary)
+models &lt;- list("Linear" = m1, "Log-X" = m2, "Log-Log" = m3)
+modelsummary(models, stars = TRUE, output = "kableExtra")
+
+# Marginal effects after transformation
+library(margins)
+margins(m2, at = list(gdp = c(1000, 10000, 100000)))
+
+# Automatic transformation suggestion
+library(MASS)
+boxcox(m1)  # Suggests optimal power transformation
+
+# Easy standardization
+data$z_gdp &lt;- scale(data$gdp)[,1]  # z-scores
+data$gdp_2sd &lt;- data$z_gdp / 2     # Gelman's divide by 2 SDs
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

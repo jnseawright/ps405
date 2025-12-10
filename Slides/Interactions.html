@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>14: Interactions.</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jaye Seawright" />
+    <meta name="date" content="2026-02-23" />
+    <script src="Interactions_files/header-attrs-2.30/header-attrs.js"></script>
+    <link href="Interactions_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+    <script src="Interactions_files/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+    <script src="Interactions_files/viz-1.8.2/viz.js"></script>
+    <link href="Interactions_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+    <script src="Interactions_files/grViz-binding-1.0.11/grViz.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# 14: Interactions.
+]
+.subtitle[
+## Linear Models
+]
+.author[
+### <large>Jaye Seawright</large>
+]
+.institute[
+### <small>Northwestern Political Science</small>
+]
+.date[
+### Feb. 23, 2026
+]
+
+---
+
+class: center, middle
+
+
+&lt;style type="text/css"&gt;
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+Let's think about the relationship across countries between wealth and democracy.
+
+---
+
+&lt;img src="Interactions_files/figure-html/unnamed-chunk-2-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="Interactions_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="Interactions_files/figure-html/unnamed-chunk-4-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="Interactions_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+How can we set up a regression to look at relationships like this?
+
+Before we start, it's important to distinguish between:
+
+1. *Moderators*: background variables that change the relationship between a right-hand-side variable of interest and an outcome, but are not themselves part of any causal story connecting those two variables.
+
+2. *Mediators*: third variables that are part of the story of how the right-hand-side variable affects the outcome.
+
+---
+We need more complicated tools of statistical analysis to study mediators.
+
+---
+###Moderator
+
+<div class="grViz html-widget html-fill-item" id="htmlwidget-4d9791e7880f773bee66" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-4d9791e7880f773bee66">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR, layout = dot]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\"]\n  Y [label = \"Y (Democracy)\"]\n  M [label = \"M (Oil Wealth)\", fillcolor = lightyellow]\n  \n  // Main effect\n  X -> Y [label = \"β₁\"]\n  \n  // Moderation effect\n  M -> X [label = \"Moderates\", style = dashed, color = red]\n  \n  // Direct effect of moderator\n  M -> Y [label = \"β₂\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+###Mediator
+
+<div class="grViz html-widget html-fill-item" id="htmlwidget-445bed8732b611466e8a" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-445bed8732b611466e8a">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\", fillcolor = palegreen]\n  M [label = \"M (Education)\", fillcolor = lightyellow]\n  Y [label = \"Y (Democracy)\", fillcolor = lightblue]\n  \n  // Mediation paths\n  X -> M [label = \"α\", color = blue]\n  M -> Y [label = \"β\", color = blue]\n  \n  // Direct effect (optional)\n  X -> Y [label = \"Direct effect\", style = dashed, color = gray]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+
+No moderator present:
+
+`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{Colonized}_{i} + e_{i}$$`
+
+---
+
+Moderator included:
+
+`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{Colonized}_{i} + \beta_{3} \text{logGDP}_{i}*\text{Colonized}_{i} + e_{i}$$`
+
+---
+
+What does the model mean when the moderator is present? There are two possibilities to consider. Either `\(\text{Colonized}_{i} = 0\)` or `\(\text{Colonized}_{i} = 1\)`. Let's first look at what the model turns into for a case where `\(\text{Colonized}_{i} = 0\)`:
+
+`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 0 + \beta_{3} \text{logGDP}_{i}*0 + e_{i}$$`
+
+---
+
+This is just a bivariate regression of democracy on logGDP, with intercept `\(\beta_{0}\)` and slope `\(\beta_{1}\)`. For cases where Colonized is zero, the extra terms drop out.
+
+---
+
+Now let's look at what the model turns into for a case where `\(\text{Colonized}_{i} = 1\)`:
+
+`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 1 + \beta_{3} \text{logGDP}_{i}*1 + e_{i}$$`
+
+
+`$$Y_{i} = (\beta_{0} + \beta_{2}) + (\beta_{1} + \beta_{3}) * \text{logGDP}_{i} + e_{i}$$`
+
+---
+
+This is still just a bivariate regression of democracy on logGDP, with a different intercept `\(\beta_{0} + \beta_{2}\)` and slope `\(\beta_{1} + \beta_{3}\)`. For cases where Colonized is one, the extra terms shift the intercept and slope away from where they are for cases with Colonized equal to zero.
+
+---
+
+Interpretation is a bit more complicated when our interaction involves a continuous variable:
+
+`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{OilRent}_{i} + \beta_{3} \text{logGDP}_{i}*\text{OilRent}_{i} + e_{i}$$`
+
+---
+
+Here, the intercept and the slope vary as a continuous function of OilRent:
+
+`$$\text{Intercept}_{i} = \beta_{0} + \beta_{2} \text{OilRent}_{i}$$`
+
+`$$\text{Slope}_{\text{logGDP},i} = \beta_{1} + \beta_{3} \text{OilRent}_{i}$$`
+
+---
+
+Because intercepts and slopes depend on sums of multiple regression parameters and vary across values of the interaction variable, the default standard errors and significance tests reported for regressions often don't answer the questions we're interested in when there is an interaction term.
+
+---
+
+* The standard significance tests reported in regression tables don't include the algebraic transformations necessary to produce the actual intercept and slope formulas that we calculated above.
+
+* Think about the model with oil rents as an interaction term. To test whether logged GDP matters at typical oil rent levels, we must compute the conditional effect `\((\beta_1 + \beta_3*\text{OilRents})\)` and its standard error, which incorporates the variances and covariance of `\(\beta_1\)` and `\(\beta_3\)`.
+
+---
+
+* The only way to get a standard regression result out of this conditional effect is if `\(\text{OilRents} = 0\)`. Then the conditional effect is just `\(\beta_1\)`, and the typical regression standard errors will be correct.
+
+---
+
+
+``` r
+democracy.interactlm &lt;- lm(libdem ~ log_gdp_pc + never_colonized + log_gdp_pc:never_colonized, data=democracy_data)
+summary(democracy.interactlm)
+```
+
+```
+## 
+## Call:
+## lm(formula = libdem ~ log_gdp_pc + never_colonized + log_gdp_pc:never_colonized, 
+##     data = democracy_data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.5701 -0.1668  0.0216  0.1496  0.5307 
+## 
+## Coefficients:
+##                                           Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                               -0.02685    0.15132  -0.177 0.859394
+## log_gdp_pc                                 0.04371    0.01817   2.406 0.017188
+## never_colonizedNever Colonized            -1.09727    0.28679  -3.826 0.000182
+## log_gdp_pc:never_colonizedNever Colonized  0.13145    0.03106   4.232 3.77e-05
+##                                              
+## (Intercept)                                  
+## log_gdp_pc                                *  
+## never_colonizedNever Colonized            ***
+## log_gdp_pc:never_colonizedNever Colonized ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.2164 on 171 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.3681,	Adjusted R-squared:  0.357 
+## F-statistic:  33.2 on 3 and 171 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+
+``` r
+library(sjPlot)
+library(sjmisc)
+library(ggplot2)
+plot_model(democracy.interactlm, type = "pred", terms = c("log_gdp_pc", "never_colonized"))
+```
+
+&lt;img src="Interactions_files/figure-html/unnamed-chunk-9-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+``` r
+democracy.interactlm2 &lt;- lm(libdem ~ log_gdp_pc + oil_rents + log_gdp_pc:oil_rents, data=democracy_data)
+summary(democracy.interactlm2)
+```
+
+```
+## 
+## Call:
+## lm(formula = libdem ~ log_gdp_pc + oil_rents + log_gdp_pc:oil_rents, 
+##     data = democracy_data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.49643 -0.14436  0.04215  0.13798  0.42400 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          -0.6571099  0.1094072  -6.006 1.18e-08 ***
+## log_gdp_pc            0.1293158  0.0123492  10.472  &lt; 2e-16 ***
+## oil_rents             0.0152675  0.0084874   1.799  0.07387 .  
+## log_gdp_pc:oil_rents -0.0027909  0.0009316  -2.996  0.00316 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.192 on 165 degrees of freedom
+##   (7 observations deleted due to missingness)
+## Multiple R-squared:  0.5046,	Adjusted R-squared:  0.4956 
+## F-statistic: 56.03 on 3 and 165 DF,  p-value: &lt; 2.2e-16
+```
+
+---
+
+
+``` r
+library(ggeffects)
+plot(ggpredict(democracy.interactlm2, terms=c("log_gdp_pc", "oil_rents")))
+```
+
+&lt;img src="Interactions_files/figure-html/unnamed-chunk-11-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+``` r
+meplot &lt;- function(model,var1,var2,int,vcov,ci=.95,
+                   xlab=var2,ylab=paste("Marginal Effect of",var1),
+                   main="Marginal Effect Plot",
+                   me_lty=1,me_lwd=1,me_col="black",
+                   ci_lty=1,ci_lwd=.5,ci_col="black",
+                   yint_lty=2,yint_lwd=1,yint_col="black"){
+  require(ggplot2)
+  alpha &lt;- 1-ci
+  z &lt;- qnorm(1-alpha/2)
+  beta.hat &lt;- coef(model)
+  cov &lt;- vcov
+  z0 &lt;- seq(min(model.frame(model)[,var2],na.rm=T),max(model.frame(model)[,var2],na.rm=T),length.out=1000)
+  dy.dx &lt;- beta.hat[var1] + beta.hat[int]*z0
+  se.dy.dx &lt;- sqrt(cov[var1,var1] + z0^2*cov[nrow(cov),ncol(cov)] + 2*z0*cov[var1,ncol(cov)])
+  upr &lt;- dy.dx + z*se.dy.dx
+  lwr &lt;- dy.dx - z*se.dy.dx
+  ggplot(data=NULL,aes(x=z0, y=dy.dx)) +
+    labs(x=xlab,y=ylab,title=main) +
+    geom_line(aes(z0, dy.dx),size = me_lwd, 
+              linetype = me_lty, 
+              color = me_col) +
+    geom_line(aes(z0, lwr), size = ci_lwd, 
+              linetype = ci_lty, 
+              color = ci_col) +
+    geom_line(aes(z0, upr), size = ci_lwd, 
+              linetype = ci_lty, 
+              color = ci_col) +
+    geom_hline(yintercept=0,linetype=yint_lty,
+               size=yint_lwd,
+               color=yint_col)
+}
+```
+
+---
+
+
+``` r
+meplot(democracy.interactlm2,var1 = "log_gdp_pc", var2 = "oil_rents", int= "log_gdp_pc:oil_rents", vcov=vcov(democracy.interactlm2))
+```
+
+&lt;img src="Interactions_files/figure-html/unnamed-chunk-13-1.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+---
+  
+Power analysis is a little more complicated when there is an interaction.
+
+* We're testing `\(\beta_3\)` (the interaction, a complex parameter) rather than `\(\beta_1\)` (the main slope, a comparatively straightforward quantity)
+
+* Interaction effects typically require about four times the sample size of main effects
+
+---
+
+
+``` r
+library(InteractionPoweR)
+power_interaction_r2(N=seq(100,300,by=10),r.x1.y=0.1, r.x2.y=.1,r.x1x2.y=0.1,r.x1.x2=.1)
+```
+
+```
+##      N       pwr
+## 1  100 0.1661964
+## 2  110 0.1787599
+## 3  120 0.1913412
+## 4  130 0.2039290
+## 5  140 0.2165130
+## 6  150 0.2290832
+## 7  160 0.2416301
+## 8  170 0.2541447
+## 9  180 0.2666185
+## 10 190 0.2790434
+## 11 200 0.2914116
+## 12 210 0.3037161
+## 13 220 0.3159499
+## 14 230 0.3281066
+## 15 240 0.3401802
+## 16 250 0.3521649
+## 17 260 0.3640554
+## 18 270 0.3758468
+## 19 280 0.3875343
+## 20 290 0.3991137
+## 21 300 0.4105808
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
