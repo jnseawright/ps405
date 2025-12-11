@@ -6,7 +6,7 @@
 
 ### Slides and Code from Seminar
 
-* [1: Introduction](https://jnseawright.github.io/PS405/Slides/Intro.html#1)
+* [1: Introduction](https://jnseawright.github.io/ps405/Slides/Intro.html#1)
 * [Week 2: Regression and Causal Inference](https://jnseawright.github.io/PS406/2regression.html#1) 
 * [Week 3: Matching](https://jnseawright.github.io/PS406/3matching.html#1)
 * [Week 4: Natural Experiments Part 1](https://jnseawright.github.io/PS406/4naturalexperiments.html#1)
