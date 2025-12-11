@@ -1,6 +1,6 @@
 ## PS 405 Linear Models
 
-<img src="images/causalinference.jpg" width="200">
+<img src="https://www.datascienceblog.net/tags/linear-model/" width="200">
 
 [Syllabus](https://jnseawright.github.io/ps405/syllabus.html)
 
