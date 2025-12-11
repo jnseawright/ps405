@@ -1,4 +1,4 @@
-## PS 405 Quantitative Causal Inference
+## PS 405 Linear Models
 
 <img src="images/causalinference.jpg" width="200">
 
