@@ -26,10 +26,10 @@
   
 ### Problem Sets
 
-* [Problem Set 1](https://jnseawright.github.io/PS405/Problems/ps1.html)
-* [Problem Set 2](https://jnseawright.github.io/PS405/Problems/ps2.html) 
-* [Problem Set 3](https://jnseawright.github.io/PS405/Problems/ps3.html)
-* [Problem Set 4](https://jnseawright.github.io/PS405/Problems/ps4.html)
+* [Problem Set 1](https://jnseawright.github.io/ps405/Problems/ps1.html)
+* [Problem Set 2](https://jnseawright.github.io/ps405/Problems/ps2.html) 
+* [Problem Set 3](https://jnseawright.github.io/ps405/Problems/ps3.html)
+* [Problem Set 4](https://jnseawright.github.io/ps405/Problems/ps4.html)
 
 ### Final Grant Proposal
 
