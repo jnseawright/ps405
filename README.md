@@ -2,7 +2,7 @@
 
 <img src="images/causalinference.jpg" width="200">
 
-[Syllabus](https://jnseawright.github.io/PS405/syllabus.html)
+[Syllabus](https://jnseawright.github.io/ps405/syllabus.html)
 
 ### Slides and Code from Seminar
 
