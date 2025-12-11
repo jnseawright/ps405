@@ -1,6 +1,6 @@
 ## PS 405 Linear Models
 
-<img src="https://www.datascienceblog.net/tags/linear-model/linear-model_avatar.png" width="200">
+<img src="https://www.datascienceblog.net/tags/linear-model/linear-model_avatar.png" width="600">
 
 [Syllabus](https://jnseawright.github.io/ps405/syllabus.html)
 
@@ -8,7 +8,10 @@
 
 * [1: Introduction](https://jnseawright.github.io/ps405/Slides/Intro.html#1)
 * [2: Starting with Regression](https://jnseawright.github.io/ps405/Slides/StartingWithRegression.html#1)
-
+* [3 and 4: Regression as a Model](https://jnseawright.github.io/ps405/Slides/RegressionModel.html#1)
+* [5: Approximating CEFs and Equalling Them](https://jnseawright.github.io/ps405/Slides/ApproximatingCEFs.html#1)
+* [6: Interpreting Coefficients](https://jnseawright.github.io/ps405/Slides/InterpretingCoefficients.html#1)
+  
 ### Lab Assignments
 
 * [Week 1: Experiments](https://jnseawright.github.io/PS406/Lab1Experiments.html)
