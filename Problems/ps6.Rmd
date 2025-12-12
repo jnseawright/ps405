@@ -1,0 +1,316 @@
+#######################
+## Problem Set 6     ##
+#######################
+
+**Due Date**: [Insert due date]  
+**Submission**: [Canvas Link]
+
+**Instructions**: 
+- Show all mathematical derivations where requested.
+- Include complete, well-commented R code for all analyses.
+- Submit knitted document with all outputs.
+- For Problems 1-3, provide clear explanations in your own words.
+
+---
+
+####################
+## Problem 1      ##
+####################
+
+**Theoretical Foundations of Inference**
+
+List and explain the four key assumptions needed for OLS to be consistent. For each assumption:
+1. State the mathematical condition
+2. Explain in plain language what it means
+3. Give an example of a situation where it might fail
+
+---
+
+####################
+## Problem 2      ##
+####################
+
+**Practical Significance Testing**
+
+**2a. Standard Error Computation:**
+Using the democracy and internet access data from the lecture:
+
+```{r problem2a, eval=FALSE}
+# Load data and run models
+library(rqog)
+qogts <- read_qog(which_data = "standard", data_type = "time-series")
+
+# Model 1: Basic model with homoskedastic errors
+model1 <- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)), 
+             data = qogts)
+
+# Model 2: Robust standard errors
+library(sandwich)
+library(lmtest)
+robust_vcov <- vcovHC(model1, type = "HC3")
+```
+
+**Questions:**
+1. Extract and compare the standard errors from both models. Which are larger?
+2. Calculate the t-statistics manually: $t = \frac{\hat{\beta}}{SE(\hat{\beta})}$
+3. Compute p-values for both sets of standard errors
+4. At α = 0.05, would you reject the null hypothesis for each coefficient in both models?
+
+**2b. Confidence Intervals:**
+1. Construct 95% confidence intervals for each coefficient using:
+   - Homoskedastic standard errors
+   - Heteroskedasticity-robust standard errors
+2. Create a visualization comparing these intervals
+
+```{r problem2b, eval=FALSE}
+# Your code for confidence interval visualization
+library(ggplot2)
+library(broom)
+
+# Extract coefficients and standard errors
+tidy_homo <- tidy(model1)
+tidy_robust <- tidy(model1)
+tidy_robust$std.error <- sqrt(diag(robust_vcov))
+
+# Create comparison plot
+# (Include your plotting code here)
+```
+
+**2c. Finite Sample Considerations:**
+The lecture notes that with small samples and normal errors, we use the t-distribution.
+
+1. What is the degrees of freedom for the t-distribution in your model?
+2. How do t-critical values compare to z-critical values for your sample size?
+3. Recompute p-values using the t-distribution. How do they differ from the normal approximation?
+
+---
+
+####################
+## Problem 3      ##
+####################
+
+**The Multiple Comparisons Problem**
+
+**3a. Understanding the Problem:**
+1. In your own words, explain the multiple comparisons problem
+2. Define:
+   - Family-Wise Error Rate (FWER)
+   - False Discovery Rate (FDR)
+
+**3b. Simulation Study:**
+Simulate the multiple comparisons problem:
+
+```{r problem3b, eval=FALSE}
+set.seed(123)
+n_tests <- 20
+n_obs <- 100
+alpha <- 0.05
+
+# Create matrix of 20 independent tests (all null true)
+p_values <- matrix(NA, nrow = 1000, ncol = n_tests)
+
+for (i in 1:1000) {
+  for (j in 1:n_tests) {
+    # Generate independent data
+    x <- rnorm(n_obs)
+    y <- rnorm(n_obs)  # No relationship
+    # Run regression and extract p-value for slope
+    p_values[i, j] <- summary(lm(y ~ x))$coefficients[2, 4]
+  }
+}
+
+# Analyze results
+false_positives <- rowSums(p_values < alpha)
+mean_fp <- mean(false_positives)
+prop_at_least_one <- mean(false_positives > 0)
+```
+
+**Questions:**
+1. What proportion of simulations have at least one false positive?
+2. What is the average number of false positives per simulation?
+3. Create a histogram of the number of false positives across simulations.
+
+**3c. Correlation Effects:**
+Now simulate correlated tests:
+
+```{r problem3c, eval=FALSE}
+# Create correlated predictors
+set.seed(123)
+n_tests <- 20
+n_obs <- 100
+
+# Generate correlated X matrix
+library(MASS)
+mu <- rep(0, n_tests)
+Sigma <- diag(n_tests)
+for (i in 1:n_tests) {
+  for (j in 1:n_tests) {
+    Sigma[i, j] <- 0.7^abs(i-j)  # AR(1) correlation
+  }
+}
+
+p_values_cor <- matrix(NA, nrow = 1000, ncol = n_tests)
+
+for (i in 1:1000) {
+  # Generate correlated predictors
+  X <- mvrnorm(n_obs, mu, Sigma)
+  # Generate Y with no relationship to any X
+  y <- rnorm(n_obs)
+  
+  # Run all regressions
+  for (j in 1:n_tests) {
+    p_values_cor[i, j] <- summary(lm(y ~ X[, j]))$coefficients[2, 4]
+  }
+}
+
+# Compare with independent case
+false_positives_cor <- rowSums(p_values_cor < alpha)
+prop_cor <- mean(false_positives_cor > 0)
+```
+
+**Questions:**
+1. How does correlation affect the multiple comparisons problem?
+2. Is the Bonferroni correction more or less conservative when tests are correlated?
+3. What are the implications for social science research where predictors are often correlated?
+
+---
+
+####################
+## Problem 4      ##
+####################
+
+**Correction Methods**
+
+**4a. Bonferroni Correction:**
+1. Explain how the Bonferroni correction works
+2. What is the adjusted significance level for 20 tests with α = 0.05?
+3. Apply Bonferroni correction to your simulation from Problem 3b:
+
+```{r problem4a, eval=FALSE}
+# Apply Bonferroni correction
+alpha_bonf <- alpha / n_tests
+false_positives_bonf <- rowSums(p_values < alpha_bonf)
+prop_bonf <- mean(false_positives_bonf > 0)
+```
+
+**Questions:**
+1. What is the FWER after Bonferroni correction?
+2. What is the cost of this correction in terms of statistical power?
+3. Create a plot showing the trade-off between false positives and power.
+
+**4b. False Discovery Rate:**
+1. Explain the difference between controlling FWER and FDR
+2. When might FDR control be more appropriate than FWER control?
+3. Implement the Benjamini-Hochberg procedure:
+
+```{r problem4b, eval=FALSE}
+# Simulate some true effects
+set.seed(123)
+n_tests <- 100
+n_obs <- 100
+prop_true <- 0.1  # 10% of tests have true effects
+n_true <- round(n_tests * prop_true)
+
+p_values_mixed <- numeric(n_tests)
+beta_true <- numeric(n_tests)
+
+for (j in 1:n_tests) {
+  x <- rnorm(n_obs)
+  if (j <= n_true) {
+    # True effect
+    beta_true[j] <- 0.3
+    y <- 0.3 * x + rnorm(n_obs)
+  } else {
+    # No effect
+    beta_true[j] <- 0
+    y <- rnorm(n_obs)
+  }
+  p_values_mixed[j] <- summary(lm(y ~ x))$coefficients[2, 4]
+}
+
+# Apply Benjamini-Hochberg procedure
+alpha_fdr <- 0.05
+sorted_p <- sort(p_values_mixed)
+m <- length(sorted_p)
+critical_values <- (1:m) * alpha_fdr / m
+
+# Find cutoff
+discoveries <- sorted_p <= critical_values
+if (any(discoveries)) {
+  k <- max(which(discoveries))
+  threshold <- sorted_p[k]
+} else {
+  threshold <- 0
+}
+
+# Evaluate performance
+sig_tests <- p_values_mixed <= threshold
+true_discoveries <- sum(sig_tests[1:n_true])
+false_discoveries <- sum(sig_tests[(n_true+1):n_tests])
+fdr <- false_discoveries / max(1, sum(sig_tests))
+```
+
+**Questions:**
+1. What is the actual FDR in your simulation?
+2. How many true effects were discovered? What proportion?
+3. Compare the performance of Bonferroni vs. BH for this scenario.
+
+**4c. Practical Application:**
+Return to the democracy model from Problem 2. Suppose you're testing 10 different potential determinants of democracy (not just internet access and GDP).
+
+```{r problem4c, eval=FALSE}
+# Imagine you've run 10 different regressions
+# with p-values: p_vals <- c(0.04, 0.01, 0.07, 0.001, 0.23, 0.05, 0.11, 0.008, 0.32, 0.02)
+
+p_vals <- c(0.04, 0.01, 0.07, 0.001, 0.23, 0.05, 0.11, 0.008, 0.32, 0.02)
+
+# Apply corrections
+alpha <- 0.05
+n_tests <- length(p_vals)
+
+# Bonferroni
+bonf_threshold <- alpha / n_tests
+bonf_sig <- p_vals < bonf_threshold
+
+# Benjamini-Hochberg
+sorted_p <- sort(p_vals)
+critical_values <- (1:n_tests) * alpha / n_tests
+bh_threshold <- max(sorted_p[sorted_p <= critical_values], na.rm = TRUE)
+bh_sig <- p_vals <= bh_threshold
+```
+
+**Questions:**
+1. Which hypotheses would you reject under each correction method?
+2. What would you report in a paper using these results?
+3. What additional information would help you decide which correction to use?
+
+---
+
+####################
+## Problem 5      ##
+####################
+
+**Synthesis and Research Practice**
+
+**5a. Case Study Analysis:**
+Find a published political science article that reports multiple hypothesis tests (e.g., a table with many coefficients and stars).
+
+1. Count how many hypothesis tests are reported
+2. Calculate the expected number of false positives if all nulls were true
+3. Would multiple testing corrections change their conclusions?
+4. Write a brief critique (1 paragraph) of their statistical reporting
+
+**5b. Research Design:**
+You're designing a study to test 15 different hypotheses about voter behavior.
+
+1. How would you adjust your analysis plan to account for multiple comparisons?
+2. Would you use FWER or FDR control? Justify your choice.
+3. How would sample size affect your decision?
+4. What would you report in the methods section about multiple testing?
+
+**5c. Reflection:**
+Based on what you've learned about inference and multiple comparisons:
+
+1. What are the most common misconceptions about p-values?
+2. How should researchers balance the risk of false positives against the risk of missing true effects?
+3. What practices would you recommend for transparent statistical reporting?

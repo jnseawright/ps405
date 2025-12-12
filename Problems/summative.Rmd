@@ -1,0 +1,89 @@
+# PS 405: Linear Models — Final Summative Problem Set
+
+**Due:**   
+**Submit:**   
+**Instructions:** This is an individual assignment. You may use course materials, textbooks, and R documentation, but you may not collaborate with others or use external code without citation.
+
+---
+
+## Problem 1: Conceptual Foundations (15%)
+
+In your own words, answer the following:
+
+1. Explain the difference between using regression for *description*, *prediction*, and *causal inference*. Provide a political science example for each.
+2. What does it mean for OLS to be the "Best Linear Unbiased Estimator" (BLUE)? Under what assumptions does this hold?
+3. Describe two ways in which omitted variable bias can threaten causal claims in political science. Give an example from a real or hypothetical study.
+
+---
+
+## Problem 2: OLS Proofs (15%)
+
+Consider the simple linear regression model:
+
+\[
+Y_i = \beta_0 + \beta_1 X_i + \varepsilon_i
+\]
+
+where \(\varepsilon_i \sim N(0, \sigma^2)\).
+
+1. What are the conditions needed for this model to be unbiased, consistent, the best linear unbiased estimator, and the best unbiased estimator? 
+2. Explain in words what the Gauss-Markov theorem guarantees about the OLS estimator in this context.
+
+---
+
+## Problem 3: Multiple Regression & Interpretation (20%)
+
+Use the `states` dataset provided in the `poliscidata` package, which contains state-level political and demographic variables.
+
+```{r load-data}
+library(poliscidata)
+data("states")
+
+# Variables include:
+# vep12_turnout: voter turnout rate in 2012
+# uninsured_pct: % without health insurance
+# college: % with college degree
+# prcapinc: per capita income
+# cig_tax: tax rate on cigarettes
+```
+
+1. Estimate a linear model where `turnout` is the dependent variable and `uninsued_pct`, `college`, and `cig_tax` are independent variables.
+2. Interpret each coefficient in substantive terms. How would you explain the relationship between income and turnout to a non-technical audience?
+3. Assess multicollinearity using Variance Inflation Factors (VIFs). Discuss whether it is a concern here.
+
+---
+
+## Problem 4: Diagnostics & Model Fit (20%)
+
+Using the model from Problem 3:
+
+1. Produce and interpret the following diagnostic plots:
+   - Residuals vs. Fitted
+   - Q-Q plot of residuals
+   - Scale-Location plot
+2. Conduct a Breusch-Pagan test for heteroskedasticity. If present, re-estimate the model with robust standard errors using `sandwich` and `lmtest`.
+3. Compare the model fit (using `broom::glance`) before and after adjusting for heteroskedasticity. What changes?
+
+---
+
+## Problem 5: Interactions & Nonlinearity (15%)
+
+Political scientists often argue that the effects of economic and educational inequalities on turnout aren't linear.
+
+1. Test whether there should be nonlinear transformations of `uninsured_pct` and `college` in your model from Problem 3.
+2. Interpret any nonlinear transformations you add using:
+   - The coefficient table
+   - Relevant plots (using `ggeffects` or `margins`)
+
+---
+
+## Problem 6: Communicating Results (15%)
+
+Prepare a publication-quality regression table and figure.
+
+1. Create a table (using `modelsummary`, `stargazer`, `gt`, or `kableExtra`) that displays:
+   - The model from Problem 3 (without nonlinarity)
+   - Any changes to the model from Problem 5 (potentially with nonlinearity)
+   - Include robust standard errors in parentheses.
+2. Create a professional scatterplot with a regression line (using `ggplot2`) showing the relationship between `uninsured_pct` and `college.`
+3. Write a short abstract (≤150 words) summarizing one key finding from your analysis, as if for a political science journal.

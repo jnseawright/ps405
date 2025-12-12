@@ -2,57 +2,212 @@
 ## Problem Set 4     ##
 #######################
 
+**Due Date**: [Insert due date]  
+**Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1676748](https://canvas.northwestern.edu/courses/245562/assignments/1676748)
+
+**Instructions**: 
+- Show all mathematical derivations.
+- Include complete, well-commented R code.
+- Submit knitted document with all outputs.
+
+---
 
 ####################
 ## Problem 1      ##
 ####################
 
-Define omitted variable bias. Give a formula for where it comes from, and explain what the symbols in that formula mean.
+**1a.** Define omitted variable bias in your own words.
+
+**1b.** Consider the linear models:
+$$y = \beta_0 + \beta_1x_1 + \beta_2x_2 + u$$
+$$y = \beta^*_0 + \beta^*_1x_1 + u^*$$
+
+Derive the formula for $\beta^*_1$ in terms of $\beta_1$, $\beta_2$, and the relationship between $x_1$ and $x_2$. Show all steps.
+
+**1c.** Interpret each term in your formula from 1b. Under what conditions does omitted variable bias occur? When is it zero?
+
+---
 
 ####################
 ## Problem 2      ##
 ####################
 
-What are the potential consequences, at the population level, of using a BLP to study a nonlinear CEF?
+**BLP Approximation to Nonlinear CEFs**
+
+**2a.** The lecture slides show a nonlinear CEF for GDP and turnout, with different linear approximations (BLPs) for different ranges of GDP. In your own words, explain:
+
+1. What does it mean for the BLP to be the "best linear approximation" of a nonlinear CEF?
+2. How can the BLP coefficient change sign depending on which range of the data we focus on?
+3. What are the implications for interpreting regression coefficients when the true CEF is nonlinear?
+
+**2b.** Using the turnout data from the lecture, create a visualization that demonstrates this phenomenon:
+
+```{r problem2b, eval=FALSE}
+# Load data from lecture
+turnout <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv")
+
+# Create three subsets: low, medium, and high GDP
+turnout_low <- turnout %>% filter(GDP < 1e7)
+turnout_medium <- turnout %>% filter(GDP >= 1e7 & GDP < 2e7)
+turnout_high <- turnout %>% filter(GDP >= 2e7)
+
+# Fit linear models for each subset
+lm_low <- lm(Turnout ~ GDP, data = turnout_low)
+lm_medium <- lm(Turnout ~ GDP, data = turnout_medium)
+lm_high <- lm(Turnout ~ GDP, data = turnout_high)
+
+# Create a plot showing all data points and the three regression lines
+library(ggplot2)
+ggplot(turnout, aes(x = GDP, y = Turnout)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(data = turnout_low, method = "lm", se = FALSE, color = "red", size = 1) +
+  geom_smooth(data = turnout_medium, method = "lm", se = FALSE, color = "blue", size = 1) +
+  geom_smooth(data = turnout_high, method = "lm", se = FALSE, color = "green", size = 1) +
+  geom_smooth(method = "lm", se = FALSE, color = "black", size = 1.5, linetype = "dashed") +
+  labs(title = "BLP Approximations to Nonlinear CEF at Different GDP Ranges",
+       subtitle = "Red: Low GDP, Blue: Medium GDP, Green: High GDP, Black: Overall BLP") +
+  theme_minimal()
+```
+
+**2c.** Interpret the coefficients from each of the four regressions. How do they differ? What does this tell us about interpreting a single linear coefficient when the relationship is nonlinear?
+
+---
 
 ####################
 ## Problem 3      ##
 ####################
 
-Return to the regressions you ran in Problem 3 last week. Interpret the differences between them in terms of omitted variable bias. Does this interpretation mean that one or the other of the models is the true model? Does it mean that one model is better than the other?
+**OVB in Your Turnout Analysis**
+
+Return to your voter turnout analysis from Problem Set 3.
+
+**3a.** Re-examine the difference between your bivariate model (turnout ~ income) and multivariate model (turnout ~ income + religiosity + age). Calculate the omitted variable bias using the formula from Problem 1.
+
+```{r problem3a, eval=FALSE}
+# Calculate the components needed for OVB formula
+# You'll need:
+# 1. β2 from multivariate model (coefficient for religiosity)
+# 2. Covariance between income and religiosity
+# 3. Variance of income
+
+# Then compute: OVB = β2 * Cov(x1, x2) / Var(x1)
+```
+
+**3b.** Does the OVB formula correctly predict the difference between the bivariate and multivariate income coefficients? Show your calculations.
+
+**3c.** Based on the lecture slides' discussion of model specification:
+1. Could adding more variables ever increase bias? Under what conditions?
+2. When might it be better to use a bivariate model even if you suspect omitted variables?
+
+---
 
 ####################
 ## Problem 4      ##
 ####################
 
-We are going to generate some simulated data to study two different situations.
+**Simulation Study of OVB**
 
-First, we will set up a trio of simulated variables where x1 and x2 are correlated, and y depends on both.
+We'll study two scenarios of omitted variable bias through simulation.
 
-```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+**Scenario A: Confounding (Both X1 and X2 cause Y)**
+
+```{r scenarioA, eval=FALSE}
 set.seed(789)
 n <- 1000
 x1 <- rnorm(n)
-x2 <- 0.7*x1 + rnorm(n)  # x2 correlated with x1 but not y
-y <- 2 + 1.5*x1 + 2*x2 + rnorm(n) # y depends on x1 and x2
+x2 <- 0.7*x1 + rnorm(n)  # x2 correlated with x1
+y <- 2 + 1.5*x1 + 2*x2 + rnorm(n, sd = 0.5)
+
+# Run regressions
+model_bivariate <- lm(y ~ x1)
+model_multivariate <- lm(y ~ x1 + x2)
+
+summary(model_bivariate)
+summary(model_multivariate)
 ```
 
-Run regressions predicting y on the basis of x1 with and without x2. Explain the differences in results in terms of omitted variable bias.
+**Questions for Scenario A:**
+1. What is the true value of β₁?
+2. What is the estimated β₁ in the bivariate model? How biased is it?
+3. Use the OVB formula to calculate the expected bias. Does it match the actual bias?
 
-Second, we will set up a trio of simulated variables where x2 is correlated with x1 and y, but y only depends on x1.
+**Scenario B: Collider Bias (X2 is a common effect)**
 
-```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+```{r scenarioB, eval=FALSE}
 set.seed(789)
 n <- 1000
+
+# Correct setup for collider scenario
 x1 <- rnorm(n)
-x2 <- 0.7*x1 - 1.5*y + rnorm(n)  # x2 correlated with x1 but not y
-y <- 2 + 1.5*x1 + rnorm(n) # y depends on x1 and x2
+y <- 2 + 1.5*x1 + rnorm(n, sd = 0.5)  # y depends only on x1
+x2 <- 0.7*x1 - 1.5*y + rnorm(n, sd = 0.5)  # x2 is a collider
+
+# Run regressions
+model_correct <- lm(y ~ x1)  # Correct specification
+model_collider <- lm(y ~ x1 + x2)  # Including collider
+
+summary(model_correct)
+summary(model_collider)
 ```
 
-Run regressions predicting y on the basis of x1 with and without x2. Explain the differences in results in terms of omitted variable bias.
+**Questions for Scenario B:**
+1. What is the true value of β₁?
+2. What happens when we include x2 in the regression? Why?
+3. This demonstrates "bad control" or collider bias. Explain in your own words why including x2 creates bias even though x2 is correlated with both x1 and y.
 
-Do these simulations suggest that eliminating omitted variable bias will always help us find the  regression coefficients we're interested in? Explain your answer.
+**4c. Simulation Synthesis:**
+1. Create a table comparing both scenarios.
+2. Under what circumstances does adding a control variable reduce bias? When might it increase bias?
+3. How can researchers decide which variables to include in a regression model?
 
-Please submit your completed assignment at:
+---
 
-[https://canvas.northwestern.edu/courses/245562/assignments/1676748](https://canvas.northwestern.edu/courses/245562/assignments/1676748)
+####################
+## Problem 5      ##
+####################
+
+**Matrix Algebra and OLS Derivation**
+
+The lecture slides derive OLS using the plug-in principle and matrix algebra.
+
+**5a. Plug-in Principle:**
+1. Define the plug-in principle in your own words.
+2. Using the plug-in principle, show how to derive the OLS estimator for β₁ in the simple regression model: $y = β₀ + β₁x + ε$
+
+**5b. Matrix Derivation:**
+The OLS estimator in matrix form is:
+$$\hat{\beta} = (X^TX)^{-1}X^Ty$$
+
+Using the turnout data with GDP and Temperature:
+
+```{r problem5b, eval=FALSE}
+# Load and clean data
+turnout <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv")
+turnout_clean <- turnout[13:nrow(turnout), ]  # Remove NA rows as in slides
+
+# Create X matrix with intercept, GDP, Temperature
+X <- as.matrix(cbind(1, turnout_clean$GDP, turnout_clean$Temperature))
+colnames(X) <- c("Intercept", "GDP", "Temperature")
+
+# Create y vector
+y <- turnout_clean$Turnout
+
+# Calculate OLS coefficients using matrix algebra
+beta_hat <- solve(t(X) %*% X) %*% t(X) %*% y
+beta_hat
+
+# Compare with lm() output
+lm(Turnout ~ GDP + Temperature, data = turnout_clean)
+```
+
+**Questions for 5b:**
+1. Verify that your matrix calculation matches the `lm()` output.
+2. What does each component of the formula $(X^TX)^{-1}X^Ty$ represent intuitively?
+3. What happens if $X^TX$ is not invertible? What does this mean in practical terms?
+
+**5c. Connecting Matrix Form to OVB:**
+The OVB formula can also be expressed in matrix terms. For a model with two predictors:
+
+$$\hat{\beta}_1 = \beta_1 + \beta_2 \frac{\text{Cov}(x_1, x_2)}{\text{Var}(x_1)}$$
+
+Show how this emerges from the matrix formula when we omit $x_2$.

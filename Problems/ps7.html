@@ -11,7 +11,7 @@
 
 
 
-<title>ps3.knit</title>
+<title>ps7.knit</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -355,219 +355,317 @@ display: none;
 <div id="section" class="section level23">
 <p class="heading"></p>
 </div>
-<div id="problem-set-3" class="section level2">
-<h2>Problem Set 3</h2>
+<div id="problem-set-7" class="section level2">
+<h2>Problem Set 7</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
 <p><strong>Due Date</strong>: [Insert due date]<br />
-<strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1676747">https://canvas.northwestern.edu/courses/245562/assignments/1676747</a></p>
-<p><strong>Instructions</strong>: - Show all work for theoretical
-problems. - Include complete, well-commented R code for applied
-problems. - Submit knitted document with all outputs.</p>
+<strong>Submission</strong>: [Canvas Link]</p>
+<p><strong>Instructions</strong>: - Show all mathematical derivations
+where requested. - Include complete, well-commented R code for all
+analyses. - Submit knitted document with all outputs. - For Problems
+1-4, provide clear explanations in your own words.</p>
 <hr />
 </div>
-<div id="section-2" class="section level20">
-<p class="heading"></p>
 </div>
+<div id="problem-1-understanding-statistical-power" class="section level1">
+<h1>Problem 1: Understanding Statistical Power</h1>
+<div id="a.-conceptual-foundations" class="section level2">
+<h2>1a. Conceptual Foundations</h2>
+<ol style="list-style-type: decimal">
+<li>Define statistical power in your own words.</li>
+<li>Explain the relationship between Type I error (α), Type II error
+(β), and power.</li>
+</ol>
 </div>
-<div id="problem-1" class="section level2">
-<h2>Problem 1</h2>
-<div id="section-3" class="section level20">
-<p class="heading"></p>
-<p><strong>1a.</strong> In a multiple regression model, <span class="math inline">\(Y = \beta_0 + \beta_1X_1 + \beta_2X_2 +
-\epsilon\)</span>, interpret <span class="math inline">\(\beta_1\)</span> in your own words.</p>
-<p><strong>1b.</strong> Consider the slides’ example of terrorism
-incidents predicted by Trump vote share and 2012 margin. If the
-estimated equation is: <span class="math display">\[\text{Terrorism} =
-10 - 0.2 \times \text{TrumpShare} + 0.1 \times \text{D12Margin}\]</span>
-Interpret what happens to predicted terrorism incidents when: -
-TrumpShare increases by 5 percentage points, holding D12Margin constant.
-- D12Margin decreases by 3 percentage points, holding TrumpShare
-constant.</p>
-<p><strong>1c.</strong> The slides show that in multivariate regression,
-<span class="math inline">\(\beta_1\)</span> represents the expected
-change in Y when <span class="math inline">\(X_1\)</span> increases by 1
-unit, <em>with all other variables held constant</em>. Why is the “all
-other variables held constant” condition crucial for interpreting <span class="math inline">\(\beta_1\)</span> as a partial effect?</p>
+<div id="b.-power-determinants" class="section level2">
+<h2>1b. Power Determinants</h2>
+<p>For each of the following factors, explain how increasing it affects
+statistical power (holding other factors constant), and provide the
+mathematical relationship:</p>
+<ol style="list-style-type: decimal">
+<li>Sample size (n)</li>
+<li>Effect size (β or d)</li>
+<li>Significance level (α)</li>
+<li>Variance/standard deviation of the outcome</li>
+<li>Predictor variance</li>
+</ol>
 <hr />
 </div>
-<div id="section-4" class="section level20">
-<p class="heading"></p>
 </div>
+<div id="problem-2-practical-power-analysis" class="section level1">
+<h1>Problem 2: Practical Power Analysis</h1>
+<div id="a.-power-calculation-simulation" class="section level2">
+<h2>2a. Power Calculation Simulation</h2>
+<p>Simulate power for different scenarios:</p>
+<pre class="r"><code># Complete this code to simulate power for different sample sizes
+
+simulate_power &lt;- function(true_effect, n, sigma = 1, alpha = 0.05, n_sim = 1000) {
+  # Your code here:
+  # 1. Simulate n_sim datasets with given parameters
+  # 2. For each dataset, run linear regression
+  # 3. Calculate proportion of simulations where p &lt; alpha
+  # 4. Return power estimate
+}
+
+# Test for different sample sizes
+sample_sizes &lt;- c(50, 100, 200, 400, 800)
+true_effect &lt;- 0.2
+
+# Create a data frame with power estimates for each sample size
+power_results &lt;- data.frame()
+for (n in sample_sizes) {
+  # Your code here
+}
+
+# Create visualization
+library(ggplot2)
+# Plot power vs sample size</code></pre>
+<p><strong>Questions:</strong> 1. What sample size is needed to achieve
+80% power for detecting an effect of 0.2? 2. How does changing the true
+effect size to 0.4 affect the required sample size? 3. What happens to
+power if you double the variance (sigma)?</p>
 </div>
-<div id="problem-2" class="section level2">
-<h2>Problem 2</h2>
-<div id="section-5" class="section level20">
-<p class="heading"></p>
-<p><strong>Theoretical Proof with Guided Steps</strong></p>
-<p>The Conditional Expectation Function (CEF) has a key property: it is
-the best predictor of Y given X in the mean-squared error sense.</p>
-<p>Let <span class="math inline">\(m(X)\)</span> be any function of X
-used to predict Y. The mean-squared error (MSE) is defined as: <span class="math display">\[MSE(m) = E[(Y - m(X))^2]\]</span></p>
-<p><strong>2a.</strong> Show that for any predictor <span class="math inline">\(m(X)\)</span>, the MSE can be decomposed as: <span class="math display">\[E[(Y - m(X))^2] = E[(Y - E[Y|X])^2] + E[(E[Y|X] -
-m(X))^2]\]</span></p>
-<p><em>Hint: Start with <span class="math inline">\(Y - m(X) = (Y -
-E[Y|X]) + (E[Y|X] - m(X))\)</span>, then expand the square.</em></p>
-<p><strong>2b.</strong> Using the decomposition from 2a, explain why the
-CEF (<span class="math inline">\(E[Y|X]\)</span>) minimizes MSE among
-all possible predictors <span class="math inline">\(m(X)\)</span>.</p>
-<p><strong>2c.</strong> Connect this proof to the lecture discussion
-about why we can’t improve the CEF by adding something that depends on
-X. What does this imply about the relationship between the CEF error
-(<span class="math inline">\(Y - E[Y|X]\)</span>) and X?</p>
+<div id="b.-winners-curse-demonstration" class="section level2">
+<h2>2b. Winner’s Curse Demonstration</h2>
+<pre class="r"><code># Complete this code to demonstrate the winner&#39;s curse
+
+set.seed(123)
+n_sim &lt;- 10000
+true_beta &lt;- 0.1
+sample_sizes &lt;- c(50, 200, 800)
+
+results &lt;- data.frame()
+for (n in sample_sizes) {
+  for (i in 1:n_sim) {
+    # Generate data
+    x &lt;- rnorm(n)
+    y &lt;- true_beta * x + rnorm(n)
+    
+    # Run regression
+    model &lt;- lm(y ~ x)
+    beta_hat &lt;- coef(model)[2]
+    p_value &lt;- summary(model)$coefficients[2, 4]
+    
+    # Store results
+    results &lt;- rbind(results, data.frame(
+      n = n,
+      beta_hat = beta_hat,
+      p_value = p_value,
+      significant = p_value &lt; 0.05
+    ))
+  }
+}
+
+# Analyze results
+library(dplyr)
+bias_analysis &lt;- results %&gt;%
+  group_by(n, significant) %&gt;%
+  summarize(
+    mean_beta = mean(beta_hat),
+    median_beta = median(beta_hat),
+    sd_beta = sd(beta_hat),
+    n_studies = n(),
+    .groups = &#39;drop&#39;
+  )
+
+# Create visualization showing:
+# 1. Distribution of all estimates by sample size
+# 2. Distribution of only significant estimates
+# 3. Mean bias in significant estimates</code></pre>
+<p><strong>Questions:</strong> 1. What is the “winner’s curse” and why
+does it occur? 2. How does sample size affect the magnitude of the
+winner’s curse? 3. What percentage of significant results overestimate
+the true effect in your simulation?</p>
 <hr />
 </div>
-<div id="section-6" class="section level20">
-<p class="heading"></p>
 </div>
+<div id="problem-3-interaction-effects" class="section level1">
+<h1>Problem 3: Interaction Effects</h1>
+<div id="a.-moderator-vs-mediator" class="section level2">
+<h2>3a. Moderator vs Mediator</h2>
+<ol style="list-style-type: decimal">
+<li>Define and distinguish between:
+<ul>
+<li>Moderator variable</li>
+<li>Mediator variable</li>
+</ul></li>
+<li>Draw path diagrams for both (like in the slides)</li>
+<li>Provide a political science example of each</li>
+</ol>
 </div>
-<div id="problem-3" class="section level2">
-<h2>Problem 3</h2>
-<div id="section-7" class="section level20">
-<p class="heading"></p>
-<p><strong>Applied Analysis: Voter Turnout in U.S. States</strong></p>
-<p>Install and load the required data:</p>
-<pre class="r"><code>install.packages(&quot;poliscidata&quot;)
-library(poliscidata)
-library(tidyverse)
+<div id="b.-categorical-moderator-analysis" class="section level2">
+<h2>3b. Categorical Moderator Analysis</h2>
+<p>Using the QOG data from the slides:</p>
+<pre class="r"><code>library(rqog)
+library(dplyr)
+library(ggplot2)
 
-# Clean and prepare the data
-states_data &lt;- states %&gt;%
-  select(state, vep12_turnout, prcapinc, religiosity, over64) %&gt;%
-  filter(!is.na(vep12_turnout), !is.na(prcapinc)) %&gt;%
-  mutate(income_thousands = prcapinc / 1000)</code></pre>
-<p><strong>3a. Bivariate Regression and CEF Visualization</strong></p>
-<p>Run a bivariate regression predicting voter turnout
-(<code>vep12_turnout</code>) based on income (<code>prcapinc</code> or
-<code>income_thousands</code>).</p>
-<pre class="r"><code># Your code here
-turnout_bivariate &lt;- lm(vep12_turnout ~ income_thousands, data = states_data)
-summary(turnout_bivariate)</code></pre>
-<p>Create a visualization that shows: 1. The raw data points 2. The BLP
-(linear regression line) 3. A LOESS curve to approximate the true CEF 4.
-Compare the two curves. Does the relationship appear linear?</p>
-<p><strong>Questions for 3a:</strong> 1. Interpret the slope coefficient
-from the bivariate regression. 2. Based on the visualization, does the
-BLP appear to be a good approximation of the CEF? Explain. 3. Calculate
-and interpret R-squared.</p>
-<p><strong>3b. Multivariate Regression Analysis</strong></p>
-<p>Now run a multivariate regression predicting voter turnout based on
-income (<code>prcapinc</code>), religiosity (<code>religiosity</code>),
-and age distribution (<code>over64</code>).</p>
-<pre class="r"><code># Your code here
-turnout_multivariate &lt;- lm(vep12_turnout ~ income_thousands + religiosity + over64, 
-                           data = states_data)
-summary(turnout_multivariate)</code></pre>
-<p><strong>Questions for 3b:</strong> 1. Interpret each coefficient in
-the multivariate model. 2. How does the coefficient for income change
-from the bivariate to multivariate model? What might explain this
-change? 3. Calculate the predicted voter turnout for a state with:
-income = $50,000, religiosity = 50, over64 = 15%.</p>
-<p><strong>3c. Model Comparison and CEF Evaluation</strong></p>
-<p>Compare the two models:</p>
-<pre class="r"><code># Model comparison
-library(modelsummary)
-models &lt;- list(&quot;Bivariate&quot; = turnout_bivariate, 
-               &quot;Multivariate&quot; = turnout_multivariate)
-modelsummary(models, stars = TRUE, output = &quot;markdown&quot;)
+# Load and prepare data
+qog_data &lt;- read_qog(which_data = &quot;standard&quot;, data_type = &quot;time-series&quot;)
 
-# Calculate and compare R-squared
-cat(&quot;Bivariate R-squared:&quot;, summary(turnout_bivariate)$r.squared, &quot;\n&quot;)
-cat(&quot;Multivariate R-squared:&quot;, summary(turnout_multivariate)$r.squared, &quot;\n&quot;)</code></pre>
-<p><strong>Questions for 3c:</strong> 1. Which model has better fit?
-Does adding variables substantially improve the model? 2. In the
-multivariate model, are all variables jointly significant? (Hint: Check
-the F-test) 3. Based on the lecture discussion about when BLP equals
-CEF, do you think the multivariate linear model adequately captures the
-true CEF? What evidence supports your conclusion?</p>
-<p><strong>3d. Diagnostics and Assumptions</strong></p>
-<p>Check key regression assumptions:</p>
-<pre class="r"><code># Diagnostic plots
-par(mfrow = c(2, 2))
-plot(turnout_multivariate)
+# Create analysis dataset
+analysis_data &lt;- qog_data %&gt;%
+  select(
+    country = cname,
+    year = year,
+    democracy = vdem_libdem,
+    gdp_pc = gle_cgdpc,
+    colonial = ht_colonial
+  ) %&gt;%
+  filter(!is.na(democracy), !is.na(gdp_pc), !is.na(colonial)) %&gt;%
+  group_by(country) %&gt;%
+  filter(year == max(year)) %&gt;%
+  ungroup() %&gt;%
+  mutate(
+    log_gdp = log(gdp_pc),
+    colonized = ifelse(colonial &gt; 0, 1, 0)
+  )
 
-# Check for non-linearity (component + residual plot)
-library(car)
-crPlots(turnout_multivariate)</code></pre>
-<p><strong>Questions for 3d:</strong> 1. Do the residual plots suggest
-any violations of linear regression assumptions? 2. The component +
-residual plots show the relationship between each predictor and the
-outcome, partialling out other variables. Do these relationships appear
-linear? 3. If you observed non-linearity in the income-turnout
-relationship, how might you modify the model to better approximate the
-CEF? (Consider transformations or polynomial terms)</p>
+# Your tasks:
+# 1. Run three models:
+#    a. Main effects only: democracy ~ log_gdp + colonized
+#    b. With interaction: democracy ~ log_gdp * colonized
+#    c. Alternative parameterization (if needed)
+
+# 2. Calculate and interpret:
+#    a. The marginal effect of log_gdp when colonized = 0
+#    b. The marginal effect of log_gdp when colonized = 1
+#    c. Test whether these effects are statistically different
+
+# 3. Create visualization:
+#    a. Plot with two regression lines (one for each colonized status)
+#    b. Include confidence bands
+#    c. Add appropriate labels and title</code></pre>
+<p><strong>Questions:</strong> 1. How does the relationship between GDP
+and democracy differ between former colonies and never-colonized
+countries? 2. Is the interaction statistically significant? What does
+this mean substantively? 3. What are the intercepts for each group, and
+how do you interpret them?</p>
 <hr />
 </div>
-<div id="section-8" class="section level20">
-<p class="heading"></p>
 </div>
+<div id="problem-4-power-for-interaction-effects" class="section level1">
+<h1>Problem 4: Power for Interaction Effects</h1>
+<div id="a.-power-simulation-for-interactions" class="section level2">
+<h2>4a. Power Simulation for Interactions</h2>
+<pre class="r"><code># Simulate power for detecting interaction effects
+
+simulate_interaction_power &lt;- function(
+  n, beta_main = 0.2, beta_interaction = 0.1,
+  cor_xz = 0, sigma = 1, alpha = 0.05, n_sim = 1000
+) {
+  power_results &lt;- numeric(n_sim)
+  
+  for (i in 1:n_sim) {
+    # Generate correlated X and Z
+    if (cor_xz == 0) {
+      x &lt;- rnorm(n)
+      z &lt;- rnorm(n)
+    } else {
+      # Generate correlated variables
+      sigma_matrix &lt;- matrix(c(1, cor_xz, cor_xz, 1), 2, 2)
+      xz &lt;- MASS::mvrnorm(n, mu = c(0, 0), Sigma = sigma_matrix)
+      x &lt;- xz[, 1]
+      z &lt;- xz[, 2]
+    }
+    
+    # Generate Y with interaction
+    y &lt;- beta_main * x + beta_main * z + beta_interaction * x * z + rnorm(n, sd = sigma)
+    
+    # Test interaction
+    model &lt;- lm(y ~ x * z)
+    p_interaction &lt;- summary(model)$coefficients[4, 4]
+    power_results[i] &lt;- p_interaction &lt; alpha
+  }
+  
+  return(mean(power_results))
+}
+
+# Your tasks:
+# 1. Create power curve for interaction detection across sample sizes
+# 2. Investigate how correlation between X and Z affects power
+# 3. Compare power for detecting main effects vs. interaction effects</code></pre>
+<p><strong>Questions:</strong> 1. Why do interaction effects typically
+require larger sample sizes than main effects? 2. How does the
+correlation between X and Z affect power to detect their interaction? 3.
+What sample size would you recommend for a study expecting a small
+interaction effect (β = 0.1)?</p>
 </div>
-<div id="problem-4" class="section level2">
-<h2>Problem 4</h2>
-<div id="section-9" class="section level20">
-<p class="heading"></p>
-<p><strong>Synthesis: Connecting Theory and Application</strong></p>
-<p><strong>4a.</strong> Recall from the lectures that the BLP has two
-key properties: (1) <span class="math inline">\(E[e] = 0\)</span> and
-(2) <span class="math inline">\(E[e \times X] = 0\)</span>. Verify these
-properties for your multivariate model from Problem 3:</p>
-<pre class="r"><code># Calculate residuals
-residuals &lt;- residuals(turnout_multivariate)
+<div id="b.-power-analysis-with-pwrss" class="section level2">
+<h2>4b. Power Analysis with <code>pwrss</code></h2>
+<pre class="r"><code>library(pwrss)
 
-# Property 1: Mean of residuals
-mean_residual &lt;- mean(residuals)
-cat(&quot;Mean of residuals:&quot;, mean_residual, &quot;\n&quot;)
+# Recreate the power analysis examples from the slides
+# and answer the following questions:
 
-# Property 2: Correlation of residuals with each predictor
-cor_res_income &lt;- cor(residuals, states_data$income_thousands, use = &quot;complete.obs&quot;)
-cor_res_relig &lt;- cor(residuals, states_data$religiosity, use = &quot;complete.obs&quot;)
-cor_res_age &lt;- cor(residuals, states_data$over64, use = &quot;complete.obs&quot;)
+# Example 1: What happens when beta decreases from 0.60 to 0.10?
+power1 &lt;- power.t.regression(
+  beta = 0.60,
+  sd.outcome = 12,
+  sd.predictor = 4,
+  k.total = 12,
+  r.squared = 0.30,
+  power = .80,
+  alpha = 0.05,
+  alternative = &quot;two.sided&quot;
+)
 
-cat(&quot;Correlation with income:&quot;, cor_res_income, &quot;\n&quot;)
-cat(&quot;Correlation with religiosity:&quot;, cor_res_relig, &quot;\n&quot;)
-cat(&quot;Correlation with age:&quot;, cor_res_age, &quot;\n&quot;)</code></pre>
-<p><strong>4b.</strong> The lecture slides show a 3D visualization of a
-multivariate regression plane. Create a similar visualization for your
-multivariate model, showing the relationship between any two predictors
-and the outcome:</p>
-<pre class="r"><code># 3D visualization (choose two predictors)
-library(plotly)
+power2 &lt;- power.t.regression(
+  beta = 0.10,  # Changed from 0.60
+  sd.outcome = 12,
+  sd.predictor = 4,
+  k.total = 12,
+  r.squared = 0.30,
+  power = .80,
+  alpha = 0.05,
+  alternative = &quot;two.sided&quot;
+)
 
-# Create prediction grid
-income_seq &lt;- seq(min(states_data$income_thousands), 
-                  max(states_data$income_thousands), length.out = 20)
-relig_seq &lt;- seq(min(states_data$religiosity), 
-                 max(states_data$religiosity), length.out = 20)
+# Example 2: What happens when outcome variance increases?
+power3 &lt;- power.t.regression(
+  beta = 0.60,
+  sd.outcome = 60,  # Increased from 12
+  sd.predictor = 4,
+  k.total = 12,
+  r.squared = 0.30,
+  power = .80,
+  alpha = 0.05,
+  alternative = &quot;two.sided&quot;
+)
 
-grid &lt;- expand.grid(income_thousands = income_seq, 
-                    religiosity = relig_seq,
-                    over64 = mean(states_data$over64, na.rm = TRUE))
-
-grid$pred_turnout &lt;- predict(turnout_multivariate, newdata = grid)
-
-# Create 3D plot
-plot_ly() %&gt;%
-  add_trace(data = states_data, 
-            x = ~income_thousands, y = ~religiosity, z = ~vep12_turnout,
-            type = &#39;scatter3d&#39;, mode = &#39;markers&#39;,
-            marker = list(size = 5, color = &#39;blue&#39;, opacity = 0.7),
-            name = &#39;Actual Data&#39;) %&gt;%
-  add_trace(data = grid,
-            x = ~income_thousands, y = ~religiosity, z = ~pred_turnout,
-            type = &#39;mesh3d&#39;, opacity = 0.5, color = &#39;orange&#39;,
-            name = &#39;Regression Plane&#39;) %&gt;%
-  layout(scene = list(
-    xaxis = list(title = &#39;Income (thousands)&#39;),
-    yaxis = list(title = &#39;Religiosity&#39;),
-    zaxis = list(title = &#39;Voter Turnout (%)&#39;)
-  ), title = &#39;Multivariate Regression Plane&#39;)</code></pre>
-<p><strong>Questions for 4:</strong> 1. Do the residuals from your model
-satisfy the BLP properties? What might it mean if they don’t? 2. Looking
-at the 3D visualization, how does the regression plane represent the
-BLP? How would this differ if the true CEF were non-linear? 3. Based on
-all your analyses, write a brief conclusion (3-4 sentences) about what
-affects voter turnout in U.S. states and how well linear regression
-captures these relationships.</p>
+# Your analysis:
+# 1. Compare required sample sizes for each scenario
+# 2. Explain why these changes affect power
+# 3. Provide practical recommendations for study design</code></pre>
+</div>
+<div id="c.-research-design-application" class="section level2">
+<h2>4c. Research Design Application</h2>
+<p>Design a study to test whether the effect of campaign spending on
+election outcomes is moderated by incumbency status.</p>
+<ol style="list-style-type: decimal">
+<li>Specify:
+<ul>
+<li>Main independent variable</li>
+<li>Moderator variable</li>
+<li>Outcome variable</li>
+<li>Control variables you would include</li>
+</ul></li>
+<li>Conduct a power analysis for this study:
+<ul>
+<li>What effect sizes would you expect?</li>
+<li>What sample size would you need for 80% power?</li>
+<li>How would you address potential confounders?</li>
+</ul></li>
+<li>Write a brief methods section (200-300 words) describing your
+proposed study, including:
+<ul>
+<li>Data sources</li>
+<li>Sample size justification</li>
+<li>Analysis plan</li>
+<li>How you would test the interaction</li>
+</ul></li>
+</ol>
 </div>
 </div>
 

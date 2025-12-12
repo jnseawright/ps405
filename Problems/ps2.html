@@ -359,6 +359,13 @@ display: none;
 <h2>Problem Set 2</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
+<p><strong>Due Date</strong>: [Insert due date]<br />
+<strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1676715">https://canvas.northwestern.edu/courses/245562/assignments/1676715</a></p>
+<p><strong>Instructions</strong>: - Complete all problems below, showing
+your work where appropriate. - Submit both your written answers and R
+code. - For Problems 1-3, provide clear, concise explanations in your
+own words. - For Problem 4, include all R code and visualizations.</p>
+<hr />
 </div>
 <div id="section-2" class="section level20">
 <p class="heading"></p>
@@ -371,6 +378,7 @@ display: none;
 <p>Define, in your own words, the conditional expectation function and
 the best linear predictor. How are these two ideas related, and in what
 ways are they different?</p>
+<hr />
 </div>
 <div id="section-4" class="section level20">
 <p class="heading"></p>
@@ -385,6 +393,7 @@ ways are they different?</p>
 X_{1} + \beta_{2} X_{2} + \cdots + \beta_{k} X_{k}\]</span></p>
 <p>Explain what each of the symbols used in the expression above would
 usually mean.</p>
+<hr />
 </div>
 <div id="section-6" class="section level20">
 <p class="heading"></p>
@@ -396,6 +405,7 @@ usually mean.</p>
 <p class="heading"></p>
 <p>Explain the regularity conditions for the BLP to exist, and for each,
 give an example of a situation in which it would fail.</p>
+<hr />
 </div>
 <div id="section-8" class="section level20">
 <p class="heading"></p>
@@ -406,16 +416,227 @@ give an example of a situation in which it would fail.</p>
 <div id="section-9" class="section level20">
 <p class="heading"></p>
 <p>Let’s consider the widely studied relationship between wealth and
-democracy. Load data from the Quality of Governance dataset:</p>
-<pre class="r"><code>devtools::install_github(&quot;ropengov/rqog&quot;)
+democracy. This problem will guide you through an analysis using the
+Quality of Governance dataset, helping you contrast the Conditional
+Expectation Function (CEF) with the Best Linear Predictor (BLP).</p>
+<p><strong>Data Loading</strong>: Run the following code to load the
+data. If you encounter issues with the <code>rqog</code> package, use
+the alternative CSV file provided.</p>
+<pre class="r"><code># Option 1: Using the rqog package (preferred)
+devtools::install_github(&quot;ropengov/rqog&quot;)
 library(rqog)
-qogts &lt;- read_qog(which_data = &quot;standard&quot;, data_type = &quot;time-series&quot;)</code></pre>
-<p>Put together a useful visualization of the relationship between
-wealth (wdi_gdpcappppcon2017) and democracy (vdem_libdem). Based on this
-visualization, what do you suspect are the key features of the CEF
-relating wealth to democracy?</p>
-<p>Please submit your completed assignment at:</p>
-<p><a href="https://canvas.northwestern.edu/courses/245562/assignments/1676715">https://canvas.northwestern.edu/courses/245562/assignments/1676715</a></p>
+qogts &lt;- read_qog(which_data = &quot;standard&quot;, data_type = &quot;time-series&quot;)
+
+# Option 2: Alternative if rqog doesn&#39;t work (uncomment and run)
+# qogts &lt;- read.csv(&quot;https://github.com/jnseawright/ps210/raw/refs/heads/main/Data/qog_sample.csv&quot;)
+
+# Clean the data for analysis
+library(dplyr)
+qog_clean &lt;- qogts %&gt;%
+  select(wdi_gdpcappppcon2017, vdem_libdem) %&gt;%
+  filter(!is.na(wdi_gdpcappppcon2017), !is.na(vdem_libdem)) %&gt;%
+  rename(gdp_pc = wdi_gdpcappppcon2017, democracy = vdem_libdem)</code></pre>
+<p><strong>4a. Visualizing CEF and BLP</strong></p>
+<p>Create a visualization of the relationship between wealth
+(<code>wdi_gdpcappppcon2017</code> or <code>gdp_pc</code> in the cleaned
+data) and democracy (<code>vdem_libdem</code> or
+<code>democracy</code>). Your plot should include:</p>
+<ol style="list-style-type: decimal">
+<li>The raw data points (use transparency if there are many
+observations)</li>
+<li>A LOESS curve (to approximate the CEF)</li>
+<li>A linear regression line (the BLP)</li>
+<li>Clear labels, titles, and a legend</li>
+</ol>
+<pre class="r"><code># Your code for 4a here
+library(ggplot2)
+
+# Create the plot with both LOESS (CEF approximation) and linear (BLP) fits
+dem_wealth_plot &lt;- ggplot(qog_clean, aes(x = gdp_pc, y = democracy)) +
+  geom_point(alpha = 0.3, color = &quot;gray50&quot;) +  # Raw data
+  geom_smooth(method = &quot;loess&quot;, se = TRUE, color = &quot;blue&quot;, 
+              aes(color = &quot;LOESS (CEF approx)&quot;), size = 1.2) +
+  geom_smooth(method = &quot;lm&quot;, se = TRUE, color = &quot;red&quot;, 
+              aes(color = &quot;Linear (BLP)&quot;), size = 1.2) +
+  scale_color_manual(values = c(&quot;LOESS (CEF approx)&quot; = &quot;blue&quot;, 
+                                &quot;Linear (BLP)&quot; = &quot;red&quot;)) +
+  labs(title = &quot;Wealth and Democracy: CEF vs. BLP&quot;,
+       x = &quot;GDP per capita (constant 2017 USD)&quot;,
+       y = &quot;Liberal Democracy Score (VDem)&quot;,
+       color = &quot;Fit Type&quot;) +
+  theme_minimal() +
+  theme(legend.position = &quot;bottom&quot;)
+
+# Display the plot
+dem_wealth_plot</code></pre>
+<p><strong>Questions for 4a</strong>: 1. Describe what each curve (LOESS
+and linear) suggests about the relationship between wealth and
+democracy. 2. Which fit seems more appropriate for these data and why?
+3. Based on the LOESS curve, does the relationship appear to be linear
+throughout the range of GDP values?</p>
+<hr />
+<p><strong>4b. Fitting and Interpreting the BLP</strong></p>
+<p>Fit the Best Linear Predictor (linear regression) predicting
+democracy from wealth. Report and interpret the coefficients.</p>
+<pre class="r"><code># Fit the linear model (BLP)
+blp_model &lt;- lm(democracy ~ gdp_pc, data = qog_clean)
+
+# Display model summary
+summary(blp_model)
+
+# Alternative: Using modelsummary for nicer output
+library(modelsummary)
+modelsummary(blp_model, stars = TRUE, output = &quot;markdown&quot;)</code></pre>
+<p><strong>Questions for 4b</strong>: 1. Interpret the intercept and
+slope coefficients in substantive terms. 2. What is the predicted
+democracy score for a country with $20,000 GDP per capita? Show your
+calculation. 3. Calculate and interpret R-squared. What does it tell us
+about this BLP?</p>
+<hr />
+<p><strong>4c. Comparing BLP to Simple CEF Approximation</strong></p>
+<p>Now let’s compare the BLP to a simple approximation of the CEF using
+grouped means:</p>
+<pre class="r"><code># Create wealth groups
+qog_clean &lt;- qog_clean %&gt;%
+  mutate(wealth_group = case_when(
+    gdp_pc &lt; 10000 ~ &quot;Low (&lt;$10K)&quot;,
+    gdp_pc &gt;= 10000 &amp; gdp_pc &lt;= 30000 ~ &quot;Medium ($10K-$30K)&quot;,
+    gdp_pc &gt; 30000 ~ &quot;High (&gt;$30K)&quot;
+  ))
+
+# Calculate group means (simple CEF approximation)
+group_means &lt;- qog_clean %&gt;%
+  group_by(wealth_group) %&gt;%
+  summarize(
+    mean_democracy = mean(democracy, na.rm = TRUE),
+    mean_gdp = mean(gdp_pc, na.rm = TRUE),
+    n = n()
+  )
+
+# Display group means
+group_means
+
+# Create comparison plot
+library(ggplot2)
+
+# Generate predictions from BLP for plotting
+blp_predictions &lt;- data.frame(
+  gdp_pc = seq(min(qog_clean$gdp_pc, na.rm = TRUE), 
+               max(qog_clean$gdp_pc, na.rm = TRUE), 
+               length.out = 100)
+)
+blp_predictions$democracy_pred &lt;- predict(blp_model, newdata = blp_predictions)
+
+# Create the comparison visualization
+comparison_plot &lt;- ggplot(qog_clean, aes(x = gdp_pc, y = democracy)) +
+  geom_point(alpha = 0.2, color = &quot;gray50&quot;) +
+  # BLP line
+  geom_line(data = blp_predictions, 
+            aes(x = gdp_pc, y = democracy_pred, color = &quot;BLP&quot;), 
+            size = 1.5) +
+  # Group means (simple CEF approximation)
+  geom_point(data = group_means, 
+             aes(x = mean_gdp, y = mean_democracy, color = &quot;Group Means (CEF approx)&quot;), 
+             size = 4, shape = 17) +
+  # Vertical lines at group boundaries
+  geom_vline(xintercept = c(10000, 30000), linetype = &quot;dashed&quot;, alpha = 0.5) +
+  scale_color_manual(values = c(&quot;BLP&quot; = &quot;red&quot;, 
+                                &quot;Group Means (CEF approx)&quot; = &quot;darkgreen&quot;)) +
+  labs(title = &quot;Comparing BLP to Grouped Means (Simple CEF)&quot;,
+       x = &quot;GDP per capita (constant 2017 USD)&quot;,
+       y = &quot;Liberal Democracy Score&quot;,
+       color = &quot;Estimate Type&quot;) +
+  theme_minimal() +
+  theme(legend.position = &quot;bottom&quot;)
+
+comparison_plot</code></pre>
+<p><strong>Questions for 4c</strong>: 1. How well does the BLP
+approximate the grouped means (our simple CEF approximation)? 2. In
+which wealth range does the BLP fit best? Where does it fit worst? 3.
+Discuss: Under what conditions might the BLP be a poor approximation of
+the true CEF for these data? 4. Calculate the mean squared error (MSE)
+for both the BLP and the grouped means approach (treating group means as
+predictions for all observations in that group). Which has lower
+MSE?</p>
+<pre class="r"><code># Calculate MSE for BLP
+blp_mse &lt;- mean(residuals(blp_model)^2)
+
+# Calculate MSE for grouped means approach
+qog_with_group_preds &lt;- qog_clean %&gt;%
+  left_join(select(group_means, wealth_group, mean_democracy), by = &quot;wealth_group&quot;) %&gt;%
+  mutate(group_residual = democracy - mean_democracy)
+group_mse &lt;- mean(qog_with_group_preds$group_residual^2, na.rm = TRUE)
+
+cat(&quot;BLP MSE:&quot;, round(blp_mse, 4), &quot;\n&quot;)
+cat(&quot;Grouped Means MSE:&quot;, round(group_mse, 4), &quot;\n&quot;)
+cat(&quot;Difference (BLP - Grouped):&quot;, round(blp_mse - group_mse, 4))</code></pre>
+<hr />
+<p><strong>4d. Theoretical Reflection and Model Extension</strong></p>
+<p>Modernization theory in political science suggests that democracy
+increases with wealth but at a decreasing rate (diminishing
+returns).</p>
+<pre class="r"><code># Let&#39;s explore a non-linear specification
+# Option 1: Polynomial (quadratic) model
+poly_model &lt;- lm(democracy ~ poly(gdp_pc, 2, raw = TRUE), data = qog_clean)
+summary(poly_model)
+
+# Option 2: Log transformation (common for diminishing returns)
+log_model &lt;- lm(democracy ~ log(gdp_pc), data = qog_clean)
+summary(log_model)
+
+# Compare models
+library(modelsummary)
+model_comparison &lt;- list(
+  &quot;Linear (BLP)&quot; = blp_model,
+  &quot;Quadratic&quot; = poly_model,
+  &quot;Log-Linear&quot; = log_model
+)
+
+modelsummary(model_comparison, stars = TRUE, output = &quot;markdown&quot;)
+
+# Create comparison plot
+library(patchwork)
+
+# Generate predictions from all models
+comparison_data &lt;- data.frame(
+  gdp_pc = seq(min(qog_clean$gdp_pc), max(qog_clean$gdp_pc), length.out = 200)
+)
+
+comparison_data$linear_pred &lt;- predict(blp_model, newdata = comparison_data)
+comparison_data$quadratic_pred &lt;- predict(poly_model, newdata = comparison_data)
+comparison_data$log_pred &lt;- predict(log_model, newdata = comparison_data)
+
+# Reshape for plotting
+library(tidyr)
+comparison_long &lt;- comparison_data %&gt;%
+  pivot_longer(cols = -gdp_pc, names_to = &quot;model&quot;, values_to = &quot;prediction&quot;) %&gt;%
+  mutate(model = factor(model, 
+                        levels = c(&quot;linear_pred&quot;, &quot;quadratic_pred&quot;, &quot;log_pred&quot;),
+                        labels = c(&quot;Linear (BLP)&quot;, &quot;Quadratic&quot;, &quot;Log-Linear&quot;)))
+
+# Plot all models together
+model_comparison_plot &lt;- ggplot(qog_clean, aes(x = gdp_pc, y = democracy)) +
+  geom_point(alpha = 0.1, color = &quot;gray50&quot;) +
+  geom_line(data = comparison_long, 
+            aes(x = gdp_pc, y = prediction, color = model), 
+            size = 1.2) +
+  scale_color_brewer(palette = &quot;Set1&quot;) +
+  labs(title = &quot;Comparing Linear and Non-Linear Specifications&quot;,
+       x = &quot;GDP per capita&quot;,
+       y = &quot;Democracy Score&quot;,
+       color = &quot;Model&quot;) +
+  theme_minimal() +
+  theme(legend.position = &quot;bottom&quot;)
+
+model_comparison_plot</code></pre>
+<p><strong>Questions for 4d</strong>: 1. Does the LOESS curve from 4a
+support the modernization theory prediction of diminishing returns? 2.
+Compare the linear (BLP), quadratic, and log-linear models. Which seems
+to best capture the relationship suggested by the LOESS curve? 3. What
+are the trade-offs between using a simple linear model (BLP) versus a
+more flexible specification? 4. If you were writing a paper on wealth
+and democracy, which model would you choose and why? Consider both
+statistical fit and substantive interpretability.</p>
 </div>
 </div>
 

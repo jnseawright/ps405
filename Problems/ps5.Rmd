@@ -1,0 +1,213 @@
+#######################
+## Problem Set 5     ##
+#######################
+
+**Due Date**: [Insert due date]  
+**Submission**: [Canvas Link]
+
+**Instructions**: 
+  - Show all mathematical derivations where requested.
+- Include complete, well-commented R code for all analyses.
+- Submit knitted document with all outputs.
+- For Problems 1-3, provide clear explanations in your own words.
+
+---
+  
+  ####################
+## Problem 1      ##
+####################
+
+**Model Fit and R-squared**
+  
+  **1a.** In your own words, explain:
+  1. The difference between residuals ($e_i$) and modeling errors ($\epsilon_i$)
+2. Why the sum of residuals in OLS regression equals zero when an intercept is included
+3. How $R^2$ measures model fit and what it represents
+
+**1b.** Using the election data from the lectures:
+  
+```{r problem1b, eval=FALSE}
+# Load data
+library(rosdata)
+data("hibbs")
+
+# Fit the models
+model_intercept <- lm(vote ~ 1, data = hibbs)  # Intercept only
+model_econ <- lm(vote ~ growth, data = hibbs)   # With growth
+```
+
+**Questions:**
+1. Verify that $\sum e_i = 0$ for both models.
+2. Calculate $R^2$ using the formula $R^2 = 1 - \frac{RSS}{TSS}$.
+3. Compare your calculation with the `summary()` output.
+
+**1c.** Limitations of $R^2$:
+  1. What happens to $R^2$ when you add more variables to a model, even irrelevant ones?
+  2. Why might a high $R^2$ not indicate a good model?
+
+---
+  
+####################
+## Problem 2      ##
+####################
+
+**Matrix Algebra and Multicollinearity**
+  
+  **2a. Matrix Form:**
+1. Write down the regression model in matrix form and explain each symbol.
+
+**2b. Implementing OLS with Matrix Algebra:**
+  Using the turnout data with GDP and Temperature:
+  
+```{r problem2b, eval=FALSE}
+# Load and clean data
+turnout <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv")
+turnout_clean <- na.omit(turnout)
+
+# Create matrices
+X <- as.matrix(cbind(1, turnout_clean$GDP, turnout_clean$Temperature))
+colnames(X) <- c("Intercept", "GDP", "Temperature")
+Y <- as.matrix(turnout_clean$Turnout)
+
+# Calculate OLS coefficients using matrix algebra
+beta_hat <- solve(t(X) %*% X) %*% t(X) %*% Y
+
+# Compare with lm()
+model_lm <- lm(Turnout ~ GDP + Temperature, data = turnout_clean)
+```
+
+**Questions:**
+  1. Verify that your matrix calculation matches the `lm()` output.
+2. What is the condition for $(X^TX)$ to be invertible?
+
+  **2c. Multicollinearity Investigation:**
+  Create a multicollinear scenario:
+  
+```{r problem2c, eval=FALSE}
+# Create multicollinear data
+set.seed(123)
+n <- 100
+x1 <- rnorm(n)
+x2 <- 0.95*x1 + rnorm(n, sd = 0.1)  # Highly correlated with x1
+x3 <- rnorm(n)
+y <- 2 + 1.5*x1 + 0.8*x3 + rnorm(n)
+
+# Fit models
+model_collinear <- lm(y ~ x1 + x2 + x3)
+summary(model_collinear)
+
+# Check variance inflation factors (VIF)
+library(car)
+vif(model_collinear)
+```
+
+**Questions:**
+  1. What happens to the standard errors when multicollinearity is present?
+  2. How do the VIF values indicate multicollinearity?
+  3. What are the practical implications for interpreting coefficients in the presence of multicollinearity?
+  
+  ---
+  
+  ####################
+## Problem 3      ##
+####################
+
+**Leverage**
+Using the turnout data:
+  
+```{r problem3, eval=FALSE}
+# Calculate leverage (diagonal of hat matrix)
+model <- lm(Turnout ~ GDP + Temperature, data = turnout_clean)
+
+# Method 1: Using hatvalues()
+leverage1 <- hatvalues(model)
+
+# Method 2: Calculate manually
+X <- model.matrix(model)
+H <- X %*% solve(t(X) %*% X) %*% t(X)
+leverage2 <- diag(H)
+
+# Compare
+all.equal(leverage1, leverage2)
+
+# Identify high leverage points
+high_leverage <- which(leverage1 > 2*mean(leverage1))  # Common rule of thumb
+turnout_clean[high_leverage, ]
+```
+
+**Questions:**
+  1. What does leverage measure? Why do we care about high leverage points?
+  2. What is the average leverage value? What's the theoretical value?
+3. Create a plot of leverage vs. observation index. Add a horizontal line at $2p/n$ (where p = number of parameters).
+
+---
+
+####################
+## Problem 4      ##
+####################
+
+**Outliers and Influence**
+
+**4a. Measuring Influence:**
+1. Define DFBETA and Cook's Distance. What does each measure?
+2. What's the difference between an outlier and an influential point?
+
+**4b. Calculating DFBETA:**
+Using the turnout model:
+
+```{r problem4b, eval=FALSE}
+# Calculate DFBETA
+dfbeta_vals <- dfbeta(model)
+
+# Plot DFBETA for Temperature coefficient
+library(ggplot2)
+n <- nrow(turnout_clean)
+threshold <- 2/sqrt(n)
+
+ggplot(data.frame(index = 1:n, dfbeta_temp = dfbeta_vals[, "Temperature"]),
+       aes(x = index, y = dfbeta_temp)) +
+  geom_point() +
+  geom_hline(yintercept = c(-threshold, threshold), 
+             color = "red", linetype = "dashed") +
+  geom_hline(yintercept = 0, color = "gray") +
+  labs(title = "DFBETA for Temperature Coefficient",
+       y = "DFBETA",
+       x = "Observation Index") +
+  geom_text(aes(label = ifelse(abs(dfbeta_temp) > threshold, 
+                               as.character(index), "")),
+            vjust = -0.5)
+```
+
+**Questions:**
+1. Which observations are influential for the Temperature coefficient?
+2. What happens to the Temperature coefficient if you remove the most influential observation?
+3. Calculate Cook's Distance for all observations. Which observations have Cook's D > 0.5?
+
+**4c. Case Study Analysis:**
+Identify the most influential observation in your model and analyze it:
+
+```{r problem4c, eval=FALSE}
+# Find most influential observation
+cook_d <- cooks.distance(model)
+most_influential <- which.max(cook_d)
+
+# Analyze this observation
+influential_obs <- turnout_clean[most_influential, ]
+
+# Run model without this observation
+model_without <- lm(Turnout ~ GDP + Temperature, 
+                    data = turnout_clean[-most_influential, ])
+
+# Compare coefficients
+coef_comparison <- data.frame(
+  "Full Model" = coef(model),
+  "Without Influential" = coef(model_without),
+  "Difference" = coef(model) - coef(model_without)
+)
+```
+
+**Questions:**
+1. Why is this observation influential? Consider its leverage and residual.
+2. Should this observation be removed? What are the ethical and methodological considerations?
+3. What would you recommend to a researcher who found such an influential observation in their data?
+

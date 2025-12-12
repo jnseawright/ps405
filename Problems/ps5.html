@@ -11,7 +11,7 @@
 
 
 
-<title>ps3.knit</title>
+<title>ps5.knit</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -355,219 +355,180 @@ display: none;
 <div id="section" class="section level23">
 <p class="heading"></p>
 </div>
-<div id="problem-set-3" class="section level2">
-<h2>Problem Set 3</h2>
+<div id="problem-set-5" class="section level2">
+<h2>Problem Set 5</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
 <p><strong>Due Date</strong>: [Insert due date]<br />
-<strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1676747">https://canvas.northwestern.edu/courses/245562/assignments/1676747</a></p>
-<p><strong>Instructions</strong>: - Show all work for theoretical
-problems. - Include complete, well-commented R code for applied
-problems. - Submit knitted document with all outputs.</p>
+<strong>Submission</strong>: [Canvas Link]</p>
+<p><strong>Instructions</strong>: - Show all mathematical derivations
+where requested. - Include complete, well-commented R code for all
+analyses. - Submit knitted document with all outputs. - For Problems
+1-3, provide clear explanations in your own words.</p>
+<hr />
+<p>#################### ## Problem 1 ## ####################</p>
+<p><strong>Model Fit and R-squared</strong></p>
+<p><strong>1a.</strong> In your own words, explain: 1. The difference
+between residuals (<span class="math inline">\(e_i\)</span>) and
+modeling errors (<span class="math inline">\(\epsilon_i\)</span>) 2. Why
+the sum of residuals in OLS regression equals zero when an intercept is
+included 3. How <span class="math inline">\(R^2\)</span> measures model
+fit and what it represents</p>
+<p><strong>1b.</strong> Using the election data from the lectures:</p>
+<pre class="r"><code># Load data
+library(rosdata)
+data(&quot;hibbs&quot;)
+
+# Fit the models
+model_intercept &lt;- lm(vote ~ 1, data = hibbs)  # Intercept only
+model_econ &lt;- lm(vote ~ growth, data = hibbs)   # With growth</code></pre>
+<p><strong>Questions:</strong> 1. Verify that <span class="math inline">\(\sum e_i = 0\)</span> for both models. 2.
+Calculate <span class="math inline">\(R^2\)</span> using the formula
+<span class="math inline">\(R^2 = 1 - \frac{RSS}{TSS}\)</span>. 3.
+Compare your calculation with the <code>summary()</code> output.</p>
+<p><strong>1c.</strong> Limitations of <span class="math inline">\(R^2\)</span>: 1. What happens to <span class="math inline">\(R^2\)</span> when you add more variables to a
+model, even irrelevant ones? 2. Why might a high <span class="math inline">\(R^2\)</span> not indicate a good model?</p>
 <hr />
 </div>
 <div id="section-2" class="section level20">
 <p class="heading"></p>
 </div>
 </div>
-<div id="problem-1" class="section level2">
-<h2>Problem 1</h2>
+<div id="problem-2" class="section level2">
+<h2>Problem 2</h2>
 <div id="section-3" class="section level20">
 <p class="heading"></p>
-<p><strong>1a.</strong> In a multiple regression model, <span class="math inline">\(Y = \beta_0 + \beta_1X_1 + \beta_2X_2 +
-\epsilon\)</span>, interpret <span class="math inline">\(\beta_1\)</span> in your own words.</p>
-<p><strong>1b.</strong> Consider the slides’ example of terrorism
-incidents predicted by Trump vote share and 2012 margin. If the
-estimated equation is: <span class="math display">\[\text{Terrorism} =
-10 - 0.2 \times \text{TrumpShare} + 0.1 \times \text{D12Margin}\]</span>
-Interpret what happens to predicted terrorism incidents when: -
-TrumpShare increases by 5 percentage points, holding D12Margin constant.
-- D12Margin decreases by 3 percentage points, holding TrumpShare
-constant.</p>
-<p><strong>1c.</strong> The slides show that in multivariate regression,
-<span class="math inline">\(\beta_1\)</span> represents the expected
-change in Y when <span class="math inline">\(X_1\)</span> increases by 1
-unit, <em>with all other variables held constant</em>. Why is the “all
-other variables held constant” condition crucial for interpreting <span class="math inline">\(\beta_1\)</span> as a partial effect?</p>
+<p><strong>Matrix Algebra and Multicollinearity</strong></p>
+<p><strong>2a. Matrix Form:</strong> 1. Write down the regression model
+in matrix form and explain each symbol.</p>
+<p><strong>2b. Implementing OLS with Matrix Algebra:</strong> Using the
+turnout data with GDP and Temperature:</p>
+<pre class="r"><code># Load and clean data
+turnout &lt;- read_csv(&quot;https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv&quot;)
+turnout_clean &lt;- na.omit(turnout)
+
+# Create matrices
+X &lt;- as.matrix(cbind(1, turnout_clean$GDP, turnout_clean$Temperature))
+colnames(X) &lt;- c(&quot;Intercept&quot;, &quot;GDP&quot;, &quot;Temperature&quot;)
+Y &lt;- as.matrix(turnout_clean$Turnout)
+
+# Calculate OLS coefficients using matrix algebra
+beta_hat &lt;- solve(t(X) %*% X) %*% t(X) %*% Y
+
+# Compare with lm()
+model_lm &lt;- lm(Turnout ~ GDP + Temperature, data = turnout_clean)</code></pre>
+<p><strong>Questions:</strong> 1. Verify that your matrix calculation
+matches the <code>lm()</code> output. 2. What is the condition for <span class="math inline">\((X^TX)\)</span> to be invertible?</p>
+<p><strong>2c. Multicollinearity Investigation:</strong> Create a
+multicollinear scenario:</p>
+<pre class="r"><code># Create multicollinear data
+set.seed(123)
+n &lt;- 100
+x1 &lt;- rnorm(n)
+x2 &lt;- 0.95*x1 + rnorm(n, sd = 0.1)  # Highly correlated with x1
+x3 &lt;- rnorm(n)
+y &lt;- 2 + 1.5*x1 + 0.8*x3 + rnorm(n)
+
+# Fit models
+model_collinear &lt;- lm(y ~ x1 + x2 + x3)
+summary(model_collinear)
+
+# Check variance inflation factors (VIF)
+library(car)
+vif(model_collinear)</code></pre>
+<p><strong>Questions:</strong> 1. What happens to the standard errors
+when multicollinearity is present? 2. How do the VIF values indicate
+multicollinearity? 3. What are the practical implications for
+interpreting coefficients in the presence of multicollinearity?</p>
+<hr />
+<p>#################### ## Problem 3 ## ####################</p>
+<p><strong>Leverage</strong> Using the turnout data:</p>
+<pre class="r"><code># Calculate leverage (diagonal of hat matrix)
+model &lt;- lm(Turnout ~ GDP + Temperature, data = turnout_clean)
+
+# Method 1: Using hatvalues()
+leverage1 &lt;- hatvalues(model)
+
+# Method 2: Calculate manually
+X &lt;- model.matrix(model)
+H &lt;- X %*% solve(t(X) %*% X) %*% t(X)
+leverage2 &lt;- diag(H)
+
+# Compare
+all.equal(leverage1, leverage2)
+
+# Identify high leverage points
+high_leverage &lt;- which(leverage1 &gt; 2*mean(leverage1))  # Common rule of thumb
+turnout_clean[high_leverage, ]</code></pre>
+<p><strong>Questions:</strong> 1. What does leverage measure? Why do we
+care about high leverage points? 2. What is the average leverage value?
+What’s the theoretical value? 3. Create a plot of leverage
+vs. observation index. Add a horizontal line at <span class="math inline">\(2p/n\)</span> (where p = number of
+parameters).</p>
 <hr />
 </div>
 <div id="section-4" class="section level20">
 <p class="heading"></p>
 </div>
 </div>
-<div id="problem-2" class="section level2">
-<h2>Problem 2</h2>
-<div id="section-5" class="section level20">
-<p class="heading"></p>
-<p><strong>Theoretical Proof with Guided Steps</strong></p>
-<p>The Conditional Expectation Function (CEF) has a key property: it is
-the best predictor of Y given X in the mean-squared error sense.</p>
-<p>Let <span class="math inline">\(m(X)\)</span> be any function of X
-used to predict Y. The mean-squared error (MSE) is defined as: <span class="math display">\[MSE(m) = E[(Y - m(X))^2]\]</span></p>
-<p><strong>2a.</strong> Show that for any predictor <span class="math inline">\(m(X)\)</span>, the MSE can be decomposed as: <span class="math display">\[E[(Y - m(X))^2] = E[(Y - E[Y|X])^2] + E[(E[Y|X] -
-m(X))^2]\]</span></p>
-<p><em>Hint: Start with <span class="math inline">\(Y - m(X) = (Y -
-E[Y|X]) + (E[Y|X] - m(X))\)</span>, then expand the square.</em></p>
-<p><strong>2b.</strong> Using the decomposition from 2a, explain why the
-CEF (<span class="math inline">\(E[Y|X]\)</span>) minimizes MSE among
-all possible predictors <span class="math inline">\(m(X)\)</span>.</p>
-<p><strong>2c.</strong> Connect this proof to the lecture discussion
-about why we can’t improve the CEF by adding something that depends on
-X. What does this imply about the relationship between the CEF error
-(<span class="math inline">\(Y - E[Y|X]\)</span>) and X?</p>
-<hr />
-</div>
-<div id="section-6" class="section level20">
-<p class="heading"></p>
-</div>
-</div>
-<div id="problem-3" class="section level2">
-<h2>Problem 3</h2>
-<div id="section-7" class="section level20">
-<p class="heading"></p>
-<p><strong>Applied Analysis: Voter Turnout in U.S. States</strong></p>
-<p>Install and load the required data:</p>
-<pre class="r"><code>install.packages(&quot;poliscidata&quot;)
-library(poliscidata)
-library(tidyverse)
-
-# Clean and prepare the data
-states_data &lt;- states %&gt;%
-  select(state, vep12_turnout, prcapinc, religiosity, over64) %&gt;%
-  filter(!is.na(vep12_turnout), !is.na(prcapinc)) %&gt;%
-  mutate(income_thousands = prcapinc / 1000)</code></pre>
-<p><strong>3a. Bivariate Regression and CEF Visualization</strong></p>
-<p>Run a bivariate regression predicting voter turnout
-(<code>vep12_turnout</code>) based on income (<code>prcapinc</code> or
-<code>income_thousands</code>).</p>
-<pre class="r"><code># Your code here
-turnout_bivariate &lt;- lm(vep12_turnout ~ income_thousands, data = states_data)
-summary(turnout_bivariate)</code></pre>
-<p>Create a visualization that shows: 1. The raw data points 2. The BLP
-(linear regression line) 3. A LOESS curve to approximate the true CEF 4.
-Compare the two curves. Does the relationship appear linear?</p>
-<p><strong>Questions for 3a:</strong> 1. Interpret the slope coefficient
-from the bivariate regression. 2. Based on the visualization, does the
-BLP appear to be a good approximation of the CEF? Explain. 3. Calculate
-and interpret R-squared.</p>
-<p><strong>3b. Multivariate Regression Analysis</strong></p>
-<p>Now run a multivariate regression predicting voter turnout based on
-income (<code>prcapinc</code>), religiosity (<code>religiosity</code>),
-and age distribution (<code>over64</code>).</p>
-<pre class="r"><code># Your code here
-turnout_multivariate &lt;- lm(vep12_turnout ~ income_thousands + religiosity + over64, 
-                           data = states_data)
-summary(turnout_multivariate)</code></pre>
-<p><strong>Questions for 3b:</strong> 1. Interpret each coefficient in
-the multivariate model. 2. How does the coefficient for income change
-from the bivariate to multivariate model? What might explain this
-change? 3. Calculate the predicted voter turnout for a state with:
-income = $50,000, religiosity = 50, over64 = 15%.</p>
-<p><strong>3c. Model Comparison and CEF Evaluation</strong></p>
-<p>Compare the two models:</p>
-<pre class="r"><code># Model comparison
-library(modelsummary)
-models &lt;- list(&quot;Bivariate&quot; = turnout_bivariate, 
-               &quot;Multivariate&quot; = turnout_multivariate)
-modelsummary(models, stars = TRUE, output = &quot;markdown&quot;)
-
-# Calculate and compare R-squared
-cat(&quot;Bivariate R-squared:&quot;, summary(turnout_bivariate)$r.squared, &quot;\n&quot;)
-cat(&quot;Multivariate R-squared:&quot;, summary(turnout_multivariate)$r.squared, &quot;\n&quot;)</code></pre>
-<p><strong>Questions for 3c:</strong> 1. Which model has better fit?
-Does adding variables substantially improve the model? 2. In the
-multivariate model, are all variables jointly significant? (Hint: Check
-the F-test) 3. Based on the lecture discussion about when BLP equals
-CEF, do you think the multivariate linear model adequately captures the
-true CEF? What evidence supports your conclusion?</p>
-<p><strong>3d. Diagnostics and Assumptions</strong></p>
-<p>Check key regression assumptions:</p>
-<pre class="r"><code># Diagnostic plots
-par(mfrow = c(2, 2))
-plot(turnout_multivariate)
-
-# Check for non-linearity (component + residual plot)
-library(car)
-crPlots(turnout_multivariate)</code></pre>
-<p><strong>Questions for 3d:</strong> 1. Do the residual plots suggest
-any violations of linear regression assumptions? 2. The component +
-residual plots show the relationship between each predictor and the
-outcome, partialling out other variables. Do these relationships appear
-linear? 3. If you observed non-linearity in the income-turnout
-relationship, how might you modify the model to better approximate the
-CEF? (Consider transformations or polynomial terms)</p>
-<hr />
-</div>
-<div id="section-8" class="section level20">
-<p class="heading"></p>
-</div>
-</div>
 <div id="problem-4" class="section level2">
 <h2>Problem 4</h2>
-<div id="section-9" class="section level20">
+<div id="section-5" class="section level20">
 <p class="heading"></p>
-<p><strong>Synthesis: Connecting Theory and Application</strong></p>
-<p><strong>4a.</strong> Recall from the lectures that the BLP has two
-key properties: (1) <span class="math inline">\(E[e] = 0\)</span> and
-(2) <span class="math inline">\(E[e \times X] = 0\)</span>. Verify these
-properties for your multivariate model from Problem 3:</p>
-<pre class="r"><code># Calculate residuals
-residuals &lt;- residuals(turnout_multivariate)
+<p><strong>Outliers and Influence</strong></p>
+<p><strong>4a. Measuring Influence:</strong> 1. Define DFBETA and Cook’s
+Distance. What does each measure? 2. What’s the difference between an
+outlier and an influential point?</p>
+<p><strong>4b. Calculating DFBETA:</strong> Using the turnout model:</p>
+<pre class="r"><code># Calculate DFBETA
+dfbeta_vals &lt;- dfbeta(model)
 
-# Property 1: Mean of residuals
-mean_residual &lt;- mean(residuals)
-cat(&quot;Mean of residuals:&quot;, mean_residual, &quot;\n&quot;)
+# Plot DFBETA for Temperature coefficient
+library(ggplot2)
+n &lt;- nrow(turnout_clean)
+threshold &lt;- 2/sqrt(n)
 
-# Property 2: Correlation of residuals with each predictor
-cor_res_income &lt;- cor(residuals, states_data$income_thousands, use = &quot;complete.obs&quot;)
-cor_res_relig &lt;- cor(residuals, states_data$religiosity, use = &quot;complete.obs&quot;)
-cor_res_age &lt;- cor(residuals, states_data$over64, use = &quot;complete.obs&quot;)
+ggplot(data.frame(index = 1:n, dfbeta_temp = dfbeta_vals[, &quot;Temperature&quot;]),
+       aes(x = index, y = dfbeta_temp)) +
+  geom_point() +
+  geom_hline(yintercept = c(-threshold, threshold), 
+             color = &quot;red&quot;, linetype = &quot;dashed&quot;) +
+  geom_hline(yintercept = 0, color = &quot;gray&quot;) +
+  labs(title = &quot;DFBETA for Temperature Coefficient&quot;,
+       y = &quot;DFBETA&quot;,
+       x = &quot;Observation Index&quot;) +
+  geom_text(aes(label = ifelse(abs(dfbeta_temp) &gt; threshold, 
+                               as.character(index), &quot;&quot;)),
+            vjust = -0.5)</code></pre>
+<p><strong>Questions:</strong> 1. Which observations are influential for
+the Temperature coefficient? 2. What happens to the Temperature
+coefficient if you remove the most influential observation? 3. Calculate
+Cook’s Distance for all observations. Which observations have Cook’s D
+&gt; 0.5?</p>
+<p><strong>4c. Case Study Analysis:</strong> Identify the most
+influential observation in your model and analyze it:</p>
+<pre class="r"><code># Find most influential observation
+cook_d &lt;- cooks.distance(model)
+most_influential &lt;- which.max(cook_d)
 
-cat(&quot;Correlation with income:&quot;, cor_res_income, &quot;\n&quot;)
-cat(&quot;Correlation with religiosity:&quot;, cor_res_relig, &quot;\n&quot;)
-cat(&quot;Correlation with age:&quot;, cor_res_age, &quot;\n&quot;)</code></pre>
-<p><strong>4b.</strong> The lecture slides show a 3D visualization of a
-multivariate regression plane. Create a similar visualization for your
-multivariate model, showing the relationship between any two predictors
-and the outcome:</p>
-<pre class="r"><code># 3D visualization (choose two predictors)
-library(plotly)
+# Analyze this observation
+influential_obs &lt;- turnout_clean[most_influential, ]
 
-# Create prediction grid
-income_seq &lt;- seq(min(states_data$income_thousands), 
-                  max(states_data$income_thousands), length.out = 20)
-relig_seq &lt;- seq(min(states_data$religiosity), 
-                 max(states_data$religiosity), length.out = 20)
+# Run model without this observation
+model_without &lt;- lm(Turnout ~ GDP + Temperature, 
+                    data = turnout_clean[-most_influential, ])
 
-grid &lt;- expand.grid(income_thousands = income_seq, 
-                    religiosity = relig_seq,
-                    over64 = mean(states_data$over64, na.rm = TRUE))
-
-grid$pred_turnout &lt;- predict(turnout_multivariate, newdata = grid)
-
-# Create 3D plot
-plot_ly() %&gt;%
-  add_trace(data = states_data, 
-            x = ~income_thousands, y = ~religiosity, z = ~vep12_turnout,
-            type = &#39;scatter3d&#39;, mode = &#39;markers&#39;,
-            marker = list(size = 5, color = &#39;blue&#39;, opacity = 0.7),
-            name = &#39;Actual Data&#39;) %&gt;%
-  add_trace(data = grid,
-            x = ~income_thousands, y = ~religiosity, z = ~pred_turnout,
-            type = &#39;mesh3d&#39;, opacity = 0.5, color = &#39;orange&#39;,
-            name = &#39;Regression Plane&#39;) %&gt;%
-  layout(scene = list(
-    xaxis = list(title = &#39;Income (thousands)&#39;),
-    yaxis = list(title = &#39;Religiosity&#39;),
-    zaxis = list(title = &#39;Voter Turnout (%)&#39;)
-  ), title = &#39;Multivariate Regression Plane&#39;)</code></pre>
-<p><strong>Questions for 4:</strong> 1. Do the residuals from your model
-satisfy the BLP properties? What might it mean if they don’t? 2. Looking
-at the 3D visualization, how does the regression plane represent the
-BLP? How would this differ if the true CEF were non-linear? 3. Based on
-all your analyses, write a brief conclusion (3-4 sentences) about what
-affects voter turnout in U.S. states and how well linear regression
-captures these relationships.</p>
+# Compare coefficients
+coef_comparison &lt;- data.frame(
+  &quot;Full Model&quot; = coef(model),
+  &quot;Without Influential&quot; = coef(model_without),
+  &quot;Difference&quot; = coef(model) - coef(model_without)
+)</code></pre>
+<p><strong>Questions:</strong> 1. Why is this observation influential?
+Consider its leverage and residual. 2. Should this observation be
+removed? What are the ethical and methodological considerations? 3. What
+would you recommend to a researcher who found such an influential
+observation in their data?</p>
 </div>
 </div>
 

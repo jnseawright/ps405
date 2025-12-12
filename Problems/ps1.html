@@ -398,7 +398,6 @@ dataset pulled from Wikipedia that lists details about governors, and
 the deportation data. Let’s start by getting both of these loaded into
 our R workspace.</p>
 <pre class="r"><code>governor_data &lt;- read.csv(&quot;https://github.com/jnseawright/ps210/raw/refs/heads/main/Data/stategovs.csv&quot;)
-
 ice_arrests &lt;- read.csv(&quot;https://github.com/jnseawright/ps210/raw/refs/heads/main/Data/icearrests.csv&quot;)</code></pre>
 <p>Now what we want to do is create a new variable in the ICE data that
 records the partisanship of the state governor where the arrest
@@ -418,8 +417,16 @@ for (i in 1:nrow(ice_arrests)){
     #When the party isn&#39;t missing, we&#39;ll set it from the governor data.
     else ice_arrests$Party[i] &lt;- governor_data$Party[governor_data$State==ice_arrests$State[i]]
 }</code></pre>
-<p>Run a regression predicting state-level ICE arrests relative to the
-party controlling the state governorship. Interpret the results.</p>
+<p><strong>3a. Run a regression predicting state-level ICE arrests
+relative to the party controlling the state governorship. Interpret the
+results.</strong></p>
+<p><strong>3b. Before running your regression, create an appropriate
+visualization to explore the relationship between governor’s party and
+ICE arrests. Consider using a boxplot, violin plot, or jittered
+scatterplot. Describe what you observe in the visualization and how it
+complements or contrasts with your regression results.</strong></p>
+<p><em>Hint: You may need to aggregate the data to state level or sample
+appropriately for visualization given the dataset’s size.</em></p>
 </div>
 <div id="section-8" class="section level20">
 <p class="heading"></p>
@@ -456,10 +463,32 @@ for (i in 1:nrow(ice_arrests)){
 #This variable often reads in with commas and gets treated as text, so we&#39;ll 
 #make sure to convert it to an actual number.
 ice_arrests$Population &lt;- parse_number(ice_arrests$Population)</code></pre>
-<p>Run a regression predicting state-level ICE arrests as a function of
-which party controls the governorship and also state population. Once
-again, interpret your results, also describing any interesting
-comparisons with the bivariate results in Problem 3.</p>
+<p><strong>4a. Run a regression predicting state-level ICE arrests as a
+function of which party controls the governorship and also state
+population. Once again, interpret your results, also describing any
+interesting comparisons with the bivariate results in Problem
+3.</strong></p>
+<p><strong>4b. Create a scatterplot of ICE arrests against state
+population, using color to distinguish between states with Democratic
+and Republican governors. Add regression lines (either separate lines
+for each party or one overall line) to visualize the relationship.
+Discuss how this visualization helps you understand the multivariate
+regression results. What patterns do you see that might not be apparent
+from the regression table alone?</strong></p>
+</div>
+<div id="section-10" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="problem-5" class="section level2">
+<h2>Problem 5</h2>
+<div id="section-11" class="section level20">
+<p class="heading"></p>
+<p><strong>Reflection question:</strong> Based on your analysis in
+Problems 3 and 4, what are at least two limitations of using governor’s
+partisanship as a predictor of ICE arrests? Consider both methodological
+issues (e.g., measurement, confounding variables) and substantive
+concerns (e.g., causal mechanisms, political context).</p>
 <p>Please submit your completed assignment at:</p>
 <p><a href="https://canvas.northwestern.edu/courses/245562/assignments/1676620">https://canvas.northwestern.edu/courses/245562/assignments/1676620</a></p>
 </div>

@@ -1,0 +1,396 @@
+#######################
+## Problem Set 8     ##
+#######################
+
+**Due Date**: [Insert due date]  
+**Submission**: [Canvas Link]
+
+**Instructions**: 
+- Show all mathematical derivations where requested.
+- Include complete, well-commented R code for all analyses.
+- Submit knitted document with all outputs.
+- For Problems 1-4, provide clear explanations in your own words.
+
+---
+
+# Problem 1: Understanding Transformations
+
+## 1a. Theoretical Foundations
+
+1. Explain the three main purposes of variable transformations in regression analysis. Provide a political science example for each.
+
+2. Compare and contrast the following transformations:
+   - $\log(X)$ vs. $\sqrt{X}$
+   - $\text{asinh}(X)$ vs. $\log(X + 1)$
+
+## 1b. Centering and Scaling
+
+Using the kidiq dataset from the slides:
+
+```{r problem1b, eval=FALSE}
+library(rosdata)
+data(kidiq)
+
+# Fit three models:
+# 1. Without centering: kid_score ~ mom_hs + mom_iq + mom_hs:mom_iq
+# 2. With centering mom_iq at its mean
+# 3. With standardization (z-scores for mom_iq)
+
+# Your tasks:
+# 1. Fit all three models
+# 2. Create a table comparing coefficients
+# 3. Interpret the interaction term in each model
+# 4. Explain why centering matters for interpretation
+```
+
+**Questions:**
+1. How does the interpretation of the main effect of `mom_hs` change across models?
+2. What is the advantage of Gelman's "divide by 2 SDs" approach?
+3. When would you use z-scores vs. mean-centering?
+
+---
+
+# Problem 2: Practical Transformation Analysis
+
+## 2a. Democracy and Development Analysis
+
+Using the QOG data from the slides:
+
+```{r problem2a, eval=FALSE}
+library(rqog)
+library(dplyr)
+library(ggplot2)
+
+# Load and prepare data
+qog_data <- read_qog(which_data = "standard", data_type = "time-series")
+
+democracy_data <- qog_data %>%
+  filter(year == 2020) %>%
+  select(
+    country = cname,
+    democracy = vdem_libdem,
+    gdp_pc = wdi_gdpcappppcon2017,
+    population = wdi_pop,
+    corruption = ti_cpi
+  ) %>%
+  filter(!is.na(democracy), !is.na(gdp_pc), gdp_pc > 0) %>%
+  mutate(
+    log_gdp = log(gdp_pc),
+    log_pop = log(population)
+  )
+
+# Your tasks:
+# 1. Fit four different models of democracy:
+#    a. Linear: democracy ~ gdp_pc
+#    b. Log-X: democracy ~ log_gdp
+#    c. Log-Y: lm(log(democracy) ~ gdp_pc)  # Note: democracy is 0-1
+#    d. Log-log: lm(log(democracy + 0.01) ~ log_gdp)  # Handle zeros
+
+# 2. For each model:
+#    a. Create residual plots
+#    b. Calculate R² and RMSE
+#    c. Interpret coefficients substantively
+
+# 3. Create a visualization comparing predicted vs. actual values
+#    for all four models on the original scale
+
+# 4. Test polynomial specifications:
+#    democracy ~ poly(log_gdp, 2)
+#    democracy ~ poly(log_gdp, 3)
+```
+
+**Questions:**
+1. Which transformation provides the best fit? Justify using both statistical and substantive criteria.
+2. How do you interpret the coefficient for `log_gdp` in the log-X model?
+3. What are the challenges of using log transformations with bounded variables (0-1 scale)?
+
+## 2b. Handling Zeros and Special Cases
+
+```{r problem2b, eval=FALSE}
+# Simulate data with zeros and negative values
+set.seed(123)
+n <- 500
+sim_data <- data.frame(
+  x = rnorm(n, mean = 100, sd = 50),
+  # Create outcome with some zeros and negatives
+  y_raw = 100 + 2*x + rnorm(n, 0, 50),
+  # Add measurement that can be negative (e.g., trade balance)
+  trade_balance = rnorm(n, mean = 0, sd = 1000)
+) %>%
+  mutate(
+    # Create version with zeros (e.g., no conflict)
+    conflict_dummy = ifelse(y_raw > median(y_raw), 1, 0),
+    # Create strictly positive variable with zeros
+    aid_amount = pmax(y_raw, 0),
+    # Create count-like variable
+    protest_count = round(pmax(y_raw/10, 0))
+  )
+
+# Your tasks:
+# 1. Compare transformations for aid_amount (has zeros):
+#    a. log(aid_amount + 1)
+#    b. sqrt(aid_amount)
+#    c. asinh(aid_amount)
+# 2. For trade_balance (can be negative):
+#    a. Why can't we use log transformation?
+#    b. What alternatives exist?
+# 3. For protest_count (count data):
+#    a. Compare: linear, sqrt, log, and Poisson GLM
+```
+
+**Questions:**
+1. When should you use `asinh()` instead of `log(x + 1)`?
+2. What are the substantive implications of different transformations for interpreting effects?
+3. How would you decide between transformations and GLMs for count data?
+
+---
+
+# Problem 3: Regression Diagnostics
+
+## 3a. Diagnostic Tools and Interpretation
+
+1. Explain what each of these diagnostic plots reveals about model assumptions:
+   - Residuals vs. fitted values
+   - Q-Q plot of residuals
+   - Scale-location plot
+   - Residuals vs. leverage plot
+
+2. Using the democracy models from Problem 2:
+
+```{r problem3a, eval=FALSE}
+# Choose the best model from Problem 2
+best_model <- lm(democracy ~ log_gdp, data = democracy_data)
+
+# Create comprehensive diagnostics:
+library(ggplot2)
+library(patchwork)
+
+# 1. Create all four diagnostic plots using base R and ggplot2
+# 2. Calculate and plot influence statistics (Cook's distance, DFFITS)
+# 3. Identify influential observations
+# 4. Test for heteroskedasticity (Breusch-Pagan test)
+# 5. Check for nonlinearity using residual plots against predictors
+
+# Your analysis should include:
+# - Identification of problematic observations
+# - Assessment of whether assumptions are violated
+# - Recommendations for model improvement
+```
+
+**Questions:**
+1. Which countries are influential observations in your model? Why?
+2. Is there evidence of heteroskedasticity? What are the implications?
+3. Are the residuals normally distributed? Why does this matter?
+
+## 3b. Cross-Validation and Model Comparison
+
+```{r problem3b, eval=FALSE}
+# Implement cross-validation for model comparison
+set.seed(123)
+
+# Your tasks:
+# 1. Implement k-fold cross-validation (k=10) for:
+#    a. Linear model: democracy ~ gdp_pc
+#    b. Log model: democracy ~ log_gdp
+#    c. Polynomial model: democracy ~ poly(log_gdp, 2)
+
+# 2. Calculate and compare:
+#    a. Mean squared error (MSE) for each model
+#    b. Mean absolute error (MAE)
+#    c. R² in each fold
+
+# 3. Create visualization comparing cross-validation performance
+
+# 4. Implement leave-one-out cross-validation for the best model
+#    and compare with k-fold results
+```
+
+**Questions:**
+1. Which model performs best in cross-validation? Does this match in-sample performance?
+2. What are the advantages of k-fold CV vs. leave-one-out CV?
+3. How much does model performance vary across folds?
+
+---
+
+# Problem 4: Special Issues in Political Data
+
+## 4a. Time-Series Diagnostics
+
+```{r problem4a, eval=FALSE}
+# Load time-series data
+qog_ts <- read_qog(which_data = "standard", data_type = "time-series")
+
+# Focus on US data over time
+us_data <- qog_ts %>%
+  filter(cname == "United States") %>%
+  select(
+    year = year,
+    democracy = vdem_libdem,
+    gdp_pc = gle_cgdpc,
+    inequality = wdi_gini
+  ) %>%
+  filter(!is.na(democracy), !is.na(gdp_pc)) %>%
+  arrange(year) %>%
+  mutate(
+    log_gdp = log(gdp_pc),
+    # Create lagged variables
+    democracy_lag = lag(democracy),
+    gdp_growth = (gdp_pc - lag(gdp_pc)) / lag(gdp_pc)
+  )
+
+# Your tasks:
+# 1. Fit model: democracy ~ log_gdp (ignoring time)
+# 2. Check for autocorrelation:
+#    a. Plot residuals over time
+#    b. Calculate Durbin-Watson statistic
+#    c. Perform Ljung-Box test
+# 3. Fit time-aware models:
+#    a. democracy ~ log_gdp + democracy_lag
+#    b. democracy ~ log_gdp + year
+#    c. democracy ~ gdp_growth
+# 4. Compare diagnostics across models
+```
+
+**Questions:**
+1. Is there evidence of autocorrelation in the residuals? What does this imply?
+2. How does including a lagged dependent variable change model interpretation?
+3. What are the trade-offs between different approaches to handling time dependence?
+
+## 4b. Measurement Error and Validity
+
+Consider the relationship between corruption and democracy:
+
+```{r problem4b, eval=FALSE}
+library(rqog)
+qog_data <- read_qog(which_data = "standard", data_type = "time-series")
+
+validity_data <- qog_data %>%
+  filter(year == 2020) %>%
+  select(
+    country = cname,
+    # Multiple measures of democracy
+    vdem_libdem = vdem_libdem,        # V-Dem liberal democracy
+    polity2 = p_polity2,              # Polity IV (rescaled 0-1)
+    fh_status = fh_status,           # Freedom House (rescaled 0-1)
+    # Multiple measures of corruption
+    ti_cpi = ti_cpi,                  # Transparency International CPI
+    wgi_corruption = wgi_cce,        # World Governance Indicators
+    # Control variables
+    gdp_pc = gle_cgdpc,
+    region = ht_region
+  ) %>%
+  mutate(
+    democracy_avg = rowMeans(cbind(vdem_libdem, polity2, fh_status), na.rm = TRUE),
+    corruption_avg = rowMeans(cbind(ti_cpi, wgi_corruption), na.rm = TRUE),
+    log_gdp = log(gdp_pc)
+  )
+
+# Your tasks:
+# 1. Fit models using different democracy measures:
+#    a. vdem_libdem ~ corruption_avg + log_gdp
+#    b. polity2 ~ corruption_avg + log_gdp
+#    c. democracy_avg ~ corruption_avg + log_gdp
+
+# 2. Assess measurement validity:
+#    a. Calculate correlations between democracy measures
+#    b. Create scatterplot matrix
+#    c. Compare coefficient estimates across models
+
+# 3. Assess model sensitivity:
+#    a. How do results change with different corruption measures?
+#    b. What happens if you exclude influential regions?
+```
+
+**Questions:**
+1. How consistent are the findings across different measures of democracy?
+2. What does inconsistency across measures suggest about measurement validity?
+3. How would you report these results to acknowledge measurement uncertainty?
+
+---
+
+# Problem 5: Comprehensive Case Study
+
+## 5a. Full Analysis Pipeline
+
+You are studying the relationship between economic development, inequality, and democracy. Using the QOG data:
+
+```{r problem5a, eval=FALSE}
+# Prepare comprehensive dataset
+analysis_data <- qog_data %>%
+  filter(year >= 2000, year <= 2020) %>%
+  select(
+    country = cname,
+    year = year,
+    democracy = vdem_libdem,
+    gdp_pc = gle_cgdpc,
+    inequality = wdi_gini,
+    education = wdi_tertenroll,
+    urbanization = wdi_urban,
+    corruption = ti_cpi,
+    region = ht_region
+  ) %>%
+  group_by(country) %>%
+  # Take most recent observation with complete data
+  filter(year == max(year[complete.cases(democracy, gdp_pc, inequality)])) %>%
+  ungroup() %>%
+  filter(complete.cases(.)) %>%
+  mutate(
+    log_gdp = log(gdp_pc),
+    inequality_sq = inequality^2  # For potential nonlinear effects
+  )
+
+# Your comprehensive analysis should include:
+# 1. Model specification:
+#    a. democracy ~ log_gdp + inequality + education + urbanization
+#    b. Add interaction: log_gdp * inequality
+#    c. Add nonlinear term: inequality_sq
+
+# 2. Diagnostic assessment for each model:
+#    a. Residual plots
+#    b. Influence statistics
+#    c. Multicollinearity (VIF)
+#    d. Heteroskedasticity tests
+
+# 3. Model comparison:
+#    a. Cross-validation performance
+#    b. Information criteria (AIC, BIC)
+#    c. Adjusted R²
+
+# 4. Sensitivity analysis:
+#    a. Robust regression to handle outliers
+#    b. Bootstrap standard errors
+#    c. Subgroup analysis by region
+
+# 5. Presentation:
+#    a. Create publication-quality diagnostic plots
+#    b. Build comprehensive results table
+#    c. Write interpretation of findings
+```
+
+## 5b. Research Report
+
+Based on your analysis from 5a, write a brief research report (3-4 pages) that includes:
+
+1. **Introduction**: Theoretical motivation for studying development, inequality, and democracy
+2. **Data and Methods**: Description of data sources, variable construction, and analytical approach
+3. **Results**: Presentation of findings with appropriate tables and figures
+4. **Diagnostic Assessment**: Transparent reporting of model diagnostics and limitations
+5. **Conclusion**: Substantive interpretation and implications for political science
+
+Your report should demonstrate:
+- Thoughtful variable transformation decisions
+- Comprehensive model diagnostics
+- Awareness of limitations and assumptions
+- Clear communication of statistical findings
+
+## 5c. Reflection and Best Practices
+
+Based on what you've learned about transformations and diagnostics:
+
+1. What are the most common mistakes political scientists make regarding model diagnostics?
+2. How should researchers balance model complexity (transformations, interactions) with interpretability?
+3. What practices would you recommend for transparent reporting of:
+   - Transformation decisions
+   - Diagnostic results
+   - Model limitations
+4. How has your approach to regression modeling changed after learning about proper diagnostics?

@@ -1,0 +1,310 @@
+#######################
+## Problem Set 7     ##
+#######################
+
+**Due Date**: [Insert due date]  
+**Submission**: [Canvas Link]
+
+**Instructions**: 
+- Show all mathematical derivations where requested.
+- Include complete, well-commented R code for all analyses.
+- Submit knitted document with all outputs.
+- For Problems 1-4, provide clear explanations in your own words.
+
+---
+
+# Problem 1: Understanding Statistical Power
+
+## 1a. Conceptual Foundations
+
+1. Define statistical power in your own words.
+2. Explain the relationship between Type I error (α), Type II error (β), and power.
+
+## 1b. Power Determinants
+
+For each of the following factors, explain how increasing it affects statistical power (holding other factors constant), and provide the mathematical relationship:
+
+1. Sample size (n)
+2. Effect size (β or d)
+3. Significance level (α)
+4. Variance/standard deviation of the outcome
+5. Predictor variance
+
+---
+
+# Problem 2: Practical Power Analysis
+
+## 2a. Power Calculation Simulation
+
+Simulate power for different scenarios:
+
+```{r problem2a, eval=FALSE}
+# Complete this code to simulate power for different sample sizes
+
+simulate_power <- function(true_effect, n, sigma = 1, alpha = 0.05, n_sim = 1000) {
+  # Your code here:
+  # 1. Simulate n_sim datasets with given parameters
+  # 2. For each dataset, run linear regression
+  # 3. Calculate proportion of simulations where p < alpha
+  # 4. Return power estimate
+}
+
+# Test for different sample sizes
+sample_sizes <- c(50, 100, 200, 400, 800)
+true_effect <- 0.2
+
+# Create a data frame with power estimates for each sample size
+power_results <- data.frame()
+for (n in sample_sizes) {
+  # Your code here
+}
+
+# Create visualization
+library(ggplot2)
+# Plot power vs sample size
+```
+
+**Questions:**
+1. What sample size is needed to achieve 80% power for detecting an effect of 0.2?
+2. How does changing the true effect size to 0.4 affect the required sample size?
+3. What happens to power if you double the variance (sigma)?
+
+## 2b. Winner's Curse Demonstration
+
+```{r problem2b, eval=FALSE}
+# Complete this code to demonstrate the winner's curse
+
+set.seed(123)
+n_sim <- 10000
+true_beta <- 0.1
+sample_sizes <- c(50, 200, 800)
+
+results <- data.frame()
+for (n in sample_sizes) {
+  for (i in 1:n_sim) {
+    # Generate data
+    x <- rnorm(n)
+    y <- true_beta * x + rnorm(n)
+    
+    # Run regression
+    model <- lm(y ~ x)
+    beta_hat <- coef(model)[2]
+    p_value <- summary(model)$coefficients[2, 4]
+    
+    # Store results
+    results <- rbind(results, data.frame(
+      n = n,
+      beta_hat = beta_hat,
+      p_value = p_value,
+      significant = p_value < 0.05
+    ))
+  }
+}
+
+# Analyze results
+library(dplyr)
+bias_analysis <- results %>%
+  group_by(n, significant) %>%
+  summarize(
+    mean_beta = mean(beta_hat),
+    median_beta = median(beta_hat),
+    sd_beta = sd(beta_hat),
+    n_studies = n(),
+    .groups = 'drop'
+  )
+
+# Create visualization showing:
+# 1. Distribution of all estimates by sample size
+# 2. Distribution of only significant estimates
+# 3. Mean bias in significant estimates
+```
+
+**Questions:**
+1. What is the "winner's curse" and why does it occur?
+2. How does sample size affect the magnitude of the winner's curse?
+3. What percentage of significant results overestimate the true effect in your simulation?
+
+---
+
+# Problem 3: Interaction Effects
+
+## 3a. Moderator vs Mediator
+
+1. Define and distinguish between:
+   - Moderator variable
+   - Mediator variable
+2. Draw path diagrams for both (like in the slides)
+3. Provide a political science example of each
+
+## 3b. Categorical Moderator Analysis
+
+Using the QOG data from the slides:
+
+```{r problem3b, eval=FALSE}
+library(rqog)
+library(dplyr)
+library(ggplot2)
+
+# Load and prepare data
+qog_data <- read_qog(which_data = "standard", data_type = "time-series")
+
+# Create analysis dataset
+analysis_data <- qog_data %>%
+  select(
+    country = cname,
+    year = year,
+    democracy = vdem_libdem,
+    gdp_pc = gle_cgdpc,
+    colonial = ht_colonial
+  ) %>%
+  filter(!is.na(democracy), !is.na(gdp_pc), !is.na(colonial)) %>%
+  group_by(country) %>%
+  filter(year == max(year)) %>%
+  ungroup() %>%
+  mutate(
+    log_gdp = log(gdp_pc),
+    colonized = ifelse(colonial > 0, 1, 0)
+  )
+
+# Your tasks:
+# 1. Run three models:
+#    a. Main effects only: democracy ~ log_gdp + colonized
+#    b. With interaction: democracy ~ log_gdp * colonized
+#    c. Alternative parameterization (if needed)
+
+# 2. Calculate and interpret:
+#    a. The marginal effect of log_gdp when colonized = 0
+#    b. The marginal effect of log_gdp when colonized = 1
+#    c. Test whether these effects are statistically different
+
+# 3. Create visualization:
+#    a. Plot with two regression lines (one for each colonized status)
+#    b. Include confidence bands
+#    c. Add appropriate labels and title
+```
+
+**Questions:**
+1. How does the relationship between GDP and democracy differ between former colonies and never-colonized countries?
+2. Is the interaction statistically significant? What does this mean substantively?
+3. What are the intercepts for each group, and how do you interpret them?
+
+---
+
+# Problem 4: Power for Interaction Effects
+
+## 4a. Power Simulation for Interactions
+
+```{r problem4a, eval=FALSE}
+# Simulate power for detecting interaction effects
+
+simulate_interaction_power <- function(
+  n, beta_main = 0.2, beta_interaction = 0.1,
+  cor_xz = 0, sigma = 1, alpha = 0.05, n_sim = 1000
+) {
+  power_results <- numeric(n_sim)
+  
+  for (i in 1:n_sim) {
+    # Generate correlated X and Z
+    if (cor_xz == 0) {
+      x <- rnorm(n)
+      z <- rnorm(n)
+    } else {
+      # Generate correlated variables
+      sigma_matrix <- matrix(c(1, cor_xz, cor_xz, 1), 2, 2)
+      xz <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = sigma_matrix)
+      x <- xz[, 1]
+      z <- xz[, 2]
+    }
+    
+    # Generate Y with interaction
+    y <- beta_main * x + beta_main * z + beta_interaction * x * z + rnorm(n, sd = sigma)
+    
+    # Test interaction
+    model <- lm(y ~ x * z)
+    p_interaction <- summary(model)$coefficients[4, 4]
+    power_results[i] <- p_interaction < alpha
+  }
+  
+  return(mean(power_results))
+}
+
+# Your tasks:
+# 1. Create power curve for interaction detection across sample sizes
+# 2. Investigate how correlation between X and Z affects power
+# 3. Compare power for detecting main effects vs. interaction effects
+```
+
+**Questions:**
+1. Why do interaction effects typically require larger sample sizes than main effects?
+2. How does the correlation between X and Z affect power to detect their interaction?
+3. What sample size would you recommend for a study expecting a small interaction effect (β = 0.1)?
+
+## 4b. Power Analysis with `pwrss`
+
+```{r problem4b, eval=FALSE}
+library(pwrss)
+
+# Recreate the power analysis examples from the slides
+# and answer the following questions:
+
+# Example 1: What happens when beta decreases from 0.60 to 0.10?
+power1 <- power.t.regression(
+  beta = 0.60,
+  sd.outcome = 12,
+  sd.predictor = 4,
+  k.total = 12,
+  r.squared = 0.30,
+  power = .80,
+  alpha = 0.05,
+  alternative = "two.sided"
+)
+
+power2 <- power.t.regression(
+  beta = 0.10,  # Changed from 0.60
+  sd.outcome = 12,
+  sd.predictor = 4,
+  k.total = 12,
+  r.squared = 0.30,
+  power = .80,
+  alpha = 0.05,
+  alternative = "two.sided"
+)
+
+# Example 2: What happens when outcome variance increases?
+power3 <- power.t.regression(
+  beta = 0.60,
+  sd.outcome = 60,  # Increased from 12
+  sd.predictor = 4,
+  k.total = 12,
+  r.squared = 0.30,
+  power = .80,
+  alpha = 0.05,
+  alternative = "two.sided"
+)
+
+# Your analysis:
+# 1. Compare required sample sizes for each scenario
+# 2. Explain why these changes affect power
+# 3. Provide practical recommendations for study design
+```
+
+## 4c. Research Design Application
+
+Design a study to test whether the effect of campaign spending on election outcomes is moderated by incumbency status.
+
+1. Specify:
+   - Main independent variable
+   - Moderator variable
+   - Outcome variable
+   - Control variables you would include
+
+2. Conduct a power analysis for this study:
+   - What effect sizes would you expect?
+   - What sample size would you need for 80% power?
+   - How would you address potential confounders?
+
+3. Write a brief methods section (200-300 words) describing your proposed study, including:
+   - Data sources
+   - Sample size justification
+   - Analysis plan
+   - How you would test the interaction
