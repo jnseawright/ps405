@@ -1179,3 +1179,8 @@ tab1 %>%
   kable_styling() %>%
   save_kable("tables/table1.png")
 ```
+
+---
+###Example
+
+[This One's For the Boys](https://www.cambridge.org/core/journals/american-political-science-review/article/this-ones-for-the-boys-how-gendered-political-socialization-limits-girls-political-ambition-and-interest/FC49F85EDDAAA804DCBFBA63C6C437F0)

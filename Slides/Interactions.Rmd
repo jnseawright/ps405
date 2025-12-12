@@ -481,3 +481,15 @@ Power analysis is a little more complicated when there is an interaction.
 library(InteractionPoweR)
 power_interaction_r2(N=seq(100,300,by=10),r.x1.y=0.1, r.x2.y=.1,r.x1x2.y=0.1,r.x1.x2=.1)
 ```
+
+---
+
+![Interactions1](Images/Cheeseman1.png)
+
+---
+
+![Interactions2](Images/Cheeseman2.png)
+
+---
+
+![Interactions3](Images/Cheeseman3.png)

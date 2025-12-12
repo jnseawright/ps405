@@ -218,3 +218,19 @@ p
 blp.multivariate <- lm(Stateterrorism ~ TrumpShare + D12Margin, data=election2016)
 blp.multivariate
 ```
+
+---
+
+![Coefficients 1](Images/Krause1.png)
+
+---
+
+![Coefficients 2](Images/Krause2.png)
+
+---
+
+![Coefficients 3](Images/Krause3.png)
+
+---
+
+![Coefficients 4](Images/Krause4.png)

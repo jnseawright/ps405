@@ -779,3 +779,22 @@ power.t.regression(beta = 0.60,
 ---
 
 How useful is a power calculation after the study has been carried out?
+
+---
+
+![Power1](Images/ArelBundock1.png)
+
+
+---
+
+![Power2](Images/ArelBundock2.png)
+
+
+---
+
+![Power3](Images/ArelBundock3.png)
+
+
+---
+
+![Power4](Images/ArelBundock4.png)

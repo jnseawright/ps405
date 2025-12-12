@@ -203,6 +203,340 @@ To see why, consider our example of 20 independent tests from earlier. We want `
 ---
 
 If our tests are not independent, the Bonferroni correction will typically be too conservative.
+
+---
+### Holm Correction: A Stepwise Improvement
+
+Bonferroni is conservative because it treats all tests equally. Holm's step-down procedure is more powerful while still controlling FWER:
+
+1. Order p-values: \(p_{(1)} \leq p_{(2)} \leq \cdots \leq p_{(m)}\)
+2. Compare \(p_{(k)}\) to \(\frac{\alpha}{m+1-k}\)
+3. Reject all hypotheses up to the first non-rejection
+
+
+``` r
+# Example: Three tests with p-values 0.004, 0.020, 0.122
+p_vals &lt;- c(0.004, 0.020, 0.122)
+alpha &lt;- 0.05
+m &lt;- length(p_vals)
+
+# Holm correction manually
+sorted_p &lt;- sort(p_vals)
+holm_thresholds &lt;- alpha/(m + 1 - 1:m)
+
+cat("Sorted p-values:", sorted_p, "\n")
+```
+
+```
+## Sorted p-values: 0.004 0.02 0.122
+```
+
+``` r
+cat("Holm thresholds:", round(holm_thresholds, 3), "\n")
+```
+
+```
+## Holm thresholds: 0.017 0.025 0.05
+```
+
+``` r
+cat("Significant under Holm:", sorted_p &lt;= holm_thresholds, "\n")
+```
+
+```
+## Significant under Holm: TRUE TRUE FALSE
+```
+
+``` r
+# Using p.adjust
+holm_adjusted &lt;- p.adjust(p_vals, method = "holm")
+cat("Holm-adjusted p-values:", round(holm_adjusted, 3), "\n")
+```
+
+```
+## Holm-adjusted p-values: 0.012 0.04 0.122
+```
+
+---
+
+### False Discovery Rate: Benjamini-Hochberg
+
+While FWER controls "any false positive," FDR controls the *proportion* of false positives among discoveries. Less conservative when many tests are expected to be true positives.
+
+**Benjamini-Hochberg Procedure:**
+1. Order p-values: \(p_{(1)} \leq \cdots \leq p_{(m)}\)
+2. Find largest \(k\) where \(p_{(k)} \leq \frac{k}{m}\alpha\)
+3. Reject all hypotheses 1 through \(k\)
+
+
+``` r
+# Same three p-values
+p_vals &lt;- c(0.004, 0.020, 0.122)
+m &lt;- length(p_vals)
+
+# BH thresholds
+bh_thresholds &lt;- (1:m)/m * alpha
+
+cat("BH thresholds:", round(bh_thresholds, 3), "\n")
+```
+
+```
+## BH thresholds: 0.017 0.033 0.05
+```
+
+``` r
+cat("Significant under BH:", p_vals &lt;= bh_thresholds, "\n")
+```
+
+```
+## Significant under BH: TRUE TRUE FALSE
+```
+
+``` r
+# Using p.adjust
+bh_adjusted &lt;- p.adjust(p_vals, method = "BH")
+cat("BH-adjusted p-values:", round(bh_adjusted, 3), "\n")
+```
+
+```
+## BH-adjusted p-values: 0.012 0.03 0.122
+```
+
+---
+
+### Comparing Correction Methods
+
+
+``` r
+set.seed(42)
+# Simulate 50 tests: 25 null true (mean=0), 25 false (mean=0.5)
+n_tests &lt;- 50
+effects &lt;- c(rep(0, 25), rep(0.5, 25))
+p_vals &lt;- 2*pnorm(-abs(rnorm(n_tests, mean = effects)))
+
+# Apply corrections
+corrections &lt;- list(
+  "None" = p_vals,
+  "Bonferroni" = p.adjust(p_vals, "bonferroni"),
+  "Holm" = p.adjust(p_vals, "holm"),
+  "BH" = p.adjust(p_vals, "BH")
+)
+
+# Count significant at alpha=0.05
+sig_counts &lt;- sapply(corrections, function(p) sum(p &lt;= 0.05))
+
+barplot(sig_counts, 
+        main = "Significant Tests Under Different Corrections",
+        ylab = "Number Significant (α=0.05)",
+        col = c("#1c5253", "#d3bccc", "#b3dee2", "#f0b7b3"),
+        ylim = c(0, n_tests))
+```
+
+![](MultipleComparisons_files/figure-html/compare-corrections-1.png)&lt;!-- --&gt;
+
+---
+
+### When to Use Which Correction?
+
+**FWER methods (Bonferroni, Holm):**
+- Confirmatory research
+- Small number of tests
+- Severe consequences of false positives
+- Clinical trials, policy evaluations
+
+**FDR methods (Benjamini-Hochberg):**
+- Exploratory research
+- Many tests (e.g., genomics, large-scale surveys)
+- Willing to accept some false positives to find more true effects
+
+---
+
+### Indexing: Reducing Multiple Outcomes
+
+When you measure many related outcomes, combine them into an index:
+
+**Mean Effects Index (Kling, Liebman, &amp; Katz, 2004):**
+1. Reorient outcomes so higher = better
+2. Standardize each outcome by control group: \(z_{ik} = \frac{y_{ik} - \bar{y}_k^{control}}{SD_k^{control}}\)
+3. Average z-scores for each unit
+
+**Advantages:**
+- Increases power when effects are consistent
+- Handles missing data gracefully
+- Reduces multiple comparisons problem
+
+
+``` r
+set.seed(123)
+n &lt;- 200
+k &lt;- 5
+treatment &lt;- sample(0:1, n, replace = TRUE)
+
+# Generate correlated outcomes using factor model (simpler approach)
+common_factor &lt;- rnorm(n)  # Common factor induces correlation
+outcomes &lt;- matrix(NA, n, k)
+
+# Each outcome = common factor + unique component + treatment effect
+for (j in 1:k) {
+  outcomes[, j] &lt;- 0.7 * common_factor + 0.3 * rnorm(n) + treatment * 0.3
+}
+
+# Create mean effects index
+control_mean &lt;- colMeans(outcomes[treatment == 0, ])
+control_sd &lt;- apply(outcomes[treatment == 0, ], 2, sd)
+
+z_scores &lt;- sweep(outcomes, 2, control_mean) / control_sd
+index &lt;- rowMeans(z_scores)
+
+# Compare individual tests vs. index
+cat("Testing each outcome individually:\n")
+```
+
+```
+## Testing each outcome individually:
+```
+
+``` r
+individual_pvals &lt;- numeric(k)
+for (j in 1:k) {
+  individual_pvals[j] &lt;- summary(lm(outcomes[, j] ~ treatment))$coefficients[2, 4]
+  cat(paste0("Outcome ", j, ": p = ", round(individual_pvals[j], 4), "\n"))
+}
+```
+
+```
+## Outcome 1: p = 0.2246
+## Outcome 2: p = 0.1092
+## Outcome 3: p = 0.0562
+## Outcome 4: p = 0.0952
+## Outcome 5: p = 0.1061
+```
+
+``` r
+cat("\nTesting composite index:\n")
+```
+
+```
+## 
+## Testing composite index:
+```
+
+``` r
+index_model &lt;- lm(index ~ treatment)
+index_p &lt;- summary(index_model)$coefficients[2, 4]
+cat("Index p-value:", round(index_p, 4), "\n")
+```
+
+```
+## Index p-value: 0.0908
+```
+
+``` r
+cat("Index estimate:", round(coef(index_model)[2], 3), "\n")
+```
+
+```
+## Index estimate: 0.212
+```
+
+``` r
+# Bonferroni correction for individual tests
+cat("\nBonferroni-corrected thresholds (α=0.05/5=0.01):\n")
+```
+
+```
+## 
+## Bonferroni-corrected thresholds (α=0.05/5=0.01):
+```
+
+``` r
+cat("Significant after Bonferroni:", sum(individual_pvals &lt; 0.01), "out of", k, "\n")
+```
+
+```
+## Significant after Bonferroni: 0 out of 5
+```
+
+---
+
+### Design-Based Approaches
+
+**Pre-analysis plans (PAPs):**
+- Specify hypotheses and analysis plan before seeing data
+- Define "families" of tests for correction
+- Distinguish confirmatory vs. exploratory analyses
+
+**Advantages of PAPs:**
+- Clarifies multiple comparisons problem
+- Prevents data dredging
+- Increases credibility of results
+
+**Replication:**
+- The ultimate test: can others reproduce your findings?
+- Particularly important when dealing with multiple comparisons
+
+---
+
+![Abstract](Images/Rooduijn1.png) 
+---
+
+![Bonferroni Regression](Images/Rooduijn2.png) 
+
+---
+
+![No Bonferroni Regression](Images/Rooduijn3.png) 
+
+---
+
+![Abstract](Images/Castorena1.png)
+---
+
+![Explanation](Images/Castorena2.png)
+
+---
+
+![Results1](Images/Castorena3.png)
+
+---
+
+![Results2](Images/Castorena4.png)
+
+---
+
+### Practical Recommendations
+
+1. **Specify your family of tests** before analysis
+2. **Use appropriate correction** based on your goals:
+   - FWER for strong control (Holm &gt; Bonferroni)
+   - FDR for exploratory work
+3. **Consider indexing** for related outcomes
+4. **Document all tests** conducted (even non-significant ones)
+5. **Be transparent** about corrections (or lack thereof)
+
+
+Table: Multiple Comparisons Toolkit
+
+|Method             |Controls      |When_To_Use               |R_Function         |
+|:------------------|:-------------|:-------------------------|:------------------|
+|Bonferroni         |FWER          |Few tests, independent    |p.adjust(, "bonf") |
+|Holm               |FWER          |Few tests, any dependency |p.adjust(, "holm") |
+|Benjamini-Hochberg |FDR           |Many tests, exploratory   |p.adjust(, "BH")   |
+|Indexing           |Reduces tests |Related outcomes          |Custom function    |
+|PAPs               |Design-based  |Pre-registered studies    |NA                 |
+
+---
+
+### Resources for Further Learning
+
+1. **R functions:** `p.adjust()` in base R
+2. **Packages:** `multcomp`, `qvalue`, `onlineFDR`
+3. **Reading:** 
+   - Benjamini &amp; Hochberg (1995) *Journal of the Royal Statistical Society*
+   - Anderson (2008) *Multiple Inference and Gender Differences...*
+   - EGAP's "10 Things to Know About Multiple Comparisons"
+
+**Remember:** No correction method is perfect. The best approach combines statistical correction with thoughtful design and transparent reporting.
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

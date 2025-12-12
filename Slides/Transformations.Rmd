@@ -490,3 +490,19 @@ boxcox(m1)  # Suggests optimal power transformation
 data$z_gdp <- scale(data$gdp)[,1]  # z-scores
 data$gdp_2sd <- data$z_gdp / 2     # Gelman's divide by 2 SDs
 ```
+
+---
+
+![Transformations1](Images/Lewandowsky1.png)
+
+---
+
+![Transformations2](Images/Lewandowsky2.png)
+
+---
+
+![Transformations3](Images/Lewandowsky3.png)
+
+---
+
+![Transformations4](Images/Lewandowsky4.png)

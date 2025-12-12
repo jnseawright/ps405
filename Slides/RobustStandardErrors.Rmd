@@ -885,3 +885,11 @@ reghdfe y x, absorb(state year) vce(cluster state year)
 
 **Remember:** The goal is honest inference, not finding significance.
 ```
+
+---
+
+![Robust1](Images/Xu1.png)
+
+---
+
+![Robust2](Images/Xu2.png)

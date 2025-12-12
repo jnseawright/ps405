@@ -178,3 +178,12 @@ t(xmat)%*%yvec
 solve(t(xmat)%*%xmat, tol=1e-20)
 solve(t(xmat)%*%xmat, tol=1e-20)%*%t(xmat)%*%yvec
 ```
+
+---
+
+![OLS 1](Images/Brown1.png)
+
+
+---
+
+![OLS 2](Images/Brown2.png)

@@ -791,4 +791,20 @@ p3 <- bayesplot::mcmc_trace(as.array(fit), pars = c("gdp_growth",
 ggsave("model_diagnostics.png", width = 10, height = 8, dpi = 300)
 ```
 
-```
+---
+
+![Diagnostics1](Images/Silva1.png)
+
+---
+
+![Diagnostics2](Images/Silva2.png)
+
+
+---
+
+![Diagnostics3](Images/Silva3.png)
+
+
+---
+
+![Diagnostics4](Images/Silva4.png)

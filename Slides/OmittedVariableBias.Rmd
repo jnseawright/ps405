@@ -333,3 +333,20 @@ ggMarginal(turnoutplot)
 turnoutplot <- turnoutplot + geom_abline(intercept = 0.786, slope = -0.7e-08,color="seagreen")
 ggMarginal(turnoutplot)
 ```
+
+---
+
+![OVB 1](Images/Haber1.png)
+
+---
+
+![OVB 2](Images/Haber2.png)
+
+
+---
+
+![OVB 3](Images/Haber3.png)
+
+---
+
+![OVB 4](Images/Haber4.png)

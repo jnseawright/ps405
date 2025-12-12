@@ -88,14 +88,14 @@ We need more complicated tools of statistical analysis to study mediators.
 ---
 ###Moderator
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-4d9791e7880f773bee66" style="width:80%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-4d9791e7880f773bee66">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR, layout = dot]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\"]\n  Y [label = \"Y (Democracy)\"]\n  M [label = \"M (Oil Wealth)\", fillcolor = lightyellow]\n  \n  // Main effect\n  X -> Y [label = \"β₁\"]\n  \n  // Moderation effect\n  M -> X [label = \"Moderates\", style = dashed, color = red]\n  \n  // Direct effect of moderator\n  M -> Y [label = \"β₂\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-069d2b6335d40e61eab8" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-069d2b6335d40e61eab8">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR, layout = dot]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\"]\n  Y [label = \"Y (Democracy)\"]\n  M [label = \"M (Oil Wealth)\", fillcolor = lightyellow]\n  \n  // Main effect\n  X -> Y [label = \"β₁\"]\n  \n  // Moderation effect\n  M -> X [label = \"Moderates\", style = dashed, color = red]\n  \n  // Direct effect of moderator\n  M -> Y [label = \"β₂\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 ###Mediator
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-445bed8732b611466e8a" style="width:80%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-445bed8732b611466e8a">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\", fillcolor = palegreen]\n  M [label = \"M (Education)\", fillcolor = lightyellow]\n  Y [label = \"Y (Democracy)\", fillcolor = lightblue]\n  \n  // Mediation paths\n  X -> M [label = \"α\", color = blue]\n  M -> Y [label = \"β\", color = blue]\n  \n  // Direct effect (optional)\n  X -> Y [label = \"Direct effect\", style = dashed, color = gray]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-53b920a4e4714a4d858b" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-53b920a4e4714a4d858b">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\", fillcolor = palegreen]\n  M [label = \"M (Education)\", fillcolor = lightyellow]\n  Y [label = \"Y (Democracy)\", fillcolor = lightblue]\n  \n  // Mediation paths\n  X -> M [label = \"α\", color = blue]\n  M -> Y [label = \"β\", color = blue]\n  \n  // Direct effect (optional)\n  X -> Y [label = \"Direct effect\", style = dashed, color = gray]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -339,6 +339,18 @@ power_interaction_r2(N=seq(100,300,by=10),r.x1.y=0.1, r.x2.y=.1,r.x1x2.y=0.1,r.x
 ## 20 290 0.3991137
 ## 21 300 0.4105808
 ```
+
+---
+
+![Interactions1](Images/Cheeseman1.png)
+
+---
+
+![Interactions2](Images/Cheeseman2.png)
+
+---
+
+![Interactions3](Images/Cheeseman3.png)
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

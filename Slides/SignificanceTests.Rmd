@@ -356,3 +356,15 @@ So, let's review.
 4. If we add homoskedasticity, we get simpler estimates of standard errors and the result that regression is the best linear unbiased estimator (BLUE).
 
 5. If we assume that errors are conditionally normally distributed, we get exact distributions for test statistics.
+
+---
+
+![Significance1](Images/Buckley1.png)
+
+---
+
+![Significance2](Images/Buckley2.png)
+
+---
+
+![Significance3](Images/Buckley3.png)

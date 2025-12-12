@@ -262,3 +262,19 @@ dfbetasplot
 ```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
 print(turnouttrim,n=15)
 ```
+
+---
+
+![Outlier1](Images/Brady1.png)
+
+
+---
+
+![Outlier2](Images/Brady2.png)
+
+---
+
+![Outlier3](Images/Brady3.png)
+---
+
+![Outlier4](Images/Brady4.png)

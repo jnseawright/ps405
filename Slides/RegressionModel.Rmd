@@ -431,3 +431,18 @@ The classic example is the Cauchy distribution, which is also the Student's T di
 rcauchy(100)
 ```
 
+---
+
+![CEF Abstract](Images/Eggers1.png) 
+
+---
+
+![CEF Description](Images/Eggers2.png)
+
+---
+
+![CEF 1](Images/Eggers3.png)
+
+---
+
+![CEF 2](Images/Eggers4.png) 

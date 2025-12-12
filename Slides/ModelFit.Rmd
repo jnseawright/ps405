@@ -281,3 +281,15 @@ econvote.fail <- lm(vote ~ growth + earlyyear + lateyear, data = hibbs)
 summary(econvote.fail)
 ```
 
+---
+
+![Multicollinearity 1](Images/Folke1.png)
+
+---
+
+![Multicollinearity 2](Images/Folke2.png)
+
+
+---
+
+![Multicollinearity 3](Images/Folke3.png)
