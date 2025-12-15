@@ -157,7 +157,7 @@ However, suppose that we carry out 20 independent significance tests --- includi
 
 ---
 
-&lt;img src="MultipleComparisons_files/figure-html/unnamed-chunk-6-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+&lt;img src="MultipleComparisons_files/figure-html/unnamed-chunk-6-1.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -209,9 +209,11 @@ If our tests are not independent, the Bonferroni correction will typically be to
 
 Bonferroni is conservative because it treats all tests equally. Holm's step-down procedure is more powerful while still controlling FWER:
 
-1. Order p-values: \(p_{(1)} \leq p_{(2)} \leq \cdots \leq p_{(m)}\)
-2. Compare \(p_{(k)}\) to \(\frac{\alpha}{m+1-k}\)
+1. Order p-values: `\((p_{(1)} \leq p_{(2)} \leq \cdots \leq p_{(m)})\)`
+2. Compare `\(p_{(k)}\)` to `\(\frac{\alpha}{m+1-k}\)`
 3. Reject all hypotheses up to the first non-rejection
+
+---
 
 
 ``` r
@@ -247,6 +249,9 @@ cat("Significant under Holm:", sorted_p &lt;= holm_thresholds, "\n")
 ## Significant under Holm: TRUE TRUE FALSE
 ```
 
+---
+
+
 ``` r
 # Using p.adjust
 holm_adjusted &lt;- p.adjust(p_vals, method = "holm")
@@ -263,10 +268,14 @@ cat("Holm-adjusted p-values:", round(holm_adjusted, 3), "\n")
 
 While FWER controls "any false positive," FDR controls the *proportion* of false positives among discoveries. Less conservative when many tests are expected to be true positives.
 
+---
+
 **Benjamini-Hochberg Procedure:**
-1. Order p-values: \(p_{(1)} \leq \cdots \leq p_{(m)}\)
-2. Find largest \(k\) where \(p_{(k)} \leq \frac{k}{m}\alpha\)
-3. Reject all hypotheses 1 through \(k\)
+1. Order p-values: `\((p_{(1)} \leq \cdots \leq p_{(m)})\)`
+2. Find largest `\((k)\)` where `\((p_{(k)} \leq \frac{k}{m}\alpha)\)`
+3. Reject all hypotheses 1 through `\((k)\)`
+
+---
 
 
 ``` r
@@ -308,10 +317,10 @@ cat("BH-adjusted p-values:", round(bh_adjusted, 3), "\n")
 
 
 ``` r
-set.seed(42)
-# Simulate 50 tests: 25 null true (mean=0), 25 false (mean=0.5)
-n_tests &lt;- 50
-effects &lt;- c(rep(0, 25), rep(0.5, 25))
+set.seed(8747)
+# Simulate 100 tests: 50 null true (mean=0), 50 false (mean=0.5)
+n_tests &lt;- 100
+effects &lt;- c(rep(0, 50), rep(0.5, 50))
 p_vals &lt;- 2*pnorm(-abs(rnorm(n_tests, mean = effects)))
 
 # Apply corrections
@@ -324,17 +333,23 @@ corrections &lt;- list(
 
 # Count significant at alpha=0.05
 sig_counts &lt;- sapply(corrections, function(p) sum(p &lt;= 0.05))
+```
 
+---
+
+
+``` r
 barplot(sig_counts, 
         main = "Significant Tests Under Different Corrections",
         ylab = "Number Significant (α=0.05)",
         col = c("#1c5253", "#d3bccc", "#b3dee2", "#f0b7b3"),
-        ylim = c(0, n_tests))
+        ylim = c(0, 5))
 ```
 
-![](MultipleComparisons_files/figure-html/compare-corrections-1.png)&lt;!-- --&gt;
+![](MultipleComparisons_files/figure-html/compare-corrections-2-1.png)&lt;!-- --&gt;
 
 ---
+
 
 ### When to Use Which Correction?
 
@@ -357,13 +372,17 @@ When you measure many related outcomes, combine them into an index:
 
 **Mean Effects Index (Kling, Liebman, &amp; Katz, 2004):**
 1. Reorient outcomes so higher = better
-2. Standardize each outcome by control group: \(z_{ik} = \frac{y_{ik} - \bar{y}_k^{control}}{SD_k^{control}}\)
+2. Standardize each outcome by control group: `\((z_{ik} = \frac{y_{ik} - \bar{y}_k^{control}}{SD_k^{control}})\)`
 3. Average z-scores for each unit
+
+---
 
 **Advantages:**
 - Increases power when effects are consistent
 - Handles missing data gracefully
 - Reduces multiple comparisons problem
+
+---
 
 
 ``` r
@@ -466,10 +485,14 @@ cat("Significant after Bonferroni:", sum(individual_pvals &lt; 0.01), "out of", 
 - Define "families" of tests for correction
 - Distinguish confirmatory vs. exploratory analyses
 
+---
+
 **Advantages of PAPs:**
 - Clarifies multiple comparisons problem
 - Prevents data dredging
 - Increases credibility of results
+
+---
 
 **Replication:**
 - The ultimate test: can others reproduce your findings?

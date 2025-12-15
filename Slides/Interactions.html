@@ -88,14 +88,14 @@ We need more complicated tools of statistical analysis to study mediators.
 ---
 ###Moderator
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-069d2b6335d40e61eab8" style="width:80%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-069d2b6335d40e61eab8">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR, layout = dot]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\"]\n  Y [label = \"Y (Democracy)\"]\n  M [label = \"M (Oil Wealth)\", fillcolor = lightyellow]\n  \n  // Main effect\n  X -> Y [label = \"β₁\"]\n  \n  // Moderation effect\n  M -> X [label = \"Moderates\", style = dashed, color = red]\n  \n  // Direct effect of moderator\n  M -> Y [label = \"β₂\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-0e9d472f1d98f8e97c4d" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-0e9d472f1d98f8e97c4d">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR, layout = dot]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\"]\n  Y [label = \"Y (Democracy)\"]\n  M [label = \"M (Oil Wealth)\", fillcolor = lightyellow]\n  \n  // Main effect\n  X -> Y [label = \"β₁\"]\n  \n  // Moderation effect\n  M -> X [label = \"Moderates\", style = dashed, color = red]\n  \n  // Direct effect of moderator\n  M -> Y [label = \"β₂\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 ###Mediator
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-53b920a4e4714a4d858b" style="width:80%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-53b920a4e4714a4d858b">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\", fillcolor = palegreen]\n  M [label = \"M (Education)\", fillcolor = lightyellow]\n  Y [label = \"Y (Democracy)\", fillcolor = lightblue]\n  \n  // Mediation paths\n  X -> M [label = \"α\", color = blue]\n  M -> Y [label = \"β\", color = blue]\n  \n  // Direct effect (optional)\n  X -> Y [label = \"Direct effect\", style = dashed, color = gray]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-e5a19d0cfca787e0874c" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-e5a19d0cfca787e0874c">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\", fillcolor = palegreen]\n  M [label = \"M (Education)\", fillcolor = lightyellow]\n  Y [label = \"Y (Democracy)\", fillcolor = lightblue]\n  \n  // Mediation paths\n  X -> M [label = \"α\", color = blue]\n  M -> Y [label = \"β\", color = blue]\n  \n  // Direct effect (optional)\n  X -> Y [label = \"Direct effect\", style = dashed, color = gray]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
@@ -107,13 +107,13 @@ No moderator present:
 
 Moderator included:
 
-`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{Colonized}_{i} + \beta_{3} \text{logGDP}_{i}*\text{Colonized}_{i} + e_{i}$$`
+`$$\scriptsize Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{Colonized}_{i} + \beta_{3} \text{logGDP}_{i}*\text{Colonized}_{i} + e_{i}$$`
 
 ---
 
 What does the model mean when the moderator is present? There are two possibilities to consider. Either `\(\text{Colonized}_{i} = 0\)` or `\(\text{Colonized}_{i} = 1\)`. Let's first look at what the model turns into for a case where `\(\text{Colonized}_{i} = 0\)`:
 
-`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 0 + \beta_{3} \text{logGDP}_{i}*0 + e_{i}$$`
+`$$\small Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 0 + \beta_{3} \text{logGDP}_{i}*0 + e_{i}$$`
 
 ---
 
@@ -123,10 +123,10 @@ This is just a bivariate regression of democracy on logGDP, with intercept `\(\b
 
 Now let's look at what the model turns into for a case where `\(\text{Colonized}_{i} = 1\)`:
 
-`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 1 + \beta_{3} \text{logGDP}_{i}*1 + e_{i}$$`
+`$$\scriptsize Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 1 + \beta_{3} \text{logGDP}_{i}*1 + e_{i}$$`
 
 
-`$$Y_{i} = (\beta_{0} + \beta_{2}) + (\beta_{1} + \beta_{3}) * \text{logGDP}_{i} + e_{i}$$`
+`$$\small Y_{i} = (\beta_{0} + \beta_{2}) + (\beta_{1} + \beta_{3}) * \text{logGDP}_{i} + e_{i}$$`
 
 ---
 
@@ -136,7 +136,7 @@ This is still just a bivariate regression of democracy on logGDP, with a differe
 
 Interpretation is a bit more complicated when our interaction involves a continuous variable:
 
-`$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{OilRent}_{i} + \beta_{3} \text{logGDP}_{i}*\text{OilRent}_{i} + e_{i}$$`
+`$$\scriptsize Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{OilRent}_{i} + \beta_{3} \text{logGDP}_{i}*\text{OilRent}_{i} + e_{i}$$`
 
 ---
 

@@ -713,7 +713,24 @@ When designing a study:
 
 ---
 
-There are published formulae for several different kinds of power calculations. Or you can use R.
+There are published formulae for several different kinds of power calculations. 
+
+---
+
+Consider a one-sided difference-in-means test. The required sample size to reach a significance level of $\alpha$ with power $1 - \beta$ when the population difference in means is $\mu - \mu_{0}$ away from the null hypothesis is:
+
+$$n = \left[\frac{(Z_{\alpha} + Z_{\beta})\sigma}{\mu - \mu_{0}}\right]^2$$
+
+
+---
+
+So, for example, if we have a difference in means of .6, a standard deviation of 2, $\alpha = 0.05$, and $\beta=0.20$. Then:
+
+$$n = \left[\frac{1.64 + 0.84)2}{0.6}\right]^2 \approx 68$$
+
+---
+
+Or you can use R.
 
 ---
 

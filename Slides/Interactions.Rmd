@@ -342,13 +342,13 @@ $$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{Colonized}_{
 
 Moderator included:
 
-$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{Colonized}_{i} + \beta_{3} \text{logGDP}_{i}*\text{Colonized}_{i} + e_{i}$$
+$$\scriptsize Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{Colonized}_{i} + \beta_{3} \text{logGDP}_{i}*\text{Colonized}_{i} + e_{i}$$
 
 ---
 
 What does the model mean when the moderator is present? There are two possibilities to consider. Either $\text{Colonized}_{i} = 0$ or $\text{Colonized}_{i} = 1$. Let's first look at what the model turns into for a case where $\text{Colonized}_{i} = 0$:
 
-$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 0 + \beta_{3} \text{logGDP}_{i}*0 + e_{i}$$
+$$\small Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 0 + \beta_{3} \text{logGDP}_{i}*0 + e_{i}$$
 
 ---
 
@@ -358,10 +358,10 @@ This is just a bivariate regression of democracy on logGDP, with intercept $\bet
 
 Now let's look at what the model turns into for a case where $\text{Colonized}_{i} = 1$:
 
-$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 1 + \beta_{3} \text{logGDP}_{i}*1 + e_{i}$$
+$$\scriptsize Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} * 1 + \beta_{3} \text{logGDP}_{i}*1 + e_{i}$$
 
 
-$$Y_{i} = (\beta_{0} + \beta_{2}) + (\beta_{1} + \beta_{3}) * \text{logGDP}_{i} + e_{i}$$
+$$\small Y_{i} = (\beta_{0} + \beta_{2}) + (\beta_{1} + \beta_{3}) * \text{logGDP}_{i} + e_{i}$$
 
 ---
 
@@ -371,7 +371,7 @@ This is still just a bivariate regression of democracy on logGDP, with a differe
 
 Interpretation is a bit more complicated when our interaction involves a continuous variable:
 
-$$Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{OilRent}_{i} + \beta_{3} \text{logGDP}_{i}*\text{OilRent}_{i} + e_{i}$$
+$$\scriptsize Y_{i} = \beta_{0} + \beta_{1} \text{logGDP}_{i} + \beta_{2} \text{OilRent}_{i} + \beta_{3} \text{logGDP}_{i}*\text{OilRent}_{i} + e_{i}$$
 
 ---
 
