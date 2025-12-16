@@ -49,52 +49,23 @@ pre[class] {
 
 
 
-# RMarkdown Slide Deck: Professional Regression Tables
-
-Here's a comprehensive slide deck on creating professional regression tables, perfect for your final class session:
-
-```r
----
-title: "Professional Regression Tables in R"
-subtitle: "Final Session: Presenting Your Results with Clarity and Style"
-author: "Graduate Methods in Political Science | Final Session"
-date: "December 12, 2025"
-output: 
-  xaringan::moon_reader:
-    css: [default, metropolis, metropolis-fonts]
-    nature:
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
-      ratio: '16:9'
----
-
-
-
-class: inverse, center, middle
-
-# Professional Regression Tables
-
-### **From Analysis to Publication: The Final Step**
-
----
 # Why Professional Tables Matter
 
-.pull-left[
 ### **Communication Goals**
 1. **Clarity:** Readers should understand your findings
 2. **Reproducibility:** Others should be able to replicate
-3. **Credibility:** Professional presentation signals careful work
-4. **Efficiency:** One table can convey what paragraphs cannot
+3. **Efficiency:** One table can convey what paragraphs cannot
+
+---
 
 ### **Political Science Standards**
 - **Top journals** (APSR, AJPS, JOP) have specific formatting
 - **Replication archives** require clean code
 - **Policy audiences** need accessible presentation
 - **Your own workflow** benefits from organization
-]
 
-.pull-right[
+---
+
 ### **Common Problems in Student Work**
 
 ``` r
@@ -114,19 +85,11 @@ R-squared:  0.3456
 Adj R-squared: 0.3345
 ```
 
-**Problems:**
-- Raw R output
-- No formatting
-- Hard to compare models
-- Not publication-ready
-]
-
 ---
 # The R Ecosystem for Tables
 
-.pull-left[
 ### **Main Packages**
-1. **`modelsummary`** (recommended)
+1. **`modelsummary`** 
    - Modern, flexible, actively maintained
    - Works with many model types
    - Excellent documentation
@@ -136,18 +99,19 @@ Adj R-squared: 0.3345
    - Simple syntax
    - Some limitations with new models
 
-3. **`gtsummary`** (medical/social science focus)
+---
+
+3\. **`gtsummary`** (medical/social science focus)
    - Beautiful default formatting
    - Great for clinical/epidemiological papers
    - Less common in political science
 
-4. **`kableExtra`** (manual control)
+4\. **`kableExtra`** (manual control)
    - Complete customization
    - Steeper learning curve
    - For when others fail
-]
+---
 
-.pull-right[
 ### **Choosing the Right Tool**
 &lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
 &lt;caption&gt;Which Tool When?&lt;/caption&gt;
@@ -187,20 +151,21 @@ Adj R-squared: 0.3345
 &lt;/tbody&gt;
 &lt;/table&gt;
 
+---
+
 ### **Our Focus Today:**
-**`modelsummary`** - the modern standard for political science
-]
+**`modelsummary`** - the modern standard 
+
 
 ---
-# Package 1: `modelsummary` - The Modern Standard
+# Package 1: `modelsummary`
 
-.pull-left[
 ### **Key Advantages**
-1. **Model-agnostic:** Works with 100+ model types
+1. **Inclusive:** Works with 100+ model types
 2. **Flexible output:** HTML, LaTeX, Word, PDF, Markdown
 3. **Customizable:** Every aspect can be modified
-4. **Active development:** Regularly updated
-5. **Integrates well:** Works with `fixest`, `lme4`, etc.
+
+---
 
 ### **Basic Syntax**
 
@@ -219,14 +184,15 @@ msummary(models)
 # With robust SEs
 msummary(models, vcov = "HC3")
 ```
-]
 
-.pull-right[
-### **Political Science Example**
+---
+
+### **Worked Example**
 
 ``` r
 # Load data
 data("Mroz", package = "carData")
+Mroz$lfp &lt;- 1*(Mroz$lfp=="yes")
 
 # Estimate models
 model1 &lt;- lm(lfp ~ k5 + k618 + age + wc + hc, 
@@ -241,18 +207,152 @@ models &lt;- list("(1)" = model1,
                "(2)" = model2, 
                "(3)" = model3)
 
-msummary(models,
+we.ms &lt;- msummary(models,
          stars = TRUE,
-         gof_omit = "AIC|BIC|Log|Adj")
+         gof_omit = "AIC|BIC|Log|Adj", 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
 ```
+---
 
-**Output:** Clean, professional table ready for publication
-]
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;" class="table table"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.248*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.115*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.144*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.125) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.128) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.127) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.309*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.302*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.295*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.037) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k618 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.021 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.016 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.011 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.015*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.014*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.013*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; wcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.190*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.145** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.164*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.045) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.046) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.046) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.027 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.031 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.019 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.042) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.041) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.043) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lwg &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.117*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.123*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.031) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.030) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; inc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.007*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.002) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.836 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.444 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.827 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
 
 ---
 # Customizing `modelsummary` Output
 
-.pull-left[
 ### **1. Variable Labels**
 
 ``` r
@@ -264,67 +364,1134 @@ cm &lt;- c('k5' = 'Children &lt; 6',
         'lwg' = 'Log wage rate',
         'inc' = 'Family income')
 
-msummary(models, 
+vl.ms &lt;- msummary(models, 
          coef_map = cm,
-         stars = TRUE)
+         stars = TRUE, 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
 ```
+---
 
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;" class="table table"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Children &amp;amp;lt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.309*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.302*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.295*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.037) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Children 6-18 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.021 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.016 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.011 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.015*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.014*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.013*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log wage rate &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.117*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.123*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.031) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.030) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Family income &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.007*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.002) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.106 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.122 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.142 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1003.4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 990.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 974.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1035.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1027.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1015.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −494.704 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −487.332 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −478.086 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.836 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.444 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.827 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
 ### **2. Statistics Selection**
 
 ``` r
-msummary(models,
+ss.ms &lt;- msummary(models,
          gof_omit = 'AIC|BIC|Log|RMSE',
          gof_map = list(
            list("raw" = "nobs", "clean" = "N", "fmt" = 0),
            list("raw" = "r.squared", "clean" = "R²", "fmt" = 3)
-         ))
+         ), 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
 ```
+---
 
+&lt;table class="table table" style="width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.248 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.115 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.144 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.125) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.128) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.127) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.309 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.302 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.295 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.037) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k618 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.021 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.016 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.011 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.015 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.014 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.013 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; wcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.190 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.145 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.164 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.045) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.046) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.046) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.027 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.031 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.019 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.042) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.041) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.043) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lwg &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.117 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.123 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.031) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.030) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; inc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.002) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; N &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R² &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
 ### **3. Standard Errors**
 
 ``` r
 # Robust SEs
-msummary(models, vcov = "HC3")
-
-# Clustered SEs
-msummary(models, vcov = ~state)
-
-# Multiple types
-msummary(models, 
-         vcov = list("HC0", "HC1", "HC2", "HC3"))
+se.ms &lt;- msummary(models, vcov = "HC3", 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
 ```
-]
 
-.pull-right[
+---
+
+&lt;table class="table table" style="width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.248 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.115 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.144 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.118) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.125) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.125) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.309 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.302 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.295 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.033) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.033) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.034) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k618 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.021 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.016 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.011 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.015) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.015) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.015 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.014 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.013 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.002) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.002) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.002) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; wcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.190 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.145 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.164 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.043) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.047) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.046) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.027 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.031 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.019 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.042) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.042) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.043) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lwg &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.117 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.123 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.034) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.033) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; inc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.002) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.106 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.122 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.142 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1003.4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 990.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 974.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1035.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1027.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1015.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −494.704 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −487.332 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −478.086 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 22.832 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 23.081 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 24.057 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Std.Errors &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC3 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
 ### **4. Formatting**
 
 ``` r
 # Decimal places
-msummary(models, fmt = 3)
+msummary(models, fmt = 2, 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
+```
 
+&lt;table class="table table" style="width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.25 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.12 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.14 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.12) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.13) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.13) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.31 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.30 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.29 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k618 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.02 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.02 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.01) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.01) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.01) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.01 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.01 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.00) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.00) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.00) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; wcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.19 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.14 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.16 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.05) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.05) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.05) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.03 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.03 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.02 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lwg &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.12 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.12 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.03) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.03) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; inc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.00) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.106 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.122 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.142 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1003.4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 990.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 974.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1035.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1027.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1015.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −494.704 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −487.332 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −478.086 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.836 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.444 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.827 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+``` r
 # Different formats for estimates and SEs
 msummary(models,
          fmt = fmt_statistic(estimate = 3, 
-                             std.error = 2))
+                             std.error = 2), 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
+```
 
+&lt;table class="table table" style="width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.248 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.115 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.144 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.12) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.13) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.13) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.309 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.302 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.295 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k618 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.021 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.016 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.011 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.01) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.01) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.01) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.015 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.014 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.013 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.00) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.00) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.00) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; wcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.190 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.145 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.164 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.05) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.05) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.05) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.027 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.031 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.019 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.04) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lwg &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.117 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.123 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.03) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.03) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; inc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.00) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.106 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.122 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.142 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1003.4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 990.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 974.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1035.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1027.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1015.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −494.704 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −487.332 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −478.086 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.836 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.444 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.827 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+``` r
 # Confidence intervals instead of SEs
 msummary(models,
          statistic = "conf.int",
-         conf_level = 0.95)
+         conf_level = 0.95, 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
+```
 
+&lt;table class="table table" style="width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.248 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.115 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.144 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [1.003, 1.493] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.863, 1.367] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.894, 1.393] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.309 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.302 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.295 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.381, −0.238] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.373, −0.230] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.365, −0.224] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k618 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.021 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.016 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.011 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.049, 0.006] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.044, 0.011] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.039, 0.016] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.015 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.014 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.013 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.020, −0.010] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.019, −0.009] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.018, −0.008] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; wcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.190 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.145 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.164 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.101, 0.278] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.054, 0.235] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.074, 0.254] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.027 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.031 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.019 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.109, 0.055] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.112, 0.050] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [−0.065, 0.102] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lwg &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.117 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.123 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.057, 0.177] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [0.063, 0.182] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; inc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [−0.010, −0.004] &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.106 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.122 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.142 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1003.4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 990.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 974.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1035.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1027.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1015.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −494.704 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −487.332 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −478.086 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.836 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.444 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.827 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+
+``` r
 # Add title and notes
 msummary(models,
          title = "Table 1: Labor Force Participation",
          notes = c("Data: Mroz (1987)", 
                    "Robust standard errors in parentheses",
-                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
+                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"), 
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
 ```
-]
+
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;" class="table table"&gt;
+&lt;caption style="font-size: initial !important;"&gt;Table 1: Labor Force Participation&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;(1) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(2) &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;&amp;amp;nbsp;(3) &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.248 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.115 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.144 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.125) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.128) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.127) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.309 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.302 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.295 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.037) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.036) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; k618 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.021 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.016 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.011 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.014) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.015 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.014 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.013 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.003) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; wcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.190 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.145 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.164 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.045) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.046) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.046) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; hcyes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.027 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.031 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.019 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.042) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.041) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.043) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lwg &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.117 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.123 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.031) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.030) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; inc &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.002) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 753 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.112 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.129 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.150 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.106 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.122 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.142 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1003.4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 990.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 974.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1035.8 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1027.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1015.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −494.704 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −487.332 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −478.086 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.836 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.444 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.827 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.47 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.46 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;
+&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; Data: Mroz (1987)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; Robust standard errors in parentheses&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; *p&amp;lt;0.1, **p&amp;lt;0.05, ***p&amp;lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/tfoot&gt;
+&lt;/table&gt;
 
 ---
 # Advanced `modelsummary` Features
 
-.pull-left[
 ### **1. Model Comparison**
 
 ``` r
@@ -343,6 +1510,8 @@ msummary(models,
          output = "table.html")
 ```
 
+---
+
 ### **2. Output Formats**
 
 ``` r
@@ -355,20 +1524,9 @@ msummary(models, output = "table.txt")    # Plain text
 msummary(models, output = "gt")           # gt object
 ```
 
-### **3. Integration with RMarkdown**
+---
 
-``` r
-# In RMarkdown, just call msummary()
-# It automatically detects output format
-
-msummary(models,
-         stars = TRUE,
-         title = "**Table 1:** Regression Results")
-```
-]
-
-.pull-right[
-### **4. Custom Tidiers**
+### **3. Custom Tidiers**
 
 ``` r
 # For unsupported models
@@ -388,7 +1546,9 @@ msummary(model,
          tidy = custom_tidy)
 ```
 
-### **5. Theme System**
+---
+
+### **4. Theme System**
 
 ``` r
 # Set global defaults
@@ -402,16 +1562,15 @@ modelsummary::modelsummary_settings(
 # Now all tables use these settings
 msummary(models)
 ```
-]
 
 ---
 # Package 2: `stargazer` - The Legacy Workhorse
 
-.pull-left[
 ### **Still Common in Political Science**
 - Used in many published papers
 - Simple syntax for basic tables
-- Good for teaching beginners
+
+---
 
 ### **Basic Usage**
 
@@ -419,24 +1578,148 @@ msummary(models)
 library(stargazer)
 
 # Single model
-stargazer(model, type = "text")
+stargazer(model1, type = "text")
+```
 
+```
+## 
+## ===============================================
+##                         Dependent variable:    
+##                     ---------------------------
+##                                 lfp            
+## -----------------------------------------------
+## k5                           -0.309***         
+##                               (0.037)          
+##                                                
+## k618                          -0.021           
+##                               (0.014)          
+##                                                
+## age                          -0.015***         
+##                               (0.003)          
+##                                                
+## wcyes                        0.190***          
+##                               (0.045)          
+##                                                
+## hcyes                         -0.027           
+##                               (0.042)          
+##                                                
+## Constant                     1.248***          
+##                               (0.125)          
+##                                                
+## -----------------------------------------------
+## Observations                    753            
+## R2                             0.112           
+## Adjusted R2                    0.106           
+## Residual Std. Error      0.469 (df = 747)      
+## F Statistic           18.836*** (df = 5; 747)  
+## ===============================================
+## Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
+```
+
+---
+
+
+``` r
 # Multiple models
 stargazer(list(model1, model2, model3),
           type = "text",
           title = "Regression Results",
           align = TRUE)
+```
 
-# For publication
+```
+## 
+## Regression Results
+## ===========================================================================================
+##                                               Dependent variable:                          
+##                     -----------------------------------------------------------------------
+##                                                       lfp                                  
+##                               (1)                     (2)                     (3)          
+## -------------------------------------------------------------------------------------------
+## k5                         -0.309***               -0.302***               -0.295***       
+##                             (0.037)                 (0.036)                 (0.036)        
+##                                                                                            
+## k618                        -0.021                  -0.016                  -0.011         
+##                             (0.014)                 (0.014)                 (0.014)        
+##                                                                                            
+## age                        -0.015***               -0.014***               -0.013***       
+##                             (0.003)                 (0.003)                 (0.003)        
+##                                                                                            
+## wcyes                      0.190***                0.145***                0.164***        
+##                             (0.045)                 (0.046)                 (0.046)        
+##                                                                                            
+## hcyes                       -0.027                  -0.031                   0.019         
+##                             (0.042)                 (0.041)                 (0.043)        
+##                                                                                            
+## lwg                                                0.117***                0.123***        
+##                                                     (0.031)                 (0.030)        
+##                                                                                            
+## inc                                                                        -0.007***       
+##                                                                             (0.002)        
+##                                                                                            
+## Constant                   1.248***                1.115***                1.144***        
+##                             (0.125)                 (0.128)                 (0.127)        
+##                                                                                            
+## -------------------------------------------------------------------------------------------
+## Observations                  753                     753                     753          
+## R2                           0.112                   0.129                   0.150         
+## Adjusted R2                  0.106                   0.122                   0.142         
+## Residual Std. Error    0.469 (df = 747)        0.464 (df = 746)        0.459 (df = 745)    
+## F Statistic         18.836*** (df = 5; 747) 18.444*** (df = 6; 746) 18.827*** (df = 7; 745)
+## ===========================================================================================
+## Note:                                                           *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01
+```
+
+---
+
+
+``` r
+# Better
 stargazer(model1, model2, model3,
           type = "html",
-          out = "table1.html",
           dep.var.labels = "Dependent Variable",
           covariate.labels = c("Var1", "Var2", "Var3"))
 ```
-]
 
-.pull-right[
+
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="3" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td colspan="3"&gt;Dependent Variable&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Var1&lt;/td&gt;&lt;td&gt;-0.309&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-0.302&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-0.295&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.037)&lt;/td&gt;&lt;td&gt;(0.036)&lt;/td&gt;&lt;td&gt;(0.036)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Var2&lt;/td&gt;&lt;td&gt;-0.021&lt;/td&gt;&lt;td&gt;-0.016&lt;/td&gt;&lt;td&gt;-0.011&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.014)&lt;/td&gt;&lt;td&gt;(0.014)&lt;/td&gt;&lt;td&gt;(0.014)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Var3&lt;/td&gt;&lt;td&gt;-0.015&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-0.014&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-0.013&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.003)&lt;/td&gt;&lt;td&gt;(0.003)&lt;/td&gt;&lt;td&gt;(0.003)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;wcyes&lt;/td&gt;&lt;td&gt;0.190&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.145&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.164&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.045)&lt;/td&gt;&lt;td&gt;(0.046)&lt;/td&gt;&lt;td&gt;(0.046)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;hcyes&lt;/td&gt;&lt;td&gt;-0.027&lt;/td&gt;&lt;td&gt;-0.031&lt;/td&gt;&lt;td&gt;0.019&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.042)&lt;/td&gt;&lt;td&gt;(0.041)&lt;/td&gt;&lt;td&gt;(0.043)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;lwg&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;0.117&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.123&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;(0.031)&lt;/td&gt;&lt;td&gt;(0.030)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;inc&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;-0.007&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;(0.002)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;1.248&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;1.115&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;1.144&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.125)&lt;/td&gt;&lt;td&gt;(0.128)&lt;/td&gt;&lt;td&gt;(0.127)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;753&lt;/td&gt;&lt;td&gt;753&lt;/td&gt;&lt;td&gt;753&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.112&lt;/td&gt;&lt;td&gt;0.129&lt;/td&gt;&lt;td&gt;0.150&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.106&lt;/td&gt;&lt;td&gt;0.122&lt;/td&gt;&lt;td&gt;0.142&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Residual Std. Error&lt;/td&gt;&lt;td&gt;0.469 (df = 747)&lt;/td&gt;&lt;td&gt;0.464 (df = 746)&lt;/td&gt;&lt;td&gt;0.459 (df = 745)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;F Statistic&lt;/td&gt;&lt;td&gt;18.836&lt;sup&gt;***&lt;/sup&gt; (df = 5; 747)&lt;/td&gt;&lt;td&gt;18.444&lt;sup&gt;***&lt;/sup&gt; (df = 6; 746)&lt;/td&gt;&lt;td&gt;18.827&lt;sup&gt;***&lt;/sup&gt; (df = 7; 745)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="4" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td colspan="3" style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+---
+
 ### **Strengths and Weaknesses**
 &lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
 &lt;caption&gt;Stargazer: Pros and Cons&lt;/caption&gt;
@@ -470,54 +1753,537 @@ stargazer(model1, model2, model3,
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-### **When to Use Stargazer**
-1. **Quick draft tables**
-2. **Teaching beginners**
-3. **Following existing code**
-4. **When you need Word compatibility**
-
-**But for new projects:** Use `modelsummary`
-]
-
 ---
-# Package 3: `gtsummary` - Beautiful Defaults
+# Package 3: `gtsummary` 
 
-.pull-left[
 ### **Medical/Social Science Focus**
 - Designed for clinical research
 - Beautiful automatic formatting
 - Great for descriptive statistics too
+
+---
 
 ### **Basic Regression Tables**
 
 ``` r
 library(gtsummary)
 
-# Simple regression table
-model &lt;- glm(response ~ age + treatment, 
-             data = trial, 
-             family = binomial)
-
-tbl_regression(model, exponentiate = TRUE)
-
-# With customization
-tbl_regression(model,
-               exponentiate = TRUE,
-               label = list(age ~ "Age (years)",
-                           treatment ~ "Treatment"),
-               estimate_fun = function(x) style_number(x, digits = 2)) %&gt;%
-  bold_labels() %&gt;%
-  italicize_levels() %&gt;%
-  modify_caption("**Table 1.** Logistic Regression Results")
+tbl_regression(model1, exponentiate = FALSE)
 ```
-]
 
-.pull-right[
-### **Strengths for Political Science**
+<div id="kcfjdyvccv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kcfjdyvccv table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#kcfjdyvccv thead, #kcfjdyvccv tbody, #kcfjdyvccv tfoot, #kcfjdyvccv tr, #kcfjdyvccv td, #kcfjdyvccv th {
+  border-style: none;
+}
+
+#kcfjdyvccv p {
+  margin: 0;
+  padding: 0;
+}
+
+#kcfjdyvccv .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#kcfjdyvccv .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#kcfjdyvccv .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#kcfjdyvccv .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#kcfjdyvccv .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#kcfjdyvccv .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#kcfjdyvccv .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#kcfjdyvccv .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#kcfjdyvccv .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#kcfjdyvccv .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#kcfjdyvccv .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#kcfjdyvccv .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#kcfjdyvccv .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#kcfjdyvccv .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#kcfjdyvccv .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcfjdyvccv .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#kcfjdyvccv .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#kcfjdyvccv .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#kcfjdyvccv .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcfjdyvccv .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#kcfjdyvccv .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcfjdyvccv .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#kcfjdyvccv .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcfjdyvccv .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kcfjdyvccv .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcfjdyvccv .gt_left {
+  text-align: left;
+}
+
+#kcfjdyvccv .gt_center {
+  text-align: center;
+}
+
+#kcfjdyvccv .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#kcfjdyvccv .gt_font_normal {
+  font-weight: normal;
+}
+
+#kcfjdyvccv .gt_font_bold {
+  font-weight: bold;
+}
+
+#kcfjdyvccv .gt_font_italic {
+  font-style: italic;
+}
+
+#kcfjdyvccv .gt_super {
+  font-size: 65%;
+}
+
+#kcfjdyvccv .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#kcfjdyvccv .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#kcfjdyvccv .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#kcfjdyvccv .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#kcfjdyvccv .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#kcfjdyvccv .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#kcfjdyvccv .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#kcfjdyvccv .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#kcfjdyvccv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="label"><span class='gt_from_md'><strong>Characteristic</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="estimate"><span class='gt_from_md'><strong>Beta</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="conf.low"><span class='gt_from_md'><strong>95% CI</strong></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="p.value"><span class='gt_from_md'><strong>p-value</strong></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">k5</td>
+<td headers="estimate" class="gt_row gt_center">-0.31</td>
+<td headers="conf.low" class="gt_row gt_center">-0.38, -0.24</td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">k618</td>
+<td headers="estimate" class="gt_row gt_center">-0.02</td>
+<td headers="conf.low" class="gt_row gt_center">-0.05, 0.01</td>
+<td headers="p.value" class="gt_row gt_center">0.13</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">age</td>
+<td headers="estimate" class="gt_row gt_center">-0.01</td>
+<td headers="conf.low" class="gt_row gt_center">-0.02, -0.01</td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">wc</td>
+<td headers="estimate" class="gt_row gt_center"><br /></td>
+<td headers="conf.low" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    no</td>
+<td headers="estimate" class="gt_row gt_center">—</td>
+<td headers="conf.low" class="gt_row gt_center">—</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    yes</td>
+<td headers="estimate" class="gt_row gt_center">0.19</td>
+<td headers="conf.low" class="gt_row gt_center">0.10, 0.28</td>
+<td headers="p.value" class="gt_row gt_center"><0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">hc</td>
+<td headers="estimate" class="gt_row gt_center"><br /></td>
+<td headers="conf.low" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    no</td>
+<td headers="estimate" class="gt_row gt_center">—</td>
+<td headers="conf.low" class="gt_row gt_center">—</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    yes</td>
+<td headers="estimate" class="gt_row gt_center">-0.03</td>
+<td headers="conf.low" class="gt_row gt_center">-0.11, 0.05</td>
+<td headers="p.value" class="gt_row gt_center">0.5</td></tr>
+  </tbody>
+  <tfoot>
+    <tr class="gt_sourcenotes">
+      <td class="gt_sourcenote" colspan="4"><span class='gt_from_md'>Abbreviation: CI = Confidence Interval</span></td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+
+---
+
+### **Strengths**
 1. **Automatic formatting** of categorical variables
-2. **Beautiful defaults** with minimal code
-3. **Great for descriptive statistics** tables
+2. **Clean defaults** with minimal code
+3. **Good descriptive statistics** tables
 4. **Medical journal style** if that's your target
+
+---
 
 ### **Limitations**
 1. **Less common** in political science
@@ -525,30 +2291,15 @@ tbl_regression(model,
 3. **Less flexible** for complex model comparisons
 4. **Different syntax** from other packages
 
-### **Example Output:**
-
-``` r
-# Univariate regression table
-trial %&gt;%
-  tbl_uvregression(
-    method = glm,
-    y = response,
-    method.args = list(family = binomial),
-    exponentiate = TRUE
-  ) %&gt;%
-  add_global_p() %&gt;%
-  bold_p(t = 0.05)
-```
-]
-
 ---
 # Package 4: `kableExtra` - Complete Control
 
-.pull-left[
 ### **When You Need Total Control**
 - Customize every aspect
 - Combine multiple tables
 - Complex formatting needs
+
+---
 
 ### **Basic Workflow**
 
@@ -571,63 +2322,35 @@ table &lt;- model %&gt;%
 save_kable(table, "table.html")
 ```
 
+---
+
 ### **Advantages**
 1. **Total control** over formatting
 2. **Combine** models, summary stats, etc.
 3. **Advanced features:** grouping, coloring, etc.
 4. **Works with any data frame**
-]
-
-.pull-right[
-### **Complex Example**
-
-``` r
-# Combine multiple model results
-results &lt;- bind_rows(
-  broom::tidy(model1) %&gt;% mutate(Model = "Model 1"),
-  broom::tidy(model2) %&gt;% mutate(Model = "Model 2"),
-  broom::tidy(model3) %&gt;% mutate(Model = "Model 3")
-) %&gt;%
-  select(Model, term, estimate, std.error, p.value)
-
-# Create polished table
-results %&gt;%
-  kable(format = "html", digits = 3) %&gt;%
-  kable_styling("striped") %&gt;%
-  pack_rows("Model 1", 1, 3) %&gt;%
-  pack_rows("Model 2", 4, 6) %&gt;%
-  pack_rows("Model 3", 7, 9) %&gt;%
-  add_header_above(c(" " = 2, 
-                     "Estimate" = 1, 
-                     "SE" = 1, 
-                     "p-value" = 1)) %&gt;%
-  column_spec(3:5, background = "#f5f5f5")
-```
-
-**Use when:** Other packages can't do what you need
-]
 
 ---
 # Table Design Principles
 
-.pull-left[
 ### **1. Clarity First**
 - **Clear variable names** (not R variable names)
 - **Consistent formatting** across tables
 - **Adequate white space**
 - **Logical ordering** of variables/models
 
+---
+
 ### **2. Information Hierarchy**
 ![](RegressionTables_files/figure-html/hierarchy-1.png)&lt;!-- --&gt;
-]
 
-.pull-right[
-### **3. Political Science Conventions**
-- **Report robust/clustered SEs** (almost always)
-- **Include R²/N** (always)
-- **Consistent decimal places** (usually 3 for estimates)
-- **Stars or p-values** (check journal preference)
-- **Confidence intervals** (becoming more common)
+---
+
+### **3. Social Science Practices**
+- **Report robust/clustered SEs** 
+- **Include `\(R^2\)` and `\(N\)`** (always)
+- **Consistent decimal places** 
+- **p-values, maybe also stars** (check journal rules)
 
 ### **4. Accessibility**
 
@@ -644,549 +2367,6 @@ msummary(models,
          notes = c("Note: Standard errors in parentheses",
                    "Data available upon request"),
          title = "Table 1: Main Results")
-```
-]
-
----
-# Journal-Specific Requirements
-
-.pull-left[
-### **American Political Science Review (APSR)**
-- **Format:** Usually LaTeX
-- **SEs:** Parentheses, robust/clustered
-- **Stars:** Common but not required
-- **Style:** Clean, minimal formatting
-- **Special:** Often requires replication archive
-
-### **American Journal of Political Science (AJPS)**
-- Similar to APSR
-- Often uses **`stargazer`** or **`texreg`**
-- Requires **clustered SEs** when appropriate
-- Prefers **p-values** in brackets
-
-### **Journal of Politics (JOP)**
-- **Flexible** on format
-- **Emphasis** on clarity
-- Often uses **`stargazer`**
-- Requires **full model specification**
-]
-
-.pull-right[
-### **Comparative Political Studies, IO, etc.**
-- **Varies** by subfield
-- **IO:** Often LaTeX with `texreg`
-- **CPS:** Flexible, often Word-friendly
-- **BJPS:** British conventions, similar to APSR
-
-### **General Advice**
-
-``` r
-# Check recent issues!
-# 1. Download replication data
-# 2. Look at their tables
-# 3. Note formatting details
-# 4. Emulate successful papers
-
-# Common patterns:
-# - Parentheses for SEs
-# - Three decimal places
-# - Stars at 0.1, 0.05, 0.01
-# - N and R² at bottom
-# - Notes explaining SEs, data
-```
-]
-
----
-# Workflow for Publication
-
-.center[
-## **From Analysis to Published Table**
-]
-
-.pull-left[
-### **Step 1: Analysis Phase**
-
-``` r
-# Exploratory tables (quick and dirty)
-msummary(model, output = "markdown")
-
-# Comparison tables
-models &lt;- list("Base" = mod1, 
-               "Full" = mod2,
-               "FE" = mod3)
-msummary(models, stars = TRUE)
-```
-
-### **Step 2: Drafting Phase**
-
-``` r
-# Refine for paper draft
-msummary(models,
-         coef_map = nice_names,
-         stars = TRUE,
-         gof_omit = "AIC|BIC|Log",
-         title = "Table 1: Main Results",
-         notes = c("Robust standard errors in parentheses",
-                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
-```
-]
-
-.pull-right[
-### **Step 3: Submission Phase**
-
-``` r
-# Journal-specific formatting
-if(journal == "APSR") {
-  msummary(models,
-           output = "table.tex",
-           stars = c('*' = 0.1, '**' = 0.05, '***' = 0.01))
-} else if(journal == "Word Journal") {
-  msummary(models,
-           output = "table.docx",
-           stars = TRUE)
-}
-
-# Save all versions
-msummary(models, output = "tables/main.tex")
-msummary(models, output = "tables/main.docx")
-msummary(models, output = "tables/main.html")
-```
-
-### **Step 4: Replication Package**
-- Include **R script** that reproduces tables
-- Save **raw data** and **cleaned data**
-- Document **all steps**
-- Test on **clean R session**
-]
-
----
-# Interactive Example: Building a Publication Table
-
-.pull-left[
-
-``` r
-# Complete example
-library(modelsummary)
-library(fixest)
-
-# Estimate models
-data("TradeConflict", package = "fixest")
-
-mod1 &lt;- feols(conflict ~ log(gdp) + democracy, 
-              data = TradeConflict)
-mod2 &lt;- feols(conflict ~ log(gdp) + democracy + alliance, 
-              data = TradeConflict)
-mod3 &lt;- feols(conflict ~ log(gdp) + democracy + alliance | year, 
-              data = TradeConflict)
-
-models &lt;- list("(1)" = mod1, "(2)" = mod2, "(3)" = mod3)
-
-# Variable labels
-cm &lt;- c('log(gdp)' = 'Log GDP',
-        'democracy' = 'Democracy',
-        'alliance' = 'Alliance')
-
-# Create table
-msummary(models,
-         coef_map = cm,
-         vcov = ~country,  # Cluster by country
-         stars = TRUE,
-         gof_map = list(
-           list("raw" = "nobs", "clean" = "N", "fmt" = 0),
-           list("raw" = "r.squared", "clean" = "R²", "fmt" = 3)
-         ),
-         title = "**Table 1:** Determinants of Trade Conflict",
-         notes = c("Standard errors clustered by country",
-                   "Year fixed effects in Model 3",
-                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
-```
-]
-
-.pull-right[
-### **Result:**
-.center[
-**Table 1:** Determinants of Trade Conflict
-
-|             | (1)     | (2)     | (3)     |
-|-------------|---------|---------|---------|
-| **Log GDP** | -0.123*** | -0.118*** | -0.115*** |
-|             | (0.021)  | (0.020)  | (0.019)  |
-| **Democracy**| -0.045** | -0.042** | -0.040** |
-|             | (0.018)  | (0.017)  | (0.016)  |
-| **Alliance** |         | -0.031*  | -0.029*  |
-|             |         | (0.016)  | (0.015)  |
-| **N**       | 1,245    | 1,245    | 1,245    |
-| **R²**      | 0.342    | 0.356    | 0.402    |
-
-Standard errors clustered by country  
-Year fixed effects in Model 3  
-*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01
-]
-
-### **Key Features:**
-1. **Clean variable names**
-2. **Clustered standard errors**
-3. **Consistent formatting**
-4. **Clear notes**
-5. **Publication-ready**
-]
-
----
-# Common Problems &amp; Solutions
-
-.pull-left[
-### **Problem 1: Model Not Supported**
-
-``` r
-# Solution: Use custom tidier
-custom_tidy &lt;- function(model) {
-  # Extract what you need
-  data.frame(
-    term = names(coef(model)),
-    estimate = coef(model),
-    std.error = sqrt(diag(vcov(model)))
-  )
-}
-
-msummary(model, tidy = custom_tidy)
-```
-
-### **Problem 2: Too Many Decimals**
-
-``` r
-# Solution: Control formatting
-msummary(models,
-         fmt = fmt_statistic(
-           estimate = 3,
-           std.error = 2,
-           r.squared = 3
-         ))
-```
-
-### **Problem 3: Strange Variable Names**
-
-``` r
-# Solution: Rename with coef_map
-cm &lt;- c('variable_with_underscore' = 'Nice Name',
-        'log(x_variable)' = 'Log of X',
-        'factor(var)level' = 'Level Name')
-
-msummary(model, coef_map = cm)
-```
-]
-
-.pull-right[
-### **Problem 4: Different Model Types**
-
-``` r
-# Solution: modelsummary handles this!
-models &lt;- list(
-  "OLS" = lm(y ~ x, data = df),
-  "Logit" = glm(y ~ x, data = df, family = binomial),
-  "FE" = feols(y ~ x | group, data = df)
-)
-
-msummary(models)  # Automatically adapts
-```
-
-### **Problem 5: Word Document Formatting**
-
-``` r
-# Solution: Output to Word
-msummary(models,
-         output = "results.docx",
-         stars = TRUE,
-         title = "Table 1: Results")
-
-# Or use RMarkdown
-# In Rmd: knitr::kable() or modelsummary
-```
-
-### **Problem 6: LaTeX Special Characters**
-
-``` r
-# Solution: Escape or avoid
-cm &lt;- c('variable_with_&amp;' = 'Variable (\\&amp; Special)',
-        'beta' = '$\\beta$')
-
-msummary(model, coef_map = cm, output = "latex")
-```
-]
-
----
-# Replication Packages &amp; Best Practices
-
-.pull-left[
-### **What to Include**
-1. **Data:** Raw and cleaned versions
-2. **Code:** R scripts that reproduce everything
-3. **Tables:** Code that generates exact tables
-4. **Documentation:** README explaining steps
-5. **Environment:** `sessionInfo()` or Dockerfile
-
-### **Table Code Structure**
-
-``` r
-# File: tables/01_main_tables.R
-# Purpose: Generate tables for paper
-
-library(modelsummary)
-source("R/00_functions.R")  # Helper functions
-source("R/01_data_cleaning.R")  # Data prep
-
-# Load models
-load("models/main_models.RData")
-
-# Table 1: Main results
-tab1 &lt;- msummary(models, output = "latex")
-writeLines(tab1, "tables/table1.tex")
-
-# Also save as text for reference
-msummary(models, output = "tables/table1.txt")
-```
-]
-
-.pull-right[
-### **Testing Replication**
-
-``` r
-# Test script
-# 1. Start fresh R session
-# 2. Run: source("tables/01_main_tables.R")
-# 3. Verify tables match paper
-
-# Better: Use targets or drake
-library(targets)
-
-tar_plan(
-  # Data
-  tar_target(data, clean_data("raw.csv")),
-  
-  # Models
-  tar_target(model1, lm(y ~ x1, data = data)),
-  tar_target(model2, lm(y ~ x1 + x2, data = data)),
-  
-  # Tables
-  tar_target(table1, {
-    models &lt;- list("(1)" = model1, "(2)" = model2)
-    msummary(models, output = "latex")
-  })
-)
-```
-
-### **Sharing**
-- **GitHub** for code
-- **Dataverse** or **ICPSR** for data
-- **Zenodo** for snapshots
-- **OSF** for project management
-]
-
----
-# Looking Ahead: Your Research
-
-.pull-left[
-### **Developing Your Style**
-1. **Consistency:** Use same style across papers
-2. **Clarity:** Prioritize reader understanding
-3. **Efficiency:** Create templates for common tasks
-4. **Adaptability:** Learn to meet journal requirements
-
-### **Create Templates**
-
-``` r
-# File: R/table_template.R
-my_table_style &lt;- function(models, title, filename) {
-  msummary(models,
-           stars = c('*' = 0.1, '**' = 0.05, '***' = 0.01),
-           fmt = 3,
-           gof_omit = "AIC|BIC|Log|RMSE",
-           title = title,
-           output = filename)
-}
-
-# Use:
-my_table_style(my_models, 
-               "Table 1: Main Results", 
-               "paper/tables/table1.tex")
-```
-]
-
-.pull-right[
-### **Continuous Learning**
-1. **Read code** from replication packages
-2. **Follow methodologists** on Twitter/GitHub
-3. **Experiment** with new packages
-4. **Share** your solutions
-
-### **Resources**
-- **`modelsummary` website:** https://vincentarelbundock.github.io/modelsummary/
-- **Political Science Replication:** http://j.mp/PolSciReplication
-- **Twitter:** #Rstats, #PoliticalScience
-- **GitHub:** Search for "poliscitable" or similar
-
-### **Final Assignment**
-- Create **publication-quality table** from your research
-- Include **replication code**
-- Write **documentation**
-- Submit as part of final project
-]
-
----
-class: inverse, center, middle
-
-# Summary &amp; Best Practices
-
----
-# Key Takeaways
-
-.pull-left[
-### **1. Use `modelsummary`**
-- Modern, flexible, well-supported
-- Handles most political science needs
-- Good documentation and community
-
-### **2. Prioritize Clarity**
-- Clear variable names
-- Consistent formatting
-- Adequate documentation
-- Machine-readable output
-
-### **3. Follow Conventions**
-- Robust/clustered SEs (almost always)
-- Report N and R²
-- Consistent decimal places
-- Clear notes about methods
-]
-
-.pull-right[
-### **4. Plan for Replication**
-- Write clean, documented code
-- Include in replication package
-- Test on fresh R session
-- Share openly when possible
-
-### **5. Adapt to Journals**
-- Check recent issues
-- Download replication code
-- Emulate successful papers
-- Have multiple output formats ready
-
-### **Final Thought:**
-&gt; "A good table communicates months of analysis in minutes of reading. Invest the time to make it right."
-]
-
----
-# Quick Reference: Code Templates
-
-
-``` r
-# TEMPLATE 1: Basic publication table
-msummary(models,
-         stars = TRUE,
-         fmt = 3,
-         coef_map = nice_names,
-         gof_omit = "AIC|BIC|Log|RMSE",
-         title = "Table X: Descriptive Title",
-         notes = c("Robust standard errors in parentheses",
-                   "Data: Source (Year)",
-                   "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
-
-# TEMPLATE 2: With clustered SEs
-msummary(models,
-         vcov = ~cluster_var,
-         stars = TRUE,
-         output = "table.tex")
-
-# TEMPLATE 3: For Word documents
-msummary(models,
-         output = "table.docx",
-         stars = TRUE)
-
-# TEMPLATE 4: Comparison table
-models &lt;- list("Model 1" = mod1, 
-               "Model 2" = mod2,
-               "Model 3" = mod3)
-msummary(models, stars = TRUE)
-```
-
----
-class: inverse, center, middle
-
-# Questions &amp; Course Wrap-up
-
-&lt;br&gt;
-
-### **Thank you for a great semester!**
-
-&lt;br&gt;
-
-### **Final Projects Due:** [Date]
-### **Office Hours:** [Time] for last-minute questions
-### **Keep in Touch:** [Your Email]
-
-&lt;br&gt;
-
-**Resources:**
-- Course website: [Link]
-- Replication examples: [Link]
-- R help: #Rstats on Twitter, Stack Overflow
-
----
-# Appendix: Complete Working Example
-
-
-``` r
-# File: make_tables.R
-# Complete example from data to publication table
-
-# Setup
-library(tidyverse)
-library(fixest)
-library(modelsummary)
-library(kableExtra)
-
-# 1. Load and prepare data
-data &lt;- read_csv("data/analysis_data.csv") %&gt;%
-  mutate(log_gdp = log(gdp),
-         democracy = as.numeric(polity &gt; 6))
-
-# 2. Estimate models
-mod1 &lt;- feols(conflict ~ log_gdp, data = data)
-mod2 &lt;- feols(conflict ~ log_gdp + democracy, data = data)
-mod3 &lt;- feols(conflict ~ log_gdp + democracy + trade, data = data)
-mod4 &lt;- feols(conflict ~ log_gdp + democracy + trade | year, data = data)
-
-models &lt;- list("(1)" = mod1, "(2)" = mod2, "(3)" = mod3, "(4)" = mod4)
-
-# 3. Create table
-nice_names &lt;- c('log_gdp' = 'Log GDP',
-                'democracy' = 'Democracy',
-                'trade' = 'Trade Openness')
-
-tab1 &lt;- msummary(models,
-                 coef_map = nice_names,
-                 vcov = ~country,
-                 stars = c('*' = 0.1, '**' = 0.05, '***' = 0.01),
-                 fmt = fmt_statistic(estimate = 3, std.error = 2),
-                 gof_map = list(
-                   list("raw" = "nobs", "clean" = "N", "fmt" = 0),
-                   list("raw" = "r.squared", "clean" = "R²", "fmt" = 3)
-                 ),
-                 title = "**Table 1:** Determinants of International Conflict",
-                 notes = c("Standard errors clustered by country in parentheses",
-                           "Year fixed effects in Model 4",
-                           "*p&lt;0.1, **p&lt;0.05, ***p&lt;0.01"))
-
-# 4. Save in multiple formats
-writeLines(tab1, "tables/table1.tex")
-msummary(models, output = "tables/table1.docx")
-msummary(models, output = "tables/table1.html")
-
-# 5. Also save as image for presentations
-tab1 %&gt;%
-  kable(format = "html") %&gt;%
-  kable_styling() %&gt;%
-  save_kable("tables/table1.png")
 ```
 
 ---

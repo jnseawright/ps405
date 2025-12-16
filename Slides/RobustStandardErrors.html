@@ -49,52 +49,51 @@ pre[class] {
 
 
 
-### **Why political data rarely satisfies textbook assumptions**
+### The Problem: Why We Need Robust SEs
 
 ---
-# The Problem: Why We Need Robust SEs
 
-.pull-left[
 ### **Classical OLS Assumption:**
 $$
 \text{Var}(\epsilon_i | X) = \sigma^2
 $$
 Constant variance (homoskedasticity)
 
-### **Political Reality:**
+---
+
+### **Reality:**
 - Some groups are more predictable than others
 - Richer districts have more variation in outcomes
 - Survey error varies by respondent type
 - Time-series volatility changes over time
 
 **This is heteroskedasticity**
-]
-
-.pull-right[
-![](RobustStandardErrors_files/figure-html/hetero-example-1.png)&lt;!-- --&gt;
-**Consequence:** Standard errors are wrong → confidence intervals wrong → p-values wrong
-]
 
 ---
-# Consequences of Ignoring Heteroskedasticity
 
-.pull-left[
+![](RobustStandardErrors_files/figure-html/hetero-example-1.png)&lt;!-- --&gt;
+
+---
+
+**Consequence:** Standard errors are wrong → confidence intervals wrong → p-values wrong
+
+---
 ### **What Happens?**
+
 1. **OLS coefficients remain unbiased**
 2. **But variance estimates are biased:**
    - Can be too small (common) → false significance
    - Can be too large → missed findings
 
+---
 ### **Examples from Political Science:**
-- **Wealth and voting:** Richer districts show more variation in turnout
-- **Media effects:** Highly engaged voters more predictable
-- **Policy adoption:** Early adopters differ from late adopters
-- **Conflict studies:** Some countries more volatile
+- **Wealth and voting:** Richer districts show different patterns of variation in turnout than poor districts (e.g., Avery 2015)
+- **Media effects:** Highly attentive individuals are differently predictable compared to less attentive people (e.g., Walgrave et al., 2017)
+- **Policy adoption:** Effects may differ across space and time (e.g. Matisoff 2008)
+- **Conflict studies:** Actors have different distributions of information, motivations, and resources (e.g., Bas 2012)
 
-**Bottom line:** We overstate precision
-]
+---
 
-.pull-right[
 
 ```
 ## Average SE (homoskedastic): 0.101
@@ -109,13 +108,11 @@ Constant variance (homoskedasticity)
 ## Typical underestimation: -29 %
 ```
 
+---
+
 ![](RobustStandardErrors_files/figure-html/consequence-plot-1.png)&lt;!-- --&gt;
-]
 
 ---
-# What Are Robust Standard Errors?
-
-.pull-left[
 ### **Huber-White (Sandwich) Estimator**
 Developed by Huber (1967) and White (1980)
 
@@ -130,73 +127,735 @@ $$
 $$
 where `\(\Omega = \text{diag}(e_i^2)\)` for HC0
 
+---
 ### **Intuition:**
 - Weight observations by their residual size
 - Bigger residuals → more uncertainty in that region
 - Adapts to heteroskedasticity
-]
 
-.pull-right[
+---
 ### **Flavors of HC Estimators**
+<div id="luuznfetdr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#luuznfetdr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-Table: Common HC Estimators
+#luuznfetdr thead, #luuznfetdr tbody, #luuznfetdr tfoot, #luuznfetdr tr, #luuznfetdr td, #luuznfetdr th {
+  border-style: none;
+}
 
-|Type |Weight          |Description             |
-|:----|:---------------|:-----------------------|
-|HC0  |e_i²            |Basic White             |
-|HC1  |n/(n-k) e_i²    |Small sample correction |
-|HC2  |e_i²/(1-h_ii)   |Leverage adjustment     |
-|HC3  |e_i²/(1-h_ii)²  |More conservative       |
-|HC4  |e_i²/(1-h_ii)^δ |Designed for outliers   |
+#luuznfetdr p {
+  margin: 0;
+  padding: 0;
+}
 
-### **Political Science Convention:**
-- **HC1** or **HC2** most common
-- **HC3** when worried about outliers
-- **Stata default:** HC1
-- **R common practice:** HC3 (more conservative)
+#luuznfetdr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#luuznfetdr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#luuznfetdr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#luuznfetdr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#luuznfetdr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#luuznfetdr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#luuznfetdr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#luuznfetdr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#luuznfetdr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#luuznfetdr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#luuznfetdr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#luuznfetdr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#luuznfetdr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#luuznfetdr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#luuznfetdr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luuznfetdr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#luuznfetdr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#luuznfetdr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#luuznfetdr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luuznfetdr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#luuznfetdr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luuznfetdr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#luuznfetdr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luuznfetdr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#luuznfetdr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#luuznfetdr .gt_left {
+  text-align: left;
+}
+
+#luuznfetdr .gt_center {
+  text-align: center;
+}
+
+#luuznfetdr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#luuznfetdr .gt_font_normal {
+  font-weight: normal;
+}
+
+#luuznfetdr .gt_font_bold {
+  font-weight: bold;
+}
+
+#luuznfetdr .gt_font_italic {
+  font-style: italic;
+}
+
+#luuznfetdr .gt_super {
+  font-size: 65%;
+}
+
+#luuznfetdr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#luuznfetdr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#luuznfetdr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#luuznfetdr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#luuznfetdr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#luuznfetdr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#luuznfetdr .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#luuznfetdr .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#luuznfetdr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>Common HC Estimators</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Type">Type</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Formula">Weight</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="Description">Description</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Type" class="gt_row gt_left" style="font-size: 16px;">HC0</td>
+<td headers="Formula" class="gt_row gt_left" style="font-size: 16px;">\(e_i^2\)</td>
+<td headers="Description" class="gt_row gt_left" style="font-size: 16px;">Basic White</td></tr>
+    <tr><td headers="Type" class="gt_row gt_left" style="font-size: 16px;">HC1</td>
+<td headers="Formula" class="gt_row gt_left" style="font-size: 16px;">\(\frac{n}{n-k}e_i^2\)</td>
+<td headers="Description" class="gt_row gt_left" style="font-size: 16px;">Incomplete small sample correction</td></tr>
+    <tr><td headers="Type" class="gt_row gt_left" style="font-size: 16px;">HC2</td>
+<td headers="Formula" class="gt_row gt_left" style="font-size: 16px;">\(\frac{e_i^2}{1-h_{ii}}\)</td>
+<td headers="Description" class="gt_row gt_left" style="font-size: 16px;">Leverage adjustment</td></tr>
+    <tr><td headers="Type" class="gt_row gt_left" style="font-size: 16px;">HC3</td>
+<td headers="Formula" class="gt_row gt_left" style="font-size: 16px;">\(\frac{e_i^2}{(1-h_{ii})^2}\)</td>
+<td headers="Description" class="gt_row gt_left" style="font-size: 16px;">Better small sample correction</td></tr>
+    <tr><td headers="Type" class="gt_row gt_left" style="font-size: 16px;">HC4</td>
+<td headers="Formula" class="gt_row gt_left" style="font-size: 16px;">\(\frac{e_i^2}{(1-h_{ii})^{\delta_i}}\)</td>
+<td headers="Description" class="gt_row gt_left" style="font-size: 16px;">Designed for outliers</td></tr>
+  </tbody>
+  
+</table>
+</div>
+
+---
+### **Social Science Practice:**
+- **HC1**, **HC2**, and **HC3** converge for larger samples (above about 500)
+- **HC3** performs best for smaller samples and works well down to samples of about 25 
+- **Stata default:** HC1, in spite of its limitations
+- **R common practice:** HC3, which is probably the best choice (Long and Ervin 2000)
 ]
 
 ---
-# Implementation in R: The `sandwich` Package
+### Implementation in R: The `sandwich` Package
 
-.pull-left[
+---
 ### **Basic Implementation**
+
 
 ``` r
 library(sandwich)
 library(lmtest)
 
-# Fit regular model
-model &lt;- lm(vote_share ~ income + education, 
-            data = election_data)
+la_electoral &lt;- read.csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/laelectoral.csv")
 
+# After fitting model
+# Fit regular model
+model &lt;- lm(voteswoninc ~ gdpgrowthlag + votesinclag, data = la_electoral)
+```
+
+---
+
+
+``` r
 # Regular SEs
 summary(model)
+```
 
+```
+## 
+## Call:
+## lm(formula = voteswoninc ~ gdpgrowthlag + votesinclag, data = la_electoral)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -49.632  -9.563   6.100  13.505  29.843 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)   -3.3713    12.0876  -0.279  0.78099   
+## gdpgrowthlag   1.0473     0.4600   2.277  0.02528 * 
+## votesinclag    0.7166     0.2361   3.036  0.00318 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 19.01 on 86 degrees of freedom
+## Multiple R-squared:  0.1439,	Adjusted R-squared:  0.124 
+## F-statistic:  7.23 on 2 and 86 DF,  p-value: 0.001252
+```
+---
+  
+
+``` r
 # Robust SEs (HC3 default)
 coeftest(model, vcov = vcovHC)
+```
 
+```
+## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  -3.37130   12.54174 -0.2688 0.788722   
+## gdpgrowthlag  1.04729    0.44261  2.3661 0.020221 * 
+## votesinclag   0.71660    0.25701  2.7882 0.006523 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+``` r
 # Different HC types
 coeftest(model, vcov = vcovHC(model, type = "HC0"))
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  -3.37130   11.67991 -0.2886 0.773551   
+## gdpgrowthlag  1.04729    0.40190  2.6058 0.010800 * 
+## votesinclag   0.71660    0.24007  2.9850 0.003692 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+  
+
+``` r
 coeftest(model, vcov = vcovHC(model, type = "HC1"))
+```
+
+```
+## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  -3.37130   11.88188 -0.2837 0.777296   
+## gdpgrowthlag  1.04729    0.40885  2.5615 0.012165 * 
+## votesinclag   0.71660    0.24422  2.9342 0.004286 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+  
+
+``` r
 coeftest(model, vcov = vcovHC(model, type = "HC3"))
 ```
 
+```
+## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)  -3.37130   12.54174 -0.2688 0.788722   
+## gdpgrowthlag  1.04729    0.44261  2.3661 0.020221 * 
+## votesinclag   0.71660    0.25701  2.7882 0.006523 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
 ### **Using `modelsummary`**
 
 ``` r
 library(modelsummary)
 
-modelsummary(
+ms.display &lt;- modelsummary(
   list("OLS" = model, 
        "Robust SE" = model),
   vcov = list("iid", "HC3"),
-  stars = TRUE
+  stars = TRUE, output = "kableExtra"
 )
 ```
-]
 
-.pull-right[
+---
+
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto;" class="table"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; OLS &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Robust SE &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −3.371 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −3.371 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (12.088) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (12.542) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; gdpgrowthlag &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.047* &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1.047* &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.460) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.443) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; votesinclag &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.717** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.717** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.236) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.257) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 89 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 89 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.144 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.144 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.124 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.124 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 781.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 781.7 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 791.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 791.7 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −386.874 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −386.874 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 7.230 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 7.018 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.69 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 18.69 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Std.Errors &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC3 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
 ### **Complete Example**
 
 ``` r
@@ -222,107 +881,161 @@ models &lt;- list(
   "HC3" = model
 )
 
-msummary(models,
+caschools.msummary &lt;- msummary(models,
          vcov = c("iid", "HC0", "HC1", "HC2", "HC3"),
          fmt = 2,
          stars = TRUE,
-         output = "markdown")
+         output = "kableExtra") %&gt;%
+  kable_styling(font_size = 10)
 ```
-]
 
 ---
-# Implementation in Stata
 
-.pull-left[
-### **Basic Syntax**
-```stata
-* Regular OLS
-regress vote_share income education
-
-* With robust SEs
-regress vote_share income education, vce(robust)
-
-* With clustered SEs
-regress vote_share income education, vce(cluster state)
-
-* Save results for table
-eststo clear
-eststo: reg vote_share income education
-eststo: reg vote_share income education, vce(robust)
-esttab using results.rtf, se ar2 replace
-```
-
-### **The `reghdfe` Package**
-```stata
-* Install if needed
-ssc install reghdfe
-
-* Fixed effects with clustered SEs
-reghdfe vote_share income education, ///
-  absorb(state year) vce(cluster state)
-```
-
-**Stata Tip:** `vce(robust)` uses HC1 by default
-]
-
-.pull-right[
-### **Comparing Outputs**
-&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
-&lt;caption&gt;Example: How SEs Change Inference&lt;/caption&gt;
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;" class="table table"&gt;
  &lt;thead&gt;
   &lt;tr&gt;
-   &lt;th style="text-align:left;"&gt; Variable &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; Coefficient &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; SE_Regular &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; SE_Robust &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; p_Regular &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; p_Robust &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Sig_Regular &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; Sig_Robust &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Regular &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; HC0 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; HC1 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;HC2 &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;HC3 &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
   &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1277.85*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1277.85*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1277.85*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1277.85*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1277.85*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (2.86) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (3.41) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (3.42) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (3.46) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (3.52) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; income &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.45 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.18 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.012 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.00*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.00*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.00*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.00*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.00*** &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; education &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.32 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.08 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.008 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.15) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.18) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.18) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.19) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (0.19) &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Constant &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 12.50 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 2.10 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.20 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.000 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; english &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.98*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.98*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.98*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.98*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −0.98*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.06) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.06) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.06) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.06) &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; (0.06) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 420 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 420 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 420 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 420 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 420 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.707 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.707 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.707 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.707 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.707 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.706 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.706 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.706 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.706 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.706 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3741.1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3741.1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3741.1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3741.1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3741.1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BIC &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3757.2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3757.2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3757.2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3757.2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3757.2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −1866.540 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −1866.540 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −1866.540 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −1866.540 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −1866.540 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; F &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 503.396 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 445.674 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 442.491 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 432.888 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 420.409 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 20.60 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 20.60 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 20.60 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 20.60 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 20.60 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Std.Errors &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; IID &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC0 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; HC3 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
 &lt;/table&gt;
+
+---
 
 ### **Key Insight:**
 Robust SEs often (but not always) increase standard errors, making findings **less significant**. This is more honest given real-world data.
-]
 
 ---
 # Clustered Standard Errors
 
-.pull-left[
 ### **When Observations Are Not Independent**
 Common in political science:
 1. **Panel data:** Multiple observations per country
@@ -330,19 +1043,20 @@ Common in political science:
 3. **Experimental data:** Treatments assigned to groups
 4. **Spatial data:** Nearby locations correlated
 
+---
 ### **The Problem:**
 Within-cluster correlation → underestimation of variance
 
 **Example:** If all respondents in Texas share unobserved factors, we don't have 100 independent observations, but 1 cluster of 100 correlated observations
-]
 
-.pull-right[
+---
 ### **Clustering Formula**
 $$
 \text{Var}(\hat{\beta}) = (X'X)^{-1} \left( \sum_{c=1}^C X_c' e_c e_c' X_c \right) (X'X)^{-1}
 $$
 where `\(c\)` indexes clusters
 
+---
 ### **Implementation in R:**
 
 ``` r
@@ -363,23 +1077,17 @@ coef_test(model,
           vcov = "CR2", 
           cluster = election_data$state)
 ```
-]
 
 ---
 # Multi-Way Clustering
 
-.pull-left[
 ### **Complex Dependencies**
 Sometimes observations cluster in multiple ways:
 1. **States and years** (Cameron, Gelbach &amp; Miller, 2011)
 2. **Individual and time** (two-way FE)
 3. **Industry and region**
 
-### **Example:**
-Studying campaign contributions:
-- Donors within states (geographic correlation)
-- Donors within industries (sector correlation)
-- Need to account for both
+---
 
 ### **R Implementation:**
 
@@ -398,11 +1106,10 @@ model_multi &lt;- felm(vote_share ~ income + education |
                     data = election_data)
 summary(model_multi, robust = TRUE)
 ```
-]
 
-.pull-right[
+---
 ### **When to Cluster?**
-.center[
+
 &lt;table class="table" style="font-size: 10px; margin-left: auto; margin-right: auto;"&gt;
 &lt;caption style="font-size: initial !important;"&gt;Clustering Guidelines for Political Data&lt;/caption&gt;
  &lt;thead&gt;
@@ -445,165 +1152,28 @@ summary(model_multi, robust = TRUE)
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-]
+
+---
 
 **Rule of thumb:** Cluster at the level of treatment assignment or at the level where you suspect correlation.
-]
-
----
-# Practical Considerations for Political Scientists
-
-.pull-left[
-### **1. Sample Size Matters**
-- Robust SEs need reasonable N
-- Clustering needs sufficient clusters (&gt;50)
-- With few clusters, use wild bootstrap
-
-### **2. Fixed Effects + Clustering**
-- Include fixed effects for within-cluster variation
-- Cluster at higher level than FE
-- Example: State-year data → state FE, cluster by state
-
-### **3. Pre-testing is Problematic**
-Don't test for heteroskedasticity then decide
-- Tests have low power
-- Type II errors common
-- **Better:** Always use robust SEs as default
-]
-
-.pull-right[
-### **4. Reporting Standards**
-
-``` r
-# In RMarkdown, use modelsummary
-modelsummary(
-  list("OLS" = model_ols,
-       "Robust SE" = model_robust,
-       "Clustered" = model_cluster),
-  vcov = list("iid", "HC3", ~state),
-  stars = TRUE,
-  gof_map = c("nobs", "r.squared"),
-  output = "kableExtra"
-)
-```
-
-### **5. Common Pitfalls**
-- Clustering at wrong level
-- Ignoring serial correlation in time series
-- Using robust SEs with instrumental variables
-- Forgetting about multi-way clustering
-
-**Journal Expectations:** Most top journals require some form of robust SEs
-]
-
----
-# Special Case: Time Series (HAC Errors)
-
-.pull-left[
-### **Newey-West Standard Errors**
-For autocorrelated errors in time series:
-
-
-``` r
-# Using sandwich package
-coeftest(model, 
-         vcov = NeweyWest(model, 
-                          lag = 4,  # Lags to consider
-                          prewhite = FALSE))
-
-# Rule of thumb: L = T^(1/4)
-# For 100 time periods: L ≈ 3
-
-# Using dynlm for time series models
-library(dynlm)
-model_ts &lt;- dynlm(vote_share ~ L(vote_share) + economy,
-                  data = election_ts)
-coeftest(model_ts, vcov = NeweyWest)
-```
-
-### **When to Use:**
-- Annual election data
-- Monthly approval ratings
-- Quarterly economic indicators
-]
-
-.pull-right[
-### **Political Science Examples**
-1. **Presidential approval:** Autocorrelated over time
-2. **Policy diffusion:** Spatial and temporal correlation
-3. **Electoral cycles:** Seasonal patterns
-
-![](RobustStandardErrors_files/figure-html/hac-example-1.png)&lt;!-- --&gt;
-
-**Diagnostic:** Check ACF/PACF plots of residuals. If autocorrelation present, use HAC errors.
-]
-
----
-# Robust SEs with Instrumental Variables
-
-.pull-left[
-### **The Challenge**
-IV models already have complex variance structure
-- Need heteroskedasticity-robust IV SEs
-- Stata: `ivregress 2sls y x1 (x2 = z), vce(robust)`
-- R: Use `ivreg` from AER package
-
-
-``` r
-library(AER)
-
-# IV regression with robust SEs
-iv_model &lt;- ivreg(vote_share ~ income + education |
-                    income + instrument,
-                  data = election_data)
-
-# Get robust SEs
-coeftest(iv_model, 
-         vcov = vcovHC(iv_model, type = "HC3"))
-
-# Clustered SEs for IV
-library(sandwich)
-coeftest(iv_model,
-         vcov = vcovCL(iv_model, 
-                       cluster = ~state))
-```
-]
-
-.pull-right[
-### **Warning: Weak Instruments**
-Robust SEs don't solve weak instrument problems
-- First-stage F-stat still matters
-- Use Kleibergen-Paap rk Wald F statistic for robust version
-
-### **Political Science Applications:**
-1. **Natural experiments:** Clustered treatment assignment
-2. **Shift-share instruments:** Need careful SEs
-3. **Border discontinuity:** Spatial correlation
-
-**Best practice:** Report both conventional and robust SEs in IV models, check for consistency.
-]
 
 ---
 # Limitations and When NOT to Use Robust SEs
 
-.pull-left[
 ### **1. Very Small Samples**
 - HC estimators biased in tiny samples
-- N &lt; 30: Consider alternatives
+- N &lt; 25: Consider alternatives
 - Better: Use exact methods or permutation tests
 
 ### **2. Weighted Data**
 - Survey weights already account for heterogeneity
 - Don't double-adjust
-- Use design-based SEs instead
+
+---
 
 ### **3. Nonlinear Models**
 - GLMs (logit, probit) have different variance structure
-- Use sandwich estimators designed for GLMs
-- Or use quasi-likelihood methods
-]
 
-.pull-right[
 ### **4. Model Misspecification**
 Robust SEs don't fix:
 - Omitted variable bias
@@ -611,243 +1181,12 @@ Robust SEs don't fix:
 - Measurement error
 - Simultaneity
 
-**They're not a magic bullet!**
+---
 
 ### **5. Efficiency Loss**
 - Robust SEs are less efficient when homoskedasticity holds
-- But cost is small in large samples
-- **Tradeoff:** Robustness vs. efficiency
 
-**Political science default:** Use robust SEs unless you have strong reason not to
-]
-
----
-# Workflow for Political Science Research
-
-.center[
-## **Step-by-Step Approach**
-]
-
-.pull-left[
-### **Step 1: Exploratory Analysis**
-1. Plot residuals vs. fitted values
-2. Check for funnel patterns
-3. Identify likely clustering structure
-4. Test for autocorrelation (time series)
-
-### **Step 2: Model Specification**
-1. Start with theory-driven model
-2. Include relevant fixed effects
-3. Consider functional form
-4. **Always plan** for robust SEs
-]
-
-.pull-right[
-### **Step 3: Estimation**
-
-``` r
-# Template code
-library(fixest)  # Fast and user-friendly
-
-model &lt;- feols(
-  y ~ x1 + x2 | fe1 + fe2,  # Formula with FEs
-  data = my_data,
-  cluster = ~cluster_var,    # Clustering
-  vcov = "hetero"           # Robust SEs
-)
-
-# Alternative: lm + sandwich
-model_lm &lt;- lm(y ~ x1 + x2, data = my_data)
-coeftest(model_lm, vcov = vcovCL, 
-         cluster = ~cluster_var)
-```
-
-### **Step 4: Reporting**
-1. Always report which SEs used
-2. Justify clustering choice
-3. Show robustness to different SE choices
-4. Provide code for replication
-]
-
----
-# Real Example: Election Forecasting
-
-.pull-left[
-
-``` r
-# Load election data
-library(forecast)
-data("presidentialElections", package = "pscl")
-
-# Model with heteroskedasticity
-model &lt;- lm(vote ~ growth + incumbent + war,
-            data = presidentialElections)
-
-# Compare SEs
-library(modelsummary)
-models &lt;- list(
-  "Standard" = model,
-  "HC3" = coeftest(model, vcov = vcovHC),
-  "Clustered by Year" = coeftest(model, 
-                                 vcov = vcovCL,
-                                 cluster = ~year)
-)
-
-msummary(models,
-         estimate = "{estimate} ({std.error})",
-         statistic = NULL,
-         output = "markdown")
-```
-]
-
-.pull-right[
-### **Findings:**
-1. Economic growth effect remains significant
-2. Incumbency advantage SE increases 30%
-3. War variable becomes insignificant with robust SEs
-
-### **Lesson:**
-What seemed like strong findings with regular SEs become more nuanced with proper inference.
-
-### **Replication Package:**
-Always include code for SE calculation in replication materials. Journals increasingly check this.
-]
-
----
-class: inverse, center, middle
-
-# Summary &amp; Best Practices
-
----
-# Key Takeaways
-
-.pull-left[
-### **1. Default to Robust SEs**
-- Political data is heteroskedastic
-- Little cost, big benefit
-- Use HC3 in R, `vce(robust)` in Stata
-
-### **2. Cluster Appropriately**
-- At level of treatment assignment
-- Or at level of suspected correlation
-- More clusters = better
-
-### **3. Don't Rely on Tests**
-- Breusch-Pagan, White tests have low power
-- Just use robust SEs
-]
-
-.pull-right[
-### **4. Report Transparently**
-```stata
-* Good: 
-reg y x, vce(cluster state)
-
-* Better:
-reg y x i.state i.year, vce(cluster state)
-```
-
-### **5. Know the Limitations**
-- Small samples problematic
-- Doesn't fix misspecification
-- Efficiency tradeoff minimal
-
-### **Final Advice:**
-&gt; "When in doubt, cluster. When really in doubt, cluster at a higher level and use robust SEs too."
-&gt; — Anonymous political methodologist
-]
-
----
-# Further Resources
-
-.pull-left[
-### **Reading List**
-1. **Angrist &amp; Pischke** (2009) *Mostly Harmless Econometrics*
-   - Chapter 8 on robust SEs
-
-2. **Cameron &amp; Trivedi** (2005) *Microeconometrics*
-   - Comprehensive treatment
-
-3. **Wooldridge** (2010) *Econometric Analysis*
-   - Clear explanations
-
-4. **Recent advances:**
-   - MacKinnon &amp; White (1985) on HC3
-   - Cameron, Gelbach &amp; Miller (2011) on multi-way
-]
-
-.pull-right[
-### **Software Guides**
-- **R:** `vignette("sandwich", package = "sandwich")`
-- **Stata:** `help regress` and `help vce_option`
-- **Python:** `statsmodels` with `cov_type='HC3'`
-
-### **Political Science Examples**
-1. **AJPS replication packages:** See how top journals do it
-2. **ICPSR workshops:** Regular training on robust inference
-3. **Your professor's code:** Ask for examples!
-
-### **Practice Dataset:**
-
-``` r
-# ANES data example
-library(anesrake)
-# Or use your own research data
-```
-]
-
----
-class: inverse, center, middle
-
-# Questions &amp; Discussion
-
-&lt;br&gt;
-
-### **Next Week:**
-- Fixed effects and difference-in-differences
-- Bring your own data for consultation
-
-&lt;br&gt;
-
-**Office Hours:** [Time] | **Email:** [Your Email]
-
----
-# Appendix: Common Problems &amp; Solutions
-
-
-``` r
-# Problem 1: Too few clusters
-# Solution: Wild cluster bootstrap
-library(fwildclusterboot)
-boot_model &lt;- boottest(model, 
-                       clustid = "state",
-                       B = 9999)
-summary(boot_model)
-
-# Problem 2: Multi-way FE with clustering
-# Solution: lfe or fixest
-library(fixest)
-model_multi &lt;- feols(y ~ x1 + x2 | state + year,
-                     data = data,
-                     cluster = ~state + year)
-
-# Problem 3: Spatial correlation
-# Solution: Conley SEs
-library(spatialreg)
-# Or use custom code from Hsiang (2010)
-```
-
-### **Stata Equivalents:**
-```stata
-* Wild bootstrap
-boottest, cluster(state) reps(9999)
-
-* Multi-way clustering
-reghdfe y x, absorb(state year) vce(cluster state year)
-```
-
-**Remember:** The goal is honest inference, not finding significance.
-```
+Use robust SEs unless you have strong reason not to
 
 ---
 

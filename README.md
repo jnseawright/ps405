@@ -30,11 +30,16 @@
 * [Problem Set 2](https://jnseawright.github.io/ps405/Problems/ps2.html) 
 * [Problem Set 3](https://jnseawright.github.io/ps405/Problems/ps3.html)
 * [Problem Set 4](https://jnseawright.github.io/ps405/Problems/ps4.html)
+* [Problem Set 5](https://jnseawright.github.io/ps405/Problems/ps5.html)
+* [Problem Set 6](https://jnseawright.github.io/ps405/Problems/ps6.html)
+* [Problem Set 7](https://jnseawright.github.io/ps405/Problems/ps7.html)
+* [Problem Set 8](https://jnseawright.github.io/ps405/Problems/ps8.html)
+* [Problem Set 9](https://jnseawright.github.io/ps405/Problems/ps9.html)
 
-### Final Grant Proposal
+### Summative Problem Set
 
-* [Grant Proposal](https://jnseawright.github.io/PS406/FinalPaper.html)
+* [Summative Problem Set](https://jnseawright.github.io/PS406/Problems/summative.html)
 
-### Presenting an Estimator In Class
+### Grades
 
-* [Presenting an Estimator](https://canvas.northwestern.edu/courses/230286/assignments/1562510)
+* [Gradebook](https://canvas.northwestern.edu/courses/245562/gradebook)

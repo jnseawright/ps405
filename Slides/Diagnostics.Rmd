@@ -201,20 +201,37 @@ Always check for nonlinearity. Consider transformations or flexible models.
 
 ### **What to Plot**
 ```{r residual-code, eval=TRUE}
-la_electoral <- read.csv("../Data/laelectoral.csv")
+la_electoral <- read.csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/laelectoral.csv")
 
 # After fitting model
 fit <- lm(voteswoninc ~ gdpgrowthlag + votesinclag, data = la_electoral)
+```
 
+---
+
+
+```{r residual-code-2, eval=TRUE}
 # Base R
 plot(fit, which = 1)  # Residuals vs Fitted
+```
 
+---
+
+```{r residual-code-25, eval=TRUE}
+la_electoral$countryname[c(70,72,62)]
+
+la_electoral$electiondate[c(70,72,62)]
+```
+
+---
+
+```{r residual-code-3, eval=TRUE}
 # ggplot2
 library(ggplot2)
-election_data$residuals <- resid(fit)
-election_data$fitted <- fitted(fit)
+la_electoral$residuals <- resid(fit)
+la_electoral$fitted <- fitted(fit)
 
-ggplot(election_data, aes(x = fitted, y = residuals)) +
+residfit.plot <- ggplot(la_electoral, aes(x = fitted, y = residuals)) +
   geom_point(alpha = 0.6) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_smooth(se = FALSE)
@@ -222,11 +239,17 @@ ggplot(election_data, aes(x = fitted, y = residuals)) +
 
 ---
 
+```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+residfit.plot
+```
+
+---
+
 ### **What to Look For**
 
-```{r residual-patterns, echo=FALSE, fig.height=4}
+```{r residual-patterns, echo=FALSE, fig.height=16, fig.width=16}
 set.seed(123)
-par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
+par(mfrow = c(3,3), mar = c(1, 1, 1, 1))
 
 # Good residuals
 x <- 1:100
@@ -240,7 +263,7 @@ fit_funnel <- lm(y_funnel ~ x)
 plot(fitted(fit_funnel), resid(fit_funnel), main = "Bad: Funnel Pattern")
 
 # Curvilinear
-y_curve <- 2*x + 0.1*x^2 + rnorm(100, 0, 10)
+y_curve <- 2*x + 0.05*x^2 + rnorm(100, 0, 30)
 fit_curve <- lm(y_curve ~ x)
 plot(fitted(fit_curve), resid(fit_curve), main = "Bad: Curved Pattern")
 ```
@@ -256,51 +279,23 @@ plot(fitted(fit_curve), resid(fit_curve), main = "Bad: Curved Pattern")
 
 ---
 ### **Bayesian Implementation**
-```{r ppc-code, eval=FALSE}
+```{r ppc-code, eval=TRUE}
 # Using rstanarm
 library(rstanarm)
-fit_bayes <- stan_glm(vote ~ economy + war, 
-                      data = election_data,
+fit_bayes <- stan_glm(voteswoninc ~ gdpgrowthlag + votesinclag, 
+                      data = la_electoral,
                       family = gaussian(),
                       seed = 123)
 ```
 
 ---
 
-```{r ppc-code-2, eval=FALSE}
+```{r ppc-code-2, eval=TRUE}
 # Generate posterior predictions
 y_rep <- posterior_predict(fit_bayes)
 
 # Compare distributions
-bayesplot::ppc_dens_overlay(election_data$vote, y_rep[1:50, ])
-```
-
----
-
-```{r ppc-example, echo=FALSE, fig.height=4.5}
-# Simulate a PPC example
-set.seed(123)
-n <- 100
-x <- rnorm(n)
-true_y <- 1 + 0.5*x + rnorm(n, 0, 1)
-observed <- true_y + rnorm(n, 0, 0.5)  # Add measurement error
-
-# Simulate replications
-reps <- matrix(NA, nrow = 20, ncol = n)
-for(i in 1:20) {
-  reps[i, ] <- 1 + 0.5*x + rnorm(n, 0, 1.2)  # Slightly wrong SD
-}
-
-# Plot
-par(mfrow = c(1, 1))
-plot(density(observed), main = "Posterior Predictive Check",
-     xlab = "Outcome", ylab = "Density", lwd = 2, col = "blue",
-     ylim = c(0, 0.4))
-for(i in 1:10) {
-  lines(density(reps[i, ]), col = rgb(0.5, 0.5, 0.5, 0.3))
-}
-legend("topright", legend = c("Observed", "Replications"),
-       col = c("blue", "gray"), lwd = c(2, 1))
+bayesplot::ppc_dens_overlay(la_electoral$voteswoninc, y_rep)
 ```
 
 ---
@@ -445,7 +440,7 @@ summary(bayes_R2(fit))
 ---
 
 ### **Step 2: During Modeling**
-1. **Fit multiple specifications**
+1. **Try to start with the most complicated specification you might need and simplify down with tests rather than the other way around**
 2. **Examine residuals**
 3. **Test for nonlinearities**
 

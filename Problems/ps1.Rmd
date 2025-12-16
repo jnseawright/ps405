@@ -2,6 +2,8 @@
 ## Problem Set 1     ##
 #######################
 
+**Due Date**: January 16, 2026  
+**Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1676620](https://canvas.northwestern.edu/courses/245562/assignments/1676620)
 
 ####################
 ## Problem 1      ##
@@ -96,8 +98,3 @@ ice_arrests$Population <- parse_number(ice_arrests$Population)
 ####################
 
 **Reflection question:** Based on your analysis in Problems 3 and 4, what are at least two limitations of using governor's partisanship as a predictor of ICE arrests? Consider both methodological issues (e.g., measurement, confounding variables) and substantive concerns (e.g., causal mechanisms, political context).
-
-
-Please submit your completed assignment at:
-
-[https://canvas.northwestern.edu/courses/245562/assignments/1676620](https://canvas.northwestern.edu/courses/245562/assignments/1676620)

@@ -2,20 +2,14 @@
 ## Problem Set 9     ##
 #######################
 
-**Due Date**: [Insert due date]  
-**Submission**: [Canvas Link]
+**Due Date**: March 13, 2026  
+**Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1687754](https://canvas.northwestern.edu/courses/245562/assignments/1687754)
 
-**Instructions**: 
-- Show all mathematical derivations where requested.
-- Include complete, well-commented R code for all analyses.
-- Submit knitted document with all outputs.
-- For Problems 1-4, provide clear explanations in your own words.
+####################
+## Problem 1      ##
+####################
 
----
-
-# Problem 1: Theoretical Foundations of Robust Standard Errors
-
-## 1a. Heteroskedasticity in Political Data
+## 1a.
 
 1. Define heteroskedasticity in your own words. Why is it common in political science data? Provide three specific examples from different subfields (e.g., comparative politics, international relations, American politics).
 
@@ -27,15 +21,16 @@
 
 3. Explain why OLS coefficient estimates remain unbiased under heteroskedasticity, but inference becomes invalid.
 
-## 1b. The Huber-White Sandwich Estimator
+## 1b.
 
 1. Why is HC3 generally recommended for political science applications? What are its advantages and disadvantages?
 
----
 
-# Problem 2: Practical Implementation of Robust SEs
+####################
+## Problem 2      ##
+####################
 
-## 2a. Comparing Different Variance Estimators
+## 2a.
 
 Using the QOG data on democracy and development:
 
@@ -84,7 +79,7 @@ model <- lm(democracy ~ log_gdp + corruption + log_pop,
 2. How do conclusions about statistical significance change across estimators?
 3. Based on residual analysis, which estimator seems most appropriate for this data?
 
-## 2b. Diagnostic Tests for Heteroskedasticity
+## 2b.
 
 ```{r problem2b, eval=FALSE}
 # Implement and interpret heteroskedasticity tests
@@ -115,9 +110,11 @@ library(skedastic)
 2. What are the limitations of pre-testing for heteroskedasticity?
 3. Why do many econometricians recommend always using robust SEs rather than testing first?
 
-# Problem 3: Professional Regression Tables
+####################
+## Problem 3      ##
+####################
 
-## 3a. Creating Publication-Ready Tables
+## 3a.
 
 ```{r problem3a, eval=FALSE}
 library(modelsummary)
@@ -163,7 +160,7 @@ models <- list(
 2. How do you balance completeness with readability in table design?
 3. What are common mistakes to avoid when creating regression tables?
 
-## 3b. Model Comparison and Presentation
+## 3b.
 
 ```{r problem3b, eval=FALSE}
 # Compare different model specifications and presentation styles
