@@ -359,11 +359,8 @@ display: none;
 <h2>Problem Set 4</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
-<p><strong>Due Date</strong>: [Insert due date]<br />
+<p><strong>Due Date</strong>: February 6, 2026<br />
 <strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1676748">https://canvas.northwestern.edu/courses/245562/assignments/1676748</a></p>
-<p><strong>Instructions</strong>: - Show all mathematical derivations. -
-Include complete, well-commented R code. - Submit knitted document with
-all outputs.</p>
 <hr />
 </div>
 <div id="section-2" class="section level20">
@@ -395,10 +392,9 @@ zero?</p>
 <h2>Problem 2</h2>
 <div id="section-5" class="section level20">
 <p class="heading"></p>
-<p><strong>BLP Approximation to Nonlinear CEFs</strong></p>
-<p><strong>2a.</strong> The lecture slides show a nonlinear CEF for GDP
-and turnout, with different linear approximations (BLPs) for different
-ranges of GDP. In your own words, explain:</p>
+<p>The lecture slides show a nonlinear CEF for GDP and turnout, with
+different linear approximations (BLPs) for different ranges of GDP. In
+your own words, explain:</p>
 <ol style="list-style-type: decimal">
 <li>What does it mean for the BLP to be the “best linear approximation”
 of a nonlinear CEF?</li>
@@ -407,36 +403,6 @@ the data we focus on?</li>
 <li>What are the implications for interpreting regression coefficients
 when the true CEF is nonlinear?</li>
 </ol>
-<p><strong>2b.</strong> Using the turnout data from the lecture, create
-a visualization that demonstrates this phenomenon:</p>
-<pre class="r"><code># Load data from lecture
-turnout &lt;- read_csv(&quot;https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv&quot;)
-
-# Create three subsets: low, medium, and high GDP
-turnout_low &lt;- turnout %&gt;% filter(GDP &lt; 1e7)
-turnout_medium &lt;- turnout %&gt;% filter(GDP &gt;= 1e7 &amp; GDP &lt; 2e7)
-turnout_high &lt;- turnout %&gt;% filter(GDP &gt;= 2e7)
-
-# Fit linear models for each subset
-lm_low &lt;- lm(Turnout ~ GDP, data = turnout_low)
-lm_medium &lt;- lm(Turnout ~ GDP, data = turnout_medium)
-lm_high &lt;- lm(Turnout ~ GDP, data = turnout_high)
-
-# Create a plot showing all data points and the three regression lines
-library(ggplot2)
-ggplot(turnout, aes(x = GDP, y = Turnout)) +
-  geom_point(alpha = 0.5) +
-  geom_smooth(data = turnout_low, method = &quot;lm&quot;, se = FALSE, color = &quot;red&quot;, size = 1) +
-  geom_smooth(data = turnout_medium, method = &quot;lm&quot;, se = FALSE, color = &quot;blue&quot;, size = 1) +
-  geom_smooth(data = turnout_high, method = &quot;lm&quot;, se = FALSE, color = &quot;green&quot;, size = 1) +
-  geom_smooth(method = &quot;lm&quot;, se = FALSE, color = &quot;black&quot;, size = 1.5, linetype = &quot;dashed&quot;) +
-  labs(title = &quot;BLP Approximations to Nonlinear CEF at Different GDP Ranges&quot;,
-       subtitle = &quot;Red: Low GDP, Blue: Medium GDP, Green: High GDP, Black: Overall BLP&quot;) +
-  theme_minimal()</code></pre>
-<p><strong>2c.</strong> Interpret the coefficients from each of the four
-regressions. How do they differ? What does this tell us about
-interpreting a single linear coefficient when the relationship is
-nonlinear?</p>
 <hr />
 </div>
 <div id="section-6" class="section level20">
@@ -447,7 +413,6 @@ nonlinear?</p>
 <h2>Problem 3</h2>
 <div id="section-7" class="section level20">
 <p class="heading"></p>
-<p><strong>OVB in Your Turnout Analysis</strong></p>
 <p>Return to your voter turnout analysis from Problem Set 3.</p>
 <p><strong>3a.</strong> Re-examine the difference between your bivariate
 model (turnout ~ income) and multivariate model (turnout ~ income +
@@ -494,9 +459,10 @@ model_multivariate &lt;- lm(y ~ x1 + x2)
 summary(model_bivariate)
 summary(model_multivariate)</code></pre>
 <p><strong>Questions for Scenario A:</strong> 1. What is the true value
-of β₁? 2. What is the estimated β₁ in the bivariate model? How biased is
-it? 3. Use the OVB formula to calculate the expected bias. Does it match
-the actual bias?</p>
+of <span class="math inline">\(\beta_{1}\)</span>? 2. What is the
+estimated <span class="math inline">\(beta_{1}\)</span> in the bivariate
+model? How biased is it? 3. Use the OVB formula to calculate the
+expected bias. Does it match the actual bias?</p>
 <p><strong>Scenario B: Collider Bias (X2 is a common
 effect)</strong></p>
 <pre class="r"><code>set.seed(789)
@@ -514,10 +480,10 @@ model_collider &lt;- lm(y ~ x1 + x2)  # Including collider
 summary(model_correct)
 summary(model_collider)</code></pre>
 <p><strong>Questions for Scenario B:</strong> 1. What is the true value
-of β₁? 2. What happens when we include x2 in the regression? Why? 3.
-This demonstrates “bad control” or collider bias. Explain in your own
-words why including x2 creates bias even though x2 is correlated with
-both x1 and y.</p>
+of <span class="math inline">\(\beta_1\)</span>? 2. What happens when we
+include x2 in the regression? Why? 3. This demonstrates “bad control” or
+collider bias. Explain in your own words why including x2 creates bias
+even though x2 is correlated with both x1 and y.</p>
 <p><strong>4c. Simulation Synthesis:</strong> 1. Create a table
 comparing both scenarios. 2. Under what circumstances does adding a
 control variable reduce bias? When might it increase bias? 3. How can
@@ -532,12 +498,10 @@ researchers decide which variables to include in a regression model?</p>
 <h2>Problem 5</h2>
 <div id="section-11" class="section level20">
 <p class="heading"></p>
-<p><strong>Matrix Algebra and OLS Derivation</strong></p>
 <p>The lecture slides derive OLS using the plug-in principle and matrix
 algebra.</p>
 <p><strong>5a. Plug-in Principle:</strong> 1. Define the plug-in
-principle in your own words. 2. Using the plug-in principle, show how to
-derive the OLS estimator for β₁ in the simple regression model: <span class="math inline">\(y = β₀ + β₁x + ε\)</span></p>
+principle in your own words.</p>
 <p><strong>5b. Matrix Derivation:</strong> The OLS estimator in matrix
 form is: <span class="math display">\[\hat{\beta} =
 (X^TX)^{-1}X^Ty\]</span></p>
@@ -559,17 +523,10 @@ beta_hat
 
 # Compare with lm() output
 lm(Turnout ~ GDP + Temperature, data = turnout_clean)</code></pre>
-<p><strong>Questions for 5b:</strong> 1. Verify that your matrix
-calculation matches the <code>lm()</code> output. 2. What does each
-component of the formula <span class="math inline">\((X^TX)^{-1}X^Ty\)</span> represent intuitively? 3.
-What happens if <span class="math inline">\(X^TX\)</span> is not
-invertible? What does this mean in practical terms?</p>
-<p><strong>5c. Connecting Matrix Form to OVB:</strong> The OVB formula
-can also be expressed in matrix terms. For a model with two
-predictors:</p>
-<p><span class="math display">\[\hat{\beta}_1 = \beta_1 + \beta_2
-\frac{\text{Cov}(x_1, x_2)}{\text{Var}(x_1)}\]</span></p>
-<p>Show how this emerges from the matrix formula when we omit <span class="math inline">\(x_2\)</span>.</p>
+<ol style="list-style-type: decimal">
+<li>Verify that your matrix calculation matches the <code>lm()</code>
+output.</li>
+</ol>
 </div>
 </div>
 

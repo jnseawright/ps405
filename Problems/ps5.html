@@ -359,22 +359,25 @@ display: none;
 <h2>Problem Set 5</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
-<p><strong>Due Date</strong>: [Insert due date]<br />
-<strong>Submission</strong>: [Canvas Link]</p>
-<p><strong>Instructions</strong>: - Show all mathematical derivations
-where requested. - Include complete, well-commented R code for all
-analyses. - Submit knitted document with all outputs. - For Problems
-1-3, provide clear explanations in your own words.</p>
+<p><strong>Due Date</strong>: February 13, 2026<br />
+<strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1687750">https://canvas.northwestern.edu/courses/245562/assignments/1687750</a></p>
 <hr />
-<p>#################### ## Problem 1 ## ####################</p>
-<p><strong>Model Fit and R-squared</strong></p>
+</div>
+<div id="section-2" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="problem-1" class="section level2">
+<h2>Problem 1</h2>
+<div id="section-3" class="section level20">
+<p class="heading"></p>
 <p><strong>1a.</strong> In your own words, explain: 1. The difference
 between residuals (<span class="math inline">\(e_i\)</span>) and
 modeling errors (<span class="math inline">\(\epsilon_i\)</span>) 2. Why
 the sum of residuals in OLS regression equals zero when an intercept is
 included 3. How <span class="math inline">\(R^2\)</span> measures model
 fit and what it represents</p>
-<p><strong>1b.</strong> Using the election data from the lectures:</p>
+<p><strong>1b.</strong> Using the Hibbs election data:</p>
 <pre class="r"><code># Load data
 library(rosdata)
 data(&quot;hibbs&quot;)
@@ -390,37 +393,17 @@ Compare your calculation with the <code>summary()</code> output.</p>
 model, even irrelevant ones? 2. Why might a high <span class="math inline">\(R^2\)</span> not indicate a good model?</p>
 <hr />
 </div>
-<div id="section-2" class="section level20">
+<div id="section-4" class="section level20">
 <p class="heading"></p>
 </div>
 </div>
 <div id="problem-2" class="section level2">
 <h2>Problem 2</h2>
-<div id="section-3" class="section level20">
+<div id="section-5" class="section level20">
 <p class="heading"></p>
-<p><strong>Matrix Algebra and Multicollinearity</strong></p>
-<p><strong>2a. Matrix Form:</strong> 1. Write down the regression model
-in matrix form and explain each symbol.</p>
-<p><strong>2b. Implementing OLS with Matrix Algebra:</strong> Using the
-turnout data with GDP and Temperature:</p>
-<pre class="r"><code># Load and clean data
-turnout &lt;- read_csv(&quot;https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv&quot;)
-turnout_clean &lt;- na.omit(turnout)
-
-# Create matrices
-X &lt;- as.matrix(cbind(1, turnout_clean$GDP, turnout_clean$Temperature))
-colnames(X) &lt;- c(&quot;Intercept&quot;, &quot;GDP&quot;, &quot;Temperature&quot;)
-Y &lt;- as.matrix(turnout_clean$Turnout)
-
-# Calculate OLS coefficients using matrix algebra
-beta_hat &lt;- solve(t(X) %*% X) %*% t(X) %*% Y
-
-# Compare with lm()
-model_lm &lt;- lm(Turnout ~ GDP + Temperature, data = turnout_clean)</code></pre>
-<p><strong>Questions:</strong> 1. Verify that your matrix calculation
-matches the <code>lm()</code> output. 2. What is the condition for <span class="math inline">\((X^TX)\)</span> to be invertible?</p>
-<p><strong>2c. Multicollinearity Investigation:</strong> Create a
-multicollinear scenario:</p>
+<p><strong>2a.</strong> 1. Write down the regression model in matrix
+form and explain each symbol.</p>
+<p><strong>2b.</strong> Create a multicollinear scenario:</p>
 <pre class="r"><code># Create multicollinear data
 set.seed(123)
 n &lt;- 100
@@ -441,8 +424,16 @@ when multicollinearity is present? 2. How do the VIF values indicate
 multicollinearity? 3. What are the practical implications for
 interpreting coefficients in the presence of multicollinearity?</p>
 <hr />
-<p>#################### ## Problem 3 ## ####################</p>
-<p><strong>Leverage</strong> Using the turnout data:</p>
+</div>
+<div id="section-6" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="problem-3" class="section level2">
+<h2>Problem 3</h2>
+<div id="section-7" class="section level20">
+<p class="heading"></p>
+<p>Using the turnout data:</p>
 <pre class="r"><code># Calculate leverage (diagonal of hat matrix)
 model &lt;- lm(Turnout ~ GDP + Temperature, data = turnout_clean)
 
@@ -467,19 +458,18 @@ vs. observation index. Add a horizontal line at <span class="math inline">\(2p/
 parameters).</p>
 <hr />
 </div>
-<div id="section-4" class="section level20">
+<div id="section-8" class="section level20">
 <p class="heading"></p>
 </div>
 </div>
 <div id="problem-4" class="section level2">
 <h2>Problem 4</h2>
-<div id="section-5" class="section level20">
+<div id="section-9" class="section level20">
 <p class="heading"></p>
-<p><strong>Outliers and Influence</strong></p>
-<p><strong>4a. Measuring Influence:</strong> 1. Define DFBETA and Cook’s
-Distance. What does each measure? 2. What’s the difference between an
-outlier and an influential point?</p>
-<p><strong>4b. Calculating DFBETA:</strong> Using the turnout model:</p>
+<p><strong>4a.</strong> 1. Define DFBETA and Cook’s Distance. What does
+each measure? 2. What’s the difference between an outlier and an
+influential point?</p>
+<p><strong>4b.</strong> Using the turnout model:</p>
 <pre class="r"><code># Calculate DFBETA
 dfbeta_vals &lt;- dfbeta(model)
 

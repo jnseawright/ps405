@@ -2,29 +2,22 @@
 ## Problem Set 5     ##
 #######################
 
-**Due Date**: [Insert due date]  
-**Submission**: [Canvas Link]
-
-**Instructions**: 
-  - Show all mathematical derivations where requested.
-- Include complete, well-commented R code for all analyses.
-- Submit knitted document with all outputs.
-- For Problems 1-3, provide clear explanations in your own words.
+**Due Date**: February 13, 2026  
+**Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1687750](https://canvas.northwestern.edu/courses/245562/assignments/1687750)
 
 ---
   
-  ####################
+####################
 ## Problem 1      ##
 ####################
 
-**Model Fit and R-squared**
-  
-  **1a.** In your own words, explain:
-  1. The difference between residuals ($e_i$) and modeling errors ($\epsilon_i$)
+
+**1a.** In your own words, explain:
+1. The difference between residuals ($e_i$) and modeling errors ($\epsilon_i$)
 2. Why the sum of residuals in OLS regression equals zero when an intercept is included
 3. How $R^2$ measures model fit and what it represents
 
-**1b.** Using the election data from the lectures:
+**1b.** Using the Hibbs election data:
   
 ```{r problem1b, eval=FALSE}
 # Load data
@@ -51,39 +44,13 @@ model_econ <- lm(vote ~ growth, data = hibbs)   # With growth
 ## Problem 2      ##
 ####################
 
-**Matrix Algebra and Multicollinearity**
-  
-  **2a. Matrix Form:**
+**2a.**
 1. Write down the regression model in matrix form and explain each symbol.
 
-**2b. Implementing OLS with Matrix Algebra:**
-  Using the turnout data with GDP and Temperature:
-  
-```{r problem2b, eval=FALSE}
-# Load and clean data
-turnout <- read_csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/turnout.csv")
-turnout_clean <- na.omit(turnout)
-
-# Create matrices
-X <- as.matrix(cbind(1, turnout_clean$GDP, turnout_clean$Temperature))
-colnames(X) <- c("Intercept", "GDP", "Temperature")
-Y <- as.matrix(turnout_clean$Turnout)
-
-# Calculate OLS coefficients using matrix algebra
-beta_hat <- solve(t(X) %*% X) %*% t(X) %*% Y
-
-# Compare with lm()
-model_lm <- lm(Turnout ~ GDP + Temperature, data = turnout_clean)
-```
-
-**Questions:**
-  1. Verify that your matrix calculation matches the `lm()` output.
-2. What is the condition for $(X^TX)$ to be invertible?
-
-  **2c. Multicollinearity Investigation:**
+**2b.**
   Create a multicollinear scenario:
   
-```{r problem2c, eval=FALSE}
+```{r problem2b, eval=FALSE}
 # Create multicollinear data
 set.seed(123)
 n <- 100
@@ -106,13 +73,12 @@ vif(model_collinear)
   2. How do the VIF values indicate multicollinearity?
   3. What are the practical implications for interpreting coefficients in the presence of multicollinearity?
   
-  ---
+---
   
-  ####################
+####################
 ## Problem 3      ##
 ####################
 
-**Leverage**
 Using the turnout data:
   
 ```{r problem3, eval=FALSE}
@@ -136,8 +102,8 @@ turnout_clean[high_leverage, ]
 ```
 
 **Questions:**
-  1. What does leverage measure? Why do we care about high leverage points?
-  2. What is the average leverage value? What's the theoretical value?
+1. What does leverage measure? Why do we care about high leverage points?
+2. What is the average leverage value? What's the theoretical value?
 3. Create a plot of leverage vs. observation index. Add a horizontal line at $2p/n$ (where p = number of parameters).
 
 ---
@@ -146,13 +112,11 @@ turnout_clean[high_leverage, ]
 ## Problem 4      ##
 ####################
 
-**Outliers and Influence**
-
-**4a. Measuring Influence:**
+**4a.**
 1. Define DFBETA and Cook's Distance. What does each measure?
 2. What's the difference between an outlier and an influential point?
 
-**4b. Calculating DFBETA:**
+**4b.**
 Using the turnout model:
 
 ```{r problem4b, eval=FALSE}

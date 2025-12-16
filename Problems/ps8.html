@@ -359,19 +359,22 @@ display: none;
 <h2>Problem Set 8</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
-<p><strong>Due Date</strong>: [Insert due date]<br />
-<strong>Submission</strong>: [Canvas Link]</p>
-<p><strong>Instructions</strong>: - Show all mathematical derivations
-where requested. - Include complete, well-commented R code for all
-analyses. - Submit knitted document with all outputs. - For Problems
-1-4, provide clear explanations in your own words.</p>
+<p><strong>Due Date</strong>: March 6, 2026<br />
+<strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1687753" class="uri">https://canvas.northwestern.edu/courses/245562/assignments/1687753</a></p>
 <hr />
 </div>
+<div id="section-2" class="section level20">
+<p class="heading"></p>
 </div>
-<div id="problem-1-understanding-transformations" class="section level1">
-<h1>Problem 1: Understanding Transformations</h1>
-<div id="a.-theoretical-foundations" class="section level2">
-<h2>1a. Theoretical Foundations</h2>
+</div>
+<div id="problem-1" class="section level2">
+<h2>Problem 1</h2>
+<div id="section-3" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="a." class="section level2">
+<h2>1a.</h2>
 <ol style="list-style-type: decimal">
 <li><p>Explain the three main purposes of variable transformations in
 regression analysis. Provide a political science example for
@@ -383,8 +386,8 @@ each.</p></li>
 </ul></li>
 </ol>
 </div>
-<div id="b.-centering-and-scaling" class="section level2">
-<h2>1b. Centering and Scaling</h2>
+<div id="b." class="section level2">
+<h2>1b.</h2>
 <p>Using the kidiq dataset from the slides:</p>
 <pre class="r"><code>library(rosdata)
 data(kidiq)
@@ -404,13 +407,19 @@ main effect of <code>mom_hs</code> change across models? 2. What is the
 advantage of Gelman’s “divide by 2 SDs” approach? 3. When would you use
 z-scores vs. mean-centering?</p>
 <hr />
+<div id="section-4" class="section level20">
+<p class="heading"></p>
 </div>
 </div>
-<div id="problem-2-practical-transformation-analysis" class="section level1">
-<h1>Problem 2: Practical Transformation Analysis</h1>
-<div id="a.-democracy-and-development-analysis" class="section level2">
-<h2>2a. Democracy and Development Analysis</h2>
-<p>Using the QOG data from the slides:</p>
+<div id="problem-2" class="section level2">
+<h2>Problem 2</h2>
+<div id="section-5" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="a.-1" class="section level2">
+<h2>2a.</h2>
+<p>Using QOG data:</p>
 <pre class="r"><code>library(rqog)
 library(dplyr)
 library(ggplot2)
@@ -494,12 +503,18 @@ substantive implications of different transformations for interpreting
 effects? 3. How would you decide between transformations and GLMs for
 count data?</p>
 <hr />
+<div id="section-6" class="section level20">
+<p class="heading"></p>
 </div>
 </div>
-<div id="problem-3-regression-diagnostics" class="section level1">
-<h1>Problem 3: Regression Diagnostics</h1>
-<div id="a.-diagnostic-tools-and-interpretation" class="section level2">
-<h2>3a. Diagnostic Tools and Interpretation</h2>
+<div id="problem-3" class="section level2">
+<h2>Problem 3</h2>
+<div id="section-7" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="a.-2" class="section level2">
+<h2>3a.</h2>
 <ol style="list-style-type: decimal">
 <li>Explain what each of these diagnostic plots reveals about model
 assumptions:
@@ -533,8 +548,8 @@ observations in your model? Why? 2. Is there evidence of
 heteroskedasticity? What are the implications? 3. Are the residuals
 normally distributed? Why does this matter?</p>
 </div>
-<div id="b.-cross-validation-and-model-comparison" class="section level2">
-<h2>3b. Cross-Validation and Model Comparison</h2>
+<div id="b.-1" class="section level2">
+<h2>3b.</h2>
 <pre class="r"><code># Implement cross-validation for model comparison
 set.seed(123)
 
@@ -557,194 +572,6 @@ set.seed(123)
 cross-validation? Does this match in-sample performance? 2. What are the
 advantages of k-fold CV vs. leave-one-out CV? 3. How much does model
 performance vary across folds?</p>
-<hr />
-</div>
-</div>
-<div id="problem-4-special-issues-in-political-data" class="section level1">
-<h1>Problem 4: Special Issues in Political Data</h1>
-<div id="a.-time-series-diagnostics" class="section level2">
-<h2>4a. Time-Series Diagnostics</h2>
-<pre class="r"><code># Load time-series data
-qog_ts &lt;- read_qog(which_data = &quot;standard&quot;, data_type = &quot;time-series&quot;)
-
-# Focus on US data over time
-us_data &lt;- qog_ts %&gt;%
-  filter(cname == &quot;United States&quot;) %&gt;%
-  select(
-    year = year,
-    democracy = vdem_libdem,
-    gdp_pc = gle_cgdpc,
-    inequality = wdi_gini
-  ) %&gt;%
-  filter(!is.na(democracy), !is.na(gdp_pc)) %&gt;%
-  arrange(year) %&gt;%
-  mutate(
-    log_gdp = log(gdp_pc),
-    # Create lagged variables
-    democracy_lag = lag(democracy),
-    gdp_growth = (gdp_pc - lag(gdp_pc)) / lag(gdp_pc)
-  )
-
-# Your tasks:
-# 1. Fit model: democracy ~ log_gdp (ignoring time)
-# 2. Check for autocorrelation:
-#    a. Plot residuals over time
-#    b. Calculate Durbin-Watson statistic
-#    c. Perform Ljung-Box test
-# 3. Fit time-aware models:
-#    a. democracy ~ log_gdp + democracy_lag
-#    b. democracy ~ log_gdp + year
-#    c. democracy ~ gdp_growth
-# 4. Compare diagnostics across models</code></pre>
-<p><strong>Questions:</strong> 1. Is there evidence of autocorrelation
-in the residuals? What does this imply? 2. How does including a lagged
-dependent variable change model interpretation? 3. What are the
-trade-offs between different approaches to handling time dependence?</p>
-</div>
-<div id="b.-measurement-error-and-validity" class="section level2">
-<h2>4b. Measurement Error and Validity</h2>
-<p>Consider the relationship between corruption and democracy:</p>
-<pre class="r"><code>library(rqog)
-qog_data &lt;- read_qog(which_data = &quot;standard&quot;, data_type = &quot;time-series&quot;)
-
-validity_data &lt;- qog_data %&gt;%
-  filter(year == 2020) %&gt;%
-  select(
-    country = cname,
-    # Multiple measures of democracy
-    vdem_libdem = vdem_libdem,        # V-Dem liberal democracy
-    polity2 = p_polity2,              # Polity IV (rescaled 0-1)
-    fh_status = fh_status,           # Freedom House (rescaled 0-1)
-    # Multiple measures of corruption
-    ti_cpi = ti_cpi,                  # Transparency International CPI
-    wgi_corruption = wgi_cce,        # World Governance Indicators
-    # Control variables
-    gdp_pc = gle_cgdpc,
-    region = ht_region
-  ) %&gt;%
-  mutate(
-    democracy_avg = rowMeans(cbind(vdem_libdem, polity2, fh_status), na.rm = TRUE),
-    corruption_avg = rowMeans(cbind(ti_cpi, wgi_corruption), na.rm = TRUE),
-    log_gdp = log(gdp_pc)
-  )
-
-# Your tasks:
-# 1. Fit models using different democracy measures:
-#    a. vdem_libdem ~ corruption_avg + log_gdp
-#    b. polity2 ~ corruption_avg + log_gdp
-#    c. democracy_avg ~ corruption_avg + log_gdp
-
-# 2. Assess measurement validity:
-#    a. Calculate correlations between democracy measures
-#    b. Create scatterplot matrix
-#    c. Compare coefficient estimates across models
-
-# 3. Assess model sensitivity:
-#    a. How do results change with different corruption measures?
-#    b. What happens if you exclude influential regions?</code></pre>
-<p><strong>Questions:</strong> 1. How consistent are the findings across
-different measures of democracy? 2. What does inconsistency across
-measures suggest about measurement validity? 3. How would you report
-these results to acknowledge measurement uncertainty?</p>
-<hr />
-</div>
-</div>
-<div id="problem-5-comprehensive-case-study" class="section level1">
-<h1>Problem 5: Comprehensive Case Study</h1>
-<div id="a.-full-analysis-pipeline" class="section level2">
-<h2>5a. Full Analysis Pipeline</h2>
-<p>You are studying the relationship between economic development,
-inequality, and democracy. Using the QOG data:</p>
-<pre class="r"><code># Prepare comprehensive dataset
-analysis_data &lt;- qog_data %&gt;%
-  filter(year &gt;= 2000, year &lt;= 2020) %&gt;%
-  select(
-    country = cname,
-    year = year,
-    democracy = vdem_libdem,
-    gdp_pc = gle_cgdpc,
-    inequality = wdi_gini,
-    education = wdi_tertenroll,
-    urbanization = wdi_urban,
-    corruption = ti_cpi,
-    region = ht_region
-  ) %&gt;%
-  group_by(country) %&gt;%
-  # Take most recent observation with complete data
-  filter(year == max(year[complete.cases(democracy, gdp_pc, inequality)])) %&gt;%
-  ungroup() %&gt;%
-  filter(complete.cases(.)) %&gt;%
-  mutate(
-    log_gdp = log(gdp_pc),
-    inequality_sq = inequality^2  # For potential nonlinear effects
-  )
-
-# Your comprehensive analysis should include:
-# 1. Model specification:
-#    a. democracy ~ log_gdp + inequality + education + urbanization
-#    b. Add interaction: log_gdp * inequality
-#    c. Add nonlinear term: inequality_sq
-
-# 2. Diagnostic assessment for each model:
-#    a. Residual plots
-#    b. Influence statistics
-#    c. Multicollinearity (VIF)
-#    d. Heteroskedasticity tests
-
-# 3. Model comparison:
-#    a. Cross-validation performance
-#    b. Information criteria (AIC, BIC)
-#    c. Adjusted R²
-
-# 4. Sensitivity analysis:
-#    a. Robust regression to handle outliers
-#    b. Bootstrap standard errors
-#    c. Subgroup analysis by region
-
-# 5. Presentation:
-#    a. Create publication-quality diagnostic plots
-#    b. Build comprehensive results table
-#    c. Write interpretation of findings</code></pre>
-</div>
-<div id="b.-research-report" class="section level2">
-<h2>5b. Research Report</h2>
-<p>Based on your analysis from 5a, write a brief research report (3-4
-pages) that includes:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Introduction</strong>: Theoretical motivation for studying
-development, inequality, and democracy</li>
-<li><strong>Data and Methods</strong>: Description of data sources,
-variable construction, and analytical approach</li>
-<li><strong>Results</strong>: Presentation of findings with appropriate
-tables and figures</li>
-<li><strong>Diagnostic Assessment</strong>: Transparent reporting of
-model diagnostics and limitations</li>
-<li><strong>Conclusion</strong>: Substantive interpretation and
-implications for political science</li>
-</ol>
-<p>Your report should demonstrate: - Thoughtful variable transformation
-decisions - Comprehensive model diagnostics - Awareness of limitations
-and assumptions - Clear communication of statistical findings</p>
-</div>
-<div id="c.-reflection-and-best-practices" class="section level2">
-<h2>5c. Reflection and Best Practices</h2>
-<p>Based on what you’ve learned about transformations and
-diagnostics:</p>
-<ol style="list-style-type: decimal">
-<li>What are the most common mistakes political scientists make
-regarding model diagnostics?</li>
-<li>How should researchers balance model complexity (transformations,
-interactions) with interpretability?</li>
-<li>What practices would you recommend for transparent reporting of:
-<ul>
-<li>Transformation decisions</li>
-<li>Diagnostic results</li>
-<li>Model limitations</li>
-</ul></li>
-<li>How has your approach to regression modeling changed after learning
-about proper diagnostics?</li>
-</ol>
-</div>
 </div>
 
 

@@ -359,27 +359,30 @@ display: none;
 <h2>Problem Set 7</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
-<p><strong>Due Date</strong>: [Insert due date]<br />
-<strong>Submission</strong>: [Canvas Link]</p>
-<p><strong>Instructions</strong>: - Show all mathematical derivations
-where requested. - Include complete, well-commented R code for all
-analyses. - Submit knitted document with all outputs. - For Problems
-1-4, provide clear explanations in your own words.</p>
+<p><strong>Due Date</strong>: February 27, 2026<br />
+<strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1687752">https://canvas.northwestern.edu/courses/245562/assignments/1687752</a></p>
 <hr />
 </div>
+<div id="section-2" class="section level20">
+<p class="heading"></p>
 </div>
-<div id="problem-1-understanding-statistical-power" class="section level1">
-<h1>Problem 1: Understanding Statistical Power</h1>
-<div id="a.-conceptual-foundations" class="section level2">
-<h2>1a. Conceptual Foundations</h2>
+</div>
+<div id="problem-1" class="section level2">
+<h2>Problem 1</h2>
+<div id="section-3" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="a." class="section level2">
+<h2>1a.</h2>
 <ol style="list-style-type: decimal">
 <li>Define statistical power in your own words.</li>
 <li>Explain the relationship between Type I error (α), Type II error
 (β), and power.</li>
 </ol>
 </div>
-<div id="b.-power-determinants" class="section level2">
-<h2>1b. Power Determinants</h2>
+<div id="b." class="section level2">
+<h2>1b.</h2>
 <p>For each of the following factors, explain how increasing it affects
 statistical power (holding other factors constant), and provide the
 mathematical relationship:</p>
@@ -391,12 +394,18 @@ mathematical relationship:</p>
 <li>Predictor variance</li>
 </ol>
 <hr />
+<div id="section-4" class="section level20">
+<p class="heading"></p>
 </div>
 </div>
-<div id="problem-2-practical-power-analysis" class="section level1">
-<h1>Problem 2: Practical Power Analysis</h1>
-<div id="a.-power-calculation-simulation" class="section level2">
-<h2>2a. Power Calculation Simulation</h2>
+<div id="problem-2" class="section level2">
+<h2>Problem 2</h2>
+<div id="section-5" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="a.-1" class="section level2">
+<h2>2a.</h2>
 <p>Simulate power for different scenarios:</p>
 <pre class="r"><code># Complete this code to simulate power for different sample sizes
 
@@ -426,8 +435,8 @@ library(ggplot2)
 effect size to 0.4 affect the required sample size? 3. What happens to
 power if you double the variance (sigma)?</p>
 </div>
-<div id="b.-winners-curse-demonstration" class="section level2">
-<h2>2b. Winner’s Curse Demonstration</h2>
+<div id="b.-1" class="section level2">
+<h2>2b.</h2>
 <pre class="r"><code># Complete this code to demonstrate the winner&#39;s curse
 
 set.seed(123)
@@ -478,12 +487,18 @@ does it occur? 2. How does sample size affect the magnitude of the
 winner’s curse? 3. What percentage of significant results overestimate
 the true effect in your simulation?</p>
 <hr />
+<div id="section-6" class="section level20">
+<p class="heading"></p>
 </div>
 </div>
-<div id="problem-3-interaction-effects" class="section level1">
-<h1>Problem 3: Interaction Effects</h1>
-<div id="a.-moderator-vs-mediator" class="section level2">
-<h2>3a. Moderator vs Mediator</h2>
+<div id="problem-3" class="section level2">
+<h2>Problem 3</h2>
+<div id="section-7" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="a.-2" class="section level2">
+<h2>3a.</h2>
 <ol style="list-style-type: decimal">
 <li>Define and distinguish between:
 <ul>
@@ -494,8 +509,8 @@ the true effect in your simulation?</p>
 <li>Provide a political science example of each</li>
 </ol>
 </div>
-<div id="b.-categorical-moderator-analysis" class="section level2">
-<h2>3b. Categorical Moderator Analysis</h2>
+<div id="b.-2" class="section level2">
+<h2>3b.</h2>
 <p>Using the QOG data from the slides:</p>
 <pre class="r"><code>library(rqog)
 library(dplyr)
@@ -543,12 +558,18 @@ countries? 2. Is the interaction statistically significant? What does
 this mean substantively? 3. What are the intercepts for each group, and
 how do you interpret them?</p>
 <hr />
+<div id="section-8" class="section level20">
+<p class="heading"></p>
 </div>
 </div>
-<div id="problem-4-power-for-interaction-effects" class="section level1">
-<h1>Problem 4: Power for Interaction Effects</h1>
-<div id="a.-power-simulation-for-interactions" class="section level2">
-<h2>4a. Power Simulation for Interactions</h2>
+<div id="problem-4" class="section level2">
+<h2>Problem 4</h2>
+<div id="section-9" class="section level20">
+<p class="heading"></p>
+</div>
+</div>
+<div id="a.-3" class="section level2">
+<h2>4a.</h2>
 <pre class="r"><code># Simulate power for detecting interaction effects
 
 simulate_interaction_power &lt;- function(
@@ -592,8 +613,8 @@ correlation between X and Z affect power to detect their interaction? 3.
 What sample size would you recommend for a study expecting a small
 interaction effect (β = 0.1)?</p>
 </div>
-<div id="b.-power-analysis-with-pwrss" class="section level2">
-<h2>4b. Power Analysis with <code>pwrss</code></h2>
+<div id="b.-3" class="section level2">
+<h2>4b.</h2>
 <pre class="r"><code>library(pwrss)
 
 # Recreate the power analysis examples from the slides
@@ -639,8 +660,8 @@ power3 &lt;- power.t.regression(
 # 2. Explain why these changes affect power
 # 3. Provide practical recommendations for study design</code></pre>
 </div>
-<div id="c.-research-design-application" class="section level2">
-<h2>4c. Research Design Application</h2>
+<div id="c." class="section level2">
+<h2>4c.</h2>
 <p>Design a study to test whether the effect of campaign spending on
 election outcomes is moderated by incumbency status.</p>
 <ol style="list-style-type: decimal">
@@ -666,7 +687,6 @@ proposed study, including:
 <li>How you would test the interaction</li>
 </ul></li>
 </ol>
-</div>
 </div>
 
 

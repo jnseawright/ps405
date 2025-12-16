@@ -2,25 +2,21 @@
 ## Problem Set 7     ##
 #######################
 
-**Due Date**: [Insert due date]  
-**Submission**: [Canvas Link]
-
-**Instructions**: 
-- Show all mathematical derivations where requested.
-- Include complete, well-commented R code for all analyses.
-- Submit knitted document with all outputs.
-- For Problems 1-4, provide clear explanations in your own words.
+**Due Date**: February 27, 2026  
+**Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1687752](https://canvas.northwestern.edu/courses/245562/assignments/1687752)
 
 ---
 
-# Problem 1: Understanding Statistical Power
+####################
+## Problem 1      ##
+####################
 
-## 1a. Conceptual Foundations
+## 1a. 
 
 1. Define statistical power in your own words.
 2. Explain the relationship between Type I error (α), Type II error (β), and power.
 
-## 1b. Power Determinants
+## 1b. 
 
 For each of the following factors, explain how increasing it affects statistical power (holding other factors constant), and provide the mathematical relationship:
 
@@ -32,9 +28,11 @@ For each of the following factors, explain how increasing it affects statistical
 
 ---
 
-# Problem 2: Practical Power Analysis
+####################
+## Problem 2      ##
+####################
 
-## 2a. Power Calculation Simulation
+## 2a.
 
 Simulate power for different scenarios:
 
@@ -69,7 +67,7 @@ library(ggplot2)
 2. How does changing the true effect size to 0.4 affect the required sample size?
 3. What happens to power if you double the variance (sigma)?
 
-## 2b. Winner's Curse Demonstration
+## 2b.
 
 ```{r problem2b, eval=FALSE}
 # Complete this code to demonstrate the winner's curse
@@ -126,9 +124,11 @@ bias_analysis <- results %>%
 
 ---
 
-# Problem 3: Interaction Effects
+####################
+## Problem 3      ##
+####################
 
-## 3a. Moderator vs Mediator
+## 3a.
 
 1. Define and distinguish between:
    - Moderator variable
@@ -136,7 +136,7 @@ bias_analysis <- results %>%
 2. Draw path diagrams for both (like in the slides)
 3. Provide a political science example of each
 
-## 3b. Categorical Moderator Analysis
+## 3b.
 
 Using the QOG data from the slides:
 
@@ -190,9 +190,11 @@ analysis_data <- qog_data %>%
 
 ---
 
-# Problem 4: Power for Interaction Effects
+####################
+## Problem 4      ##
+####################
 
-## 4a. Power Simulation for Interactions
+## 4a.
 
 ```{r problem4a, eval=FALSE}
 # Simulate power for detecting interaction effects
@@ -239,7 +241,7 @@ simulate_interaction_power <- function(
 2. How does the correlation between X and Z affect power to detect their interaction?
 3. What sample size would you recommend for a study expecting a small interaction effect (β = 0.1)?
 
-## 4b. Power Analysis with `pwrss`
+## 4b.
 
 ```{r problem4b, eval=FALSE}
 library(pwrss)
@@ -288,7 +290,7 @@ power3 <- power.t.regression(
 # 3. Provide practical recommendations for study design
 ```
 
-## 4c. Research Design Application
+## 4c.
 
 Design a study to test whether the effect of campaign spending on election outcomes is moderated by incumbency status.
 

@@ -2,14 +2,9 @@
 ## Problem Set 6     ##
 #######################
 
-**Due Date**: [Insert due date]  
-**Submission**: [Canvas Link]
+**Due Date**: February 20, 2026  
+**Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1687751](https://canvas.northwestern.edu/courses/245562/assignments/1687751)
 
-**Instructions**: 
-- Show all mathematical derivations where requested.
-- Include complete, well-commented R code for all analyses.
-- Submit knitted document with all outputs.
-- For Problems 1-3, provide clear explanations in your own words.
 
 ---
 
@@ -17,7 +12,6 @@
 ## Problem 1      ##
 ####################
 
-**Theoretical Foundations of Inference**
 
 List and explain the four key assumptions needed for OLS to be consistent. For each assumption:
 1. State the mathematical condition
@@ -30,9 +24,8 @@ List and explain the four key assumptions needed for OLS to be consistent. For e
 ## Problem 2      ##
 ####################
 
-**Practical Significance Testing**
 
-**2a. Standard Error Computation:**
+**2a.**
 Using the democracy and internet access data from the lecture:
 
 ```{r problem2a, eval=FALSE}
@@ -56,7 +49,7 @@ robust_vcov <- vcovHC(model1, type = "HC3")
 3. Compute p-values for both sets of standard errors
 4. At α = 0.05, would you reject the null hypothesis for each coefficient in both models?
 
-**2b. Confidence Intervals:**
+**2b.**
 1. Construct 95% confidence intervals for each coefficient using:
    - Homoskedastic standard errors
    - Heteroskedasticity-robust standard errors
@@ -76,7 +69,7 @@ tidy_robust$std.error <- sqrt(diag(robust_vcov))
 # (Include your plotting code here)
 ```
 
-**2c. Finite Sample Considerations:**
+**2c.**
 The lecture notes that with small samples and normal errors, we use the t-distribution.
 
 1. What is the degrees of freedom for the t-distribution in your model?
@@ -89,15 +82,13 @@ The lecture notes that with small samples and normal errors, we use the t-distri
 ## Problem 3      ##
 ####################
 
-**The Multiple Comparisons Problem**
-
-**3a. Understanding the Problem:**
+**3a.**
 1. In your own words, explain the multiple comparisons problem
 2. Define:
    - Family-Wise Error Rate (FWER)
    - False Discovery Rate (FDR)
 
-**3b. Simulation Study:**
+**3b.**
 Simulate the multiple comparisons problem:
 
 ```{r problem3b, eval=FALSE}
@@ -130,7 +121,7 @@ prop_at_least_one <- mean(false_positives > 0)
 2. What is the average number of false positives per simulation?
 3. Create a histogram of the number of false positives across simulations.
 
-**3c. Correlation Effects:**
+**3c.**
 Now simulate correlated tests:
 
 ```{r problem3c, eval=FALSE}
@@ -179,9 +170,7 @@ prop_cor <- mean(false_positives_cor > 0)
 ## Problem 4      ##
 ####################
 
-**Correction Methods**
-
-**4a. Bonferroni Correction:**
+**4a.**
 1. Explain how the Bonferroni correction works
 2. What is the adjusted significance level for 20 tests with α = 0.05?
 3. Apply Bonferroni correction to your simulation from Problem 3b:
@@ -198,7 +187,7 @@ prop_bonf <- mean(false_positives_bonf > 0)
 2. What is the cost of this correction in terms of statistical power?
 3. Create a plot showing the trade-off between false positives and power.
 
-**4b. False Discovery Rate:**
+**4b.**
 1. Explain the difference between controlling FWER and FDR
 2. When might FDR control be more appropriate than FWER control?
 3. Implement the Benjamini-Hochberg procedure:
@@ -255,7 +244,7 @@ fdr <- false_discoveries / max(1, sum(sig_tests))
 2. How many true effects were discovered? What proportion?
 3. Compare the performance of Bonferroni vs. BH for this scenario.
 
-**4c. Practical Application:**
+**4c.**
 Return to the democracy model from Problem 2. Suppose you're testing 10 different potential determinants of democracy (not just internet access and GDP).
 
 ```{r problem4c, eval=FALSE}
@@ -290,9 +279,7 @@ bh_sig <- p_vals <= bh_threshold
 ## Problem 5      ##
 ####################
 
-**Synthesis and Research Practice**
-
-**5a. Case Study Analysis:**
+**5a.**
 Find a published political science article that reports multiple hypothesis tests (e.g., a table with many coefficients and stars).
 
 1. Count how many hypothesis tests are reported
@@ -300,7 +287,7 @@ Find a published political science article that reports multiple hypothesis test
 3. Would multiple testing corrections change their conclusions?
 4. Write a brief critique (1 paragraph) of their statistical reporting
 
-**5b. Research Design:**
+**5b.**
 You're designing a study to test 15 different hypotheses about voter behavior.
 
 1. How would you adjust your analysis plan to account for multiple comparisons?
@@ -308,7 +295,7 @@ You're designing a study to test 15 different hypotheses about voter behavior.
 3. How would sample size affect your decision?
 4. What would you report in the methods section about multiple testing?
 
-**5c. Reflection:**
+**5c.**
 Based on what you've learned about inference and multiple comparisons:
 
 1. What are the most common misconceptions about p-values?

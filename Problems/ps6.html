@@ -359,12 +359,8 @@ display: none;
 <h2>Problem Set 6</h2>
 <div id="section-1" class="section level23">
 <p class="heading"></p>
-<p><strong>Due Date</strong>: [Insert due date]<br />
-<strong>Submission</strong>: [Canvas Link]</p>
-<p><strong>Instructions</strong>: - Show all mathematical derivations
-where requested. - Include complete, well-commented R code for all
-analyses. - Submit knitted document with all outputs. - For Problems
-1-3, provide clear explanations in your own words.</p>
+<p><strong>Due Date</strong>: February 20, 2026<br />
+<strong>Submission</strong>: <a href="https://canvas.northwestern.edu/courses/245562/assignments/1687751">https://canvas.northwestern.edu/courses/245562/assignments/1687751</a></p>
 <hr />
 </div>
 <div id="section-2" class="section level20">
@@ -375,7 +371,6 @@ analyses. - Submit knitted document with all outputs. - For Problems
 <h2>Problem 1</h2>
 <div id="section-3" class="section level20">
 <p class="heading"></p>
-<p><strong>Theoretical Foundations of Inference</strong></p>
 <p>List and explain the four key assumptions needed for OLS to be
 consistent. For each assumption: 1. State the mathematical condition 2.
 Explain in plain language what it means 3. Give an example of a
@@ -390,9 +385,8 @@ situation where it might fail</p>
 <h2>Problem 2</h2>
 <div id="section-5" class="section level20">
 <p class="heading"></p>
-<p><strong>Practical Significance Testing</strong></p>
-<p><strong>2a. Standard Error Computation:</strong> Using the democracy
-and internet access data from the lecture:</p>
+<p><strong>2a.</strong> Using the democracy and internet access data
+from the lecture:</p>
 <pre class="r"><code># Load data and run models
 library(rqog)
 qogts &lt;- read_qog(which_data = &quot;standard&quot;, data_type = &quot;time-series&quot;)
@@ -411,10 +405,10 @@ manually: <span class="math inline">\(t =
 \frac{\hat{\beta}}{SE(\hat{\beta})}\)</span> 3. Compute p-values for
 both sets of standard errors 4. At α = 0.05, would you reject the null
 hypothesis for each coefficient in both models?</p>
-<p><strong>2b. Confidence Intervals:</strong> 1. Construct 95%
-confidence intervals for each coefficient using: - Homoskedastic
-standard errors - Heteroskedasticity-robust standard errors 2. Create a
-visualization comparing these intervals</p>
+<p><strong>2b.</strong> 1. Construct 95% confidence intervals for each
+coefficient using: - Homoskedastic standard errors -
+Heteroskedasticity-robust standard errors 2. Create a visualization
+comparing these intervals</p>
 <pre class="r"><code># Your code for confidence interval visualization
 library(ggplot2)
 library(broom)
@@ -426,9 +420,8 @@ tidy_robust$std.error &lt;- sqrt(diag(robust_vcov))
 
 # Create comparison plot
 # (Include your plotting code here)</code></pre>
-<p><strong>2c. Finite Sample Considerations:</strong> The lecture notes
-that with small samples and normal errors, we use the
-t-distribution.</p>
+<p><strong>2c.</strong> The lecture notes that with small samples and
+normal errors, we use the t-distribution.</p>
 <ol style="list-style-type: decimal">
 <li>What is the degrees of freedom for the t-distribution in your
 model?</li>
@@ -447,12 +440,10 @@ the normal approximation?</li>
 <h2>Problem 3</h2>
 <div id="section-7" class="section level20">
 <p class="heading"></p>
-<p><strong>The Multiple Comparisons Problem</strong></p>
-<p><strong>3a. Understanding the Problem:</strong> 1. In your own words,
-explain the multiple comparisons problem 2. Define: - Family-Wise Error
-Rate (FWER) - False Discovery Rate (FDR)</p>
-<p><strong>3b. Simulation Study:</strong> Simulate the multiple
-comparisons problem:</p>
+<p><strong>3a.</strong> 1. In your own words, explain the multiple
+comparisons problem 2. Define: - Family-Wise Error Rate (FWER) - False
+Discovery Rate (FDR)</p>
+<p><strong>3b.</strong> Simulate the multiple comparisons problem:</p>
 <pre class="r"><code>set.seed(123)
 n_tests &lt;- 20
 n_obs &lt;- 100
@@ -479,8 +470,7 @@ prop_at_least_one &lt;- mean(false_positives &gt; 0)</code></pre>
 least one false positive? 2. What is the average number of false
 positives per simulation? 3. Create a histogram of the number of false
 positives across simulations.</p>
-<p><strong>3c. Correlation Effects:</strong> Now simulate correlated
-tests:</p>
+<p><strong>3c.</strong> Now simulate correlated tests:</p>
 <pre class="r"><code># Create correlated predictors
 set.seed(123)
 n_tests &lt;- 20
@@ -528,11 +518,9 @@ correlated?</p>
 <h2>Problem 4</h2>
 <div id="section-9" class="section level20">
 <p class="heading"></p>
-<p><strong>Correction Methods</strong></p>
-<p><strong>4a. Bonferroni Correction:</strong> 1. Explain how the
-Bonferroni correction works 2. What is the adjusted significance level
-for 20 tests with α = 0.05? 3. Apply Bonferroni correction to your
-simulation from Problem 3b:</p>
+<p><strong>4a.</strong> 1. Explain how the Bonferroni correction works
+2. What is the adjusted significance level for 20 tests with α = 0.05?
+3. Apply Bonferroni correction to your simulation from Problem 3b:</p>
 <pre class="r"><code># Apply Bonferroni correction
 alpha_bonf &lt;- alpha / n_tests
 false_positives_bonf &lt;- rowSums(p_values &lt; alpha_bonf)
@@ -541,10 +529,9 @@ prop_bonf &lt;- mean(false_positives_bonf &gt; 0)</code></pre>
 correction? 2. What is the cost of this correction in terms of
 statistical power? 3. Create a plot showing the trade-off between false
 positives and power.</p>
-<p><strong>4b. False Discovery Rate:</strong> 1. Explain the difference
-between controlling FWER and FDR 2. When might FDR control be more
-appropriate than FWER control? 3. Implement the Benjamini-Hochberg
-procedure:</p>
+<p><strong>4b.</strong> 1. Explain the difference between controlling
+FWER and FDR 2. When might FDR control be more appropriate than FWER
+control? 3. Implement the Benjamini-Hochberg procedure:</p>
 <pre class="r"><code># Simulate some true effects
 set.seed(123)
 n_tests &lt;- 100
@@ -592,9 +579,9 @@ fdr &lt;- false_discoveries / max(1, sum(sig_tests))</code></pre>
 <p><strong>Questions:</strong> 1. What is the actual FDR in your
 simulation? 2. How many true effects were discovered? What proportion?
 3. Compare the performance of Bonferroni vs. BH for this scenario.</p>
-<p><strong>4c. Practical Application:</strong> Return to the democracy
-model from Problem 2. Suppose you’re testing 10 different potential
-determinants of democracy (not just internet access and GDP).</p>
+<p><strong>4c.</strong> Return to the democracy model from Problem 2.
+Suppose you’re testing 10 different potential determinants of democracy
+(not just internet access and GDP).</p>
 <pre class="r"><code># Imagine you&#39;ve run 10 different regressions
 # with p-values: p_vals &lt;- c(0.04, 0.01, 0.07, 0.001, 0.23, 0.05, 0.11, 0.008, 0.32, 0.02)
 
@@ -627,10 +614,9 @@ which correction to use?</p>
 <h2>Problem 5</h2>
 <div id="section-11" class="section level20">
 <p class="heading"></p>
-<p><strong>Synthesis and Research Practice</strong></p>
-<p><strong>5a. Case Study Analysis:</strong> Find a published political
-science article that reports multiple hypothesis tests (e.g., a table
-with many coefficients and stars).</p>
+<p><strong>5a.</strong> Find a published political science article that
+reports multiple hypothesis tests (e.g., a table with many coefficients
+and stars).</p>
 <ol style="list-style-type: decimal">
 <li>Count how many hypothesis tests are reported</li>
 <li>Calculate the expected number of false positives if all nulls were
@@ -639,8 +625,8 @@ true</li>
 <li>Write a brief critique (1 paragraph) of their statistical
 reporting</li>
 </ol>
-<p><strong>5b. Research Design:</strong> You’re designing a study to
-test 15 different hypotheses about voter behavior.</p>
+<p><strong>5b.</strong> You’re designing a study to test 15 different
+hypotheses about voter behavior.</p>
 <ol style="list-style-type: decimal">
 <li>How would you adjust your analysis plan to account for multiple
 comparisons?</li>
@@ -649,8 +635,8 @@ comparisons?</li>
 <li>What would you report in the methods section about multiple
 testing?</li>
 </ol>
-<p><strong>5c. Reflection:</strong> Based on what you’ve learned about
-inference and multiple comparisons:</p>
+<p><strong>5c.</strong> Based on what you’ve learned about inference and
+multiple comparisons:</p>
 <ol style="list-style-type: decimal">
 <li>What are the most common misconceptions about p-values?</li>
 <li>How should researchers balance the risk of false positives against

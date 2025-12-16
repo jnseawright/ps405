@@ -2,16 +2,8 @@
 ## Problem Set 2     ##
 #######################
 
-**Due Date**: [Insert due date]  
+**Due Date**: January 23, 2026  
 **Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1676715](https://canvas.northwestern.edu/courses/245562/assignments/1676715)
-
-**Instructions**: 
-- Complete all problems below, showing your work where appropriate.
-- Submit both your written answers and R code.
-- For Problems 1-3, provide clear, concise explanations in your own words.
-- For Problem 4, include all R code and visualizations.
-
----
 
 ####################
 ## Problem 1      ##
@@ -66,13 +58,13 @@ qog_clean <- qogts %>%
   rename(gdp_pc = wdi_gdpcappppcon2017, democracy = vdem_libdem)
 ```
 
-**4a. Visualizing CEF and BLP**
+**4a.**
 
 Create a visualization of the relationship between wealth (`wdi_gdpcappppcon2017` or `gdp_pc` in the cleaned data) and democracy (`vdem_libdem` or `democracy`). Your plot should include:
 
 1. The raw data points (use transparency if there are many observations)
 2. A LOESS curve (to approximate the CEF)
-3. A linear regression line (the BLP)
+3. A linear regression line (estimate of the BLP)
 4. Clear labels, titles, and a legend
 
 ```{r problem4a, eval=FALSE}
@@ -106,9 +98,9 @@ dem_wealth_plot
 
 ---
 
-**4b. Fitting and Interpreting the BLP**
+**4b.**
 
-Fit the Best Linear Predictor (linear regression) predicting democracy from wealth. Report and interpret the coefficients.
+Fit the empirical approximation of the Best Linear Predictor connecting democracy and wealth. Report and interpret the coefficients.
 
 ```{r problem4b, eval=FALSE}
 # Fit the linear model (BLP)
@@ -129,7 +121,7 @@ modelsummary(blp_model, stars = TRUE, output = "markdown")
 
 ---
 
-**4c. Comparing BLP to Simple CEF Approximation**
+**4c.**
 
 Now let's compare the BLP to a simple approximation of the CEF using grouped means:
 
@@ -213,7 +205,7 @@ cat("Difference (BLP - Grouped):", round(blp_mse - group_mse, 4))
 
 ---
 
-**4d. Theoretical Reflection and Model Extension**
+**4d.**
 
 Modernization theory in political science suggests that democracy increases with wealth but at a decreasing rate (diminishing returns).
 

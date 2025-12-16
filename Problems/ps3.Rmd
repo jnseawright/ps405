@@ -2,13 +2,9 @@
 ## Problem Set 3     ##
 #######################
 
-**Due Date**: [Insert due date]  
+**Due Date**: January 30, 2026  
 **Submission**: [https://canvas.northwestern.edu/courses/245562/assignments/1676747](https://canvas.northwestern.edu/courses/245562/assignments/1676747)
 
-**Instructions**: 
-- Show all work for theoretical problems.
-- Include complete, well-commented R code for applied problems.
-- Submit knitted document with all outputs.
 
 ---
 
@@ -32,8 +28,6 @@ Interpret what happens to predicted terrorism incidents when:
 ## Problem 2      ##
 ####################
 
-**Theoretical Proof with Guided Steps**
-
 The Conditional Expectation Function (CEF) has a key property: it is the best predictor of Y given X in the mean-squared error sense.
 
 Let $m(X)$ be any function of X used to predict Y. The mean-squared error (MSE) is defined as:
@@ -54,8 +48,6 @@ $$E[(Y - m(X))^2] = E[(Y - E[Y|X])^2] + E[(E[Y|X] - m(X))^2]$$
 ## Problem 3      ##
 ####################
 
-**Applied Analysis: Voter Turnout in U.S. States**
-
 Install and load the required data:
 
 ```{r load-data, eval=FALSE}
@@ -70,7 +62,7 @@ states_data <- states %>%
   mutate(income_thousands = prcapinc / 1000)
 ```
 
-**3a. Bivariate Regression and CEF Visualization**
+**3a.**
 
 Run a bivariate regression predicting voter turnout (`vep12_turnout`) based on income (`prcapinc` or `income_thousands`).
 
@@ -91,7 +83,7 @@ Create a visualization that shows:
 2. Based on the visualization, does the BLP appear to be a good approximation of the CEF? Explain.
 3. Calculate and interpret R-squared.
 
-**3b. Multivariate Regression Analysis**
+**3b.**
 
 Now run a multivariate regression predicting voter turnout based on income (`prcapinc`), religiosity (`religiosity`), and age distribution (`over64`).
 
@@ -107,7 +99,7 @@ summary(turnout_multivariate)
 2. How does the coefficient for income change from the bivariate to multivariate model? What might explain this change?
 3. Calculate the predicted voter turnout for a state with: income = $50,000, religiosity = 50, over64 = 15%.
 
-**3c. Model Comparison and CEF Evaluation**
+**3c.**
 
 Compare the two models:
 
@@ -125,35 +117,13 @@ cat("Multivariate R-squared:", summary(turnout_multivariate)$r.squared, "\n")
 
 **Questions for 3c:**
 1. Which model has better fit? Does adding variables substantially improve the model?
-2. In the multivariate model, are all variables jointly significant? (Hint: Check the F-test)
-3. Based on the lecture discussion about when BLP equals CEF, do you think the multivariate linear model adequately captures the true CEF? What evidence supports your conclusion?
 
-**3d. Diagnostics and Assumptions**
-
-Check key regression assumptions:
-
-```{r 3d-code, eval=FALSE}
-# Diagnostic plots
-par(mfrow = c(2, 2))
-plot(turnout_multivariate)
-
-# Check for non-linearity (component + residual plot)
-library(car)
-crPlots(turnout_multivariate)
-```
-
-**Questions for 3d:**
-1. Do the residual plots suggest any violations of linear regression assumptions?
-2. The component + residual plots show the relationship between each predictor and the outcome, partialling out other variables. Do these relationships appear linear?
-3. If you observed non-linearity in the income-turnout relationship, how might you modify the model to better approximate the CEF? (Consider transformations or polynomial terms)
 
 ---
 
 ####################
 ## Problem 4      ##
 ####################
-
-**Synthesis: Connecting Theory and Application**
 
 **4a.** Recall from the lectures that the BLP has two key properties: (1) $E[e] = 0$ and (2) $E[e \times X] = 0$. Verify these properties for your multivariate model from Problem 3:
 
@@ -175,44 +145,7 @@ cat("Correlation with religiosity:", cor_res_relig, "\n")
 cat("Correlation with age:", cor_res_age, "\n")
 ```
 
-**4b.** The lecture slides show a 3D visualization of a multivariate regression plane. Create a similar visualization for your multivariate model, showing the relationship between any two predictors and the outcome:
-
-```{r 4b-code, eval=FALSE}
-# 3D visualization (choose two predictors)
-library(plotly)
-
-# Create prediction grid
-income_seq <- seq(min(states_data$income_thousands), 
-                  max(states_data$income_thousands), length.out = 20)
-relig_seq <- seq(min(states_data$religiosity), 
-                 max(states_data$religiosity), length.out = 20)
-
-grid <- expand.grid(income_thousands = income_seq, 
-                    religiosity = relig_seq,
-                    over64 = mean(states_data$over64, na.rm = TRUE))
-
-grid$pred_turnout <- predict(turnout_multivariate, newdata = grid)
-
-# Create 3D plot
-plot_ly() %>%
-  add_trace(data = states_data, 
-            x = ~income_thousands, y = ~religiosity, z = ~vep12_turnout,
-            type = 'scatter3d', mode = 'markers',
-            marker = list(size = 5, color = 'blue', opacity = 0.7),
-            name = 'Actual Data') %>%
-  add_trace(data = grid,
-            x = ~income_thousands, y = ~religiosity, z = ~pred_turnout,
-            type = 'mesh3d', opacity = 0.5, color = 'orange',
-            name = 'Regression Plane') %>%
-  layout(scene = list(
-    xaxis = list(title = 'Income (thousands)'),
-    yaxis = list(title = 'Religiosity'),
-    zaxis = list(title = 'Voter Turnout (%)')
-  ), title = 'Multivariate Regression Plane')
-```
-
 **Questions for 4:**
 1. Do the residuals from your model satisfy the BLP properties? What might it mean if they don't?
-2. Looking at the 3D visualization, how does the regression plane represent the BLP? How would this differ if the true CEF were non-linear?
-3. Based on all your analyses, write a brief conclusion (3-4 sentences) about what affects voter turnout in U.S. states and how well linear regression captures these relationships.
+2. Based on all your analyses, write a brief conclusion (3-4 sentences) about what affects voter turnout in U.S. states and how well linear regression captures these relationships.
 
