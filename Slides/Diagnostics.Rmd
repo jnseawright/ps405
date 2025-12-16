@@ -67,115 +67,83 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ### **The Problem**
 - Regression models make strong assumptions
+
+---
+### **The Problem**
+
 - Violations can lead to:
   - **Biased coefficients**
   - **Invalid inferences**
   - **Poor predictions**
-- Especially critical for:
-  - Policy evaluation
-  - Election forecasting
-  - Causal inference
-
-.pull-right[
-### **Real Examples**
-```{r, eval=FALSE}
-# Election forecasting
-vote_share ~ economy + approval + incumbency
-
-# Policy evaluation
-policy_success ~ spending + implementation + context
-
-# Public opinion
-support ~ demographics + media + events
-```
-**Question:** Can we trust these models?
-]
 
 ---
-# Key Assumptions of Regression (in order of importance)
+# Key Assumptions of Regression
 
-.pull-left[
 ### **1. Validity** 
-Data map to research question
+Data fit the concepts and populations in the research question
 - Outcome measures the phenomenon
 - Model includes relevant predictors
 - Generalizes to target cases
+
+---
+# Key Assumptions of Regression
 
 ### **2. Representativeness**
 Sample reflects population (conditional on X)
 - Selection on X is OK
 - Selection on Y is problematic
 - Even with "all" data (e.g., all elections)
-]
 
-.pull-right[
+
+---
+# Key Assumptions of Regression
+
 ### **3. Additivity & Linearity**
 Predictors combine linearly
-- Most political relationships are nonlinear
+- Some political relationships are nonlinear
 - Age × voting, income × participation
+- Nonlinear relationships are fine if we can include them as linear terms
+
+---
+# Key Assumptions of Regression
+
 
 ### **4. Independence of Errors**
 No autocorrelation (time/space)
 
+---
+# Key Assumptions of Regression
+
+
 ### **5. Equal Variance (Homoscedasticity)**
 Constant prediction uncertainty
 
+---
+# Key Assumptions of Regression
+
+
 ### **6. Normality of Errors**
 Least important for estimation
-]
-
----
-# Validity in Political Research: Examples
-
-```{r validity-plot, echo=FALSE, fig.height=4}
-# Create a conceptual plot
-set.seed(123)
-valid_data <- data.frame(
-  Issue = factor(rep(c("Measurement", "Generalization", "Omitted Variables"), each = 3)),
-  Example = c(
-    "GDP growth ≠ economic well-being",
-    "State elections ≠ national elections",
-    "Survey respondents ≠ voters",
-    "Lab experiment ≠ real behavior",
-    "US data ≠ comparative politics",
-    "Historical data ≠ contemporary politics",
-    "Control for income",
-    "Control for institutions",
-    "Control for context"
-  ),
-  Importance = c(9, 7, 8, 6, 8, 7, 9, 8, 7)
-)
-
-ggplot(valid_data, aes(x = Issue, y = Importance, fill = Issue)) +
-  geom_boxplot(alpha = 0.7) +
-  geom_jitter(aes(color = Example), width = 0.2, size = 3, show.legend = FALSE) +
-  scale_y_continuous(limits = c(5, 10), breaks = 5:10) +
-  labs(title = "Common Validity Threats in Political Science",
-       subtitle = "Each point represents a specific validity concern",
-       y = "Severity (1-10)") +
-  theme_minimal() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-**Key Insight:** Most datasets fail perfect validity. The goal is **awareness** and **transparency**.
 
 ---
 # Representativeness: Selection Bias
 
-.pull-left[
 ### **The Core Issue**
 Selection on Y biases coefficients
 
-```{r selection-example, echo=FALSE}
-# Conceptual example
+---
+
+```{r selection-example, echo=TRUE}
 set.seed(123)
 n <- 1000
 pop_data <- data.frame(
   ideology = rnorm(n, 0, 1),
-  income = rnorm(n, 50000, 15000),
-  vote = ifelse(runif(n) > 0.5, 1, 0)
+  income = rnorm(n, 50000, 15000)
 )
+
+# Make voting probability depend on ideology and income
+prob_vote <- plogis(0.5 + 0.3*pop_data$ideology + pop_data$income/100000)
+pop_data$vote <- rbinom(n, 1, prob_vote)
 
 # Selection: only voters in sample
 sample_data <- pop_data %>% 
@@ -187,78 +155,56 @@ cat("Population correlation (ideology, income):",
 cat("Sample correlation (ideology, income):", 
     round(cor(sample_data$ideology, sample_data$income), 3))
 ```
-]
 
-.pull-right[
+
+
+---
+# Representativeness: Selection Bias
+
 ### **Political Science Examples**
+
 1. **Survey non-response**
    - Political interest → participation → survey response
-
 2. **Media coverage**
    - Extreme cases get coverage → biased perception
 
-3. **Historical records**
-   - Surviving documents ≠ all documents
+---
+# Representativeness: Selection Bias
 
-4. **Elite interviews**
-   - Accessible elites ≠ all elites
+### **Political Science Examples**
+
+3\. **Historical records**
+  - Surviving documents ≠ all documents
+  
+4\. **Elite interviews**
+  - Accessible elites ≠ all elites
+
+---
+# Representativeness: Selection Bias
 
 ### **Solutions**
 - Weighting
 - Selection models
 - Multiple data sources
-]
 
 ---
-# Additivity & Linearity: Political Reality is Nonlinear
+# Additivity & Linearity: Nonlinear Reality
 
-```{r nonlinear-plot, echo=FALSE, fig.height=5}
-# Create example nonlinear relationships
-set.seed(123)
-n <- 300
-example_data <- data.frame(
-  age = runif(n, 18, 90),
-  income = runif(n, 20000, 150000),
-  years = runif(n, 0, 50)
-) %>%
-  mutate(
-    # U-shaped: young and old vote more
-    turnout = 0.7 - 0.01*(age-45)^2/100 + rnorm(n, 0, 0.05),
-    # Diminishing returns: income on participation
-    participation = 0.4 + 0.3*log(income/20000)/5 + rnorm(n, 0, 0.05),
-    # Experience effect: diminishing then increasing
-    influence = 0.2 + 0.4*sin((years-25)*pi/50) + rnorm(n, 0, 0.1)
-  ) %>%
-  mutate(across(c(turnout, participation, influence), 
-                ~ ifelse(.x < 0, 0, ifelse(.x > 1, 1, .x))))
+| | | |
+|:---:|:---:|:---:|
+| ![Image1](Images/ageturnout.png) | ![Image2](Images/incometurnout.png) | ![Image3](Images/gendertime.jpg) |
 
-p1 <- ggplot(example_data, aes(x = age, y = turnout)) +
-  geom_point(alpha = 0.5) + geom_smooth(se = FALSE, color = "red") +
-  labs(x = "Age", y = "Turnout Probability", title = "U-shaped: Age × Turnout")
-
-p2 <- ggplot(example_data, aes(x = income, y = participation)) +
-  geom_point(alpha = 0.5) + geom_smooth(se = FALSE, color = "red") +
-  labs(x = "Income", y = "Political Participation", 
-       title = "Log: Income × Participation")
-
-p3 <- ggplot(example_data, aes(x = years, y = influence)) +
-  geom_point(alpha = 0.5) + geom_smooth(se = FALSE, color = "red") +
-  labs(x = "Years in Office", y = "Political Influence", 
-       title = "Nonlinear: Experience × Influence")
-
-gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
-```
-
-**Takeaway:** Always check for nonlinearity. Consider transformations or flexible models.
+Always check for nonlinearity. Consider transformations or flexible models.
 
 ---
 # Diagnostic Tool 1: Residual Plots
 
-.pull-left[
 ### **What to Plot**
-```{r residual-code, eval=FALSE}
+```{r residual-code, eval=TRUE}
+la_electoral <- read.csv("../Data/laelectoral.csv")
+
 # After fitting model
-fit <- lm(vote_share ~ economy + approval, data = election_data)
+fit <- lm(voteswoninc ~ gdpgrowthlag + votesinclag, data = la_electoral)
 
 # Base R
 plot(fit, which = 1)  # Residuals vs Fitted
@@ -273,11 +219,11 @@ ggplot(election_data, aes(x = fitted, y = residuals)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_smooth(se = FALSE)
 ```
-]
 
-.pull-right[
+---
+
 ### **What to Look For**
-.center[
+
 ```{r residual-patterns, echo=FALSE, fig.height=4}
 set.seed(123)
 par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
@@ -298,19 +244,17 @@ y_curve <- 2*x + 0.1*x^2 + rnorm(100, 0, 10)
 fit_curve <- lm(y_curve ~ x)
 plot(fitted(fit_curve), resid(fit_curve), main = "Bad: Curved Pattern")
 ```
-]
-]
 
 ---
 # Diagnostic Tool 2: Posterior Predictive Checks
 
-.pull-left[
 ### **The Idea**
 1. Fit your model
 2. Simulate new data from it
 3. Compare simulated data to real data
 4. If they look different → model problems
 
+---
 ### **Bayesian Implementation**
 ```{r ppc-code, eval=FALSE}
 # Using rstanarm
@@ -319,16 +263,20 @@ fit_bayes <- stan_glm(vote ~ economy + war,
                       data = election_data,
                       family = gaussian(),
                       seed = 123)
+```
 
+---
+
+```{r ppc-code-2, eval=FALSE}
 # Generate posterior predictions
 y_rep <- posterior_predict(fit_bayes)
 
 # Compare distributions
 bayesplot::ppc_dens_overlay(election_data$vote, y_rep[1:50, ])
 ```
-]
 
-.pull-right[
+---
+
 ```{r ppc-example, echo=FALSE, fig.height=4.5}
 # Simulate a PPC example
 set.seed(123)
@@ -354,16 +302,16 @@ for(i in 1:10) {
 legend("topright", legend = c("Observed", "Replications"),
        col = c("blue", "gray"), lwd = c(2, 1))
 ```
-]
 
 ---
 # Diagnostic Tool 3: Cross-Validation
 
-.pull-left[
 ### **Why CV?**
 - In-sample fit ≠ out-of-sample performance
 - Prevents overfitting
 - Estimates predictive accuracy
+
+---
 
 ### **Types of CV**
 1. **Leave-One-Out (LOO)**
@@ -377,418 +325,146 @@ legend("topright", legend = c("Observed", "Replications"),
 3. **Time-Series CV**
    - Train on past, test on future
    - Critical for political forecasting
-]
 
-.pull-right[
+---
 ### **Implementation in R**
-```{r cv-code, eval=FALSE}
+
+```{r cv-code, eval=TRUE}
 library(rstanarm)
 library(loo)
 
 # Fit Bayesian model
-fit <- stan_glm(vote_share ~ gdp_growth + incumbent,
-                data = election_data)
+fit <- stan_glm(vdem_libdem ~ I(log(wdi_gdpcappppcon2017)) + wdi_gerp,
+                data = qogts)
 
 # LOO Cross-Validation
 loo_result <- loo(fit)
 print(loo_result)
 
 # Compare models
-fit2 <- stan_glm(vote_share ~ gdp_growth + incumbent + war,
-                 data = election_data)
+fit2 <- stan_glm(vdem_libdem ~ I(log(wdi_gdpcappppcon2017)) + wdi_gerp + as.factor(ht_colonial), data = qogts)
 loo2 <- loo(fit2)
 loo_compare(loo_result, loo2)
 ```
 
+---
+
 ### **Interpretation**
 - `elpd_diff`: Difference in expected log predictive density
 - Rule of thumb: `elpd_diff > 4` suggests meaningful difference
-]
 
 ---
-# R² and Explained Variance: Political Science Context
+# $R^2$ and Explained Variance
 
-.pull-left[
-### **What R² Tells Us**
+$$R^2 = 1 - \frac{\sum_{i=1}^{n} e_{i}^2}{\sum_{i=1}^{n} y_{i}^2}$$
+---
+
+### **What $R^2$ Tells Us**
 - Proportion of variance "explained"
 - Range: 0 (worst) to 1 (best)
 
-### **But in Political Science...**
-- **Low R² is common and OK!**
-- Human behavior is stochastic
-- Many unmeasurable factors
-- Example: Individual voting decisions
+---
+
+### **But in social science...**
+- **Low $R^2$ is common.**
+- Political behavior is noisy
+- Measurement error, multiple causation, heterogeneity
+
+---
 
 ```{r rsquared-examples, echo=FALSE}
 # Example R² values from political science
 examples <- data.frame(
-  Study = c("Vote choice (individual)",
-           "Election forecasting (aggregate)",
-           "Policy adoption",
-           "Conflict onset",
-           "Public opinion shift"),
-  R2 = c(0.15, 0.65, 0.30, 0.10, 0.25),
-  Interpretation = c("Many factors matter",
-                    "Structure matters",
-                    "Context dependent",
-                    "Hard to predict",
-                    "Media + events matter")
+  Study = c("Populism and Referenda (Werner and Jacobs 2022)",
+           "Strongmen and Geographic Vote Choice (Hong et al. 2023)",
+           "Explaining Populism (Schafer 2022)"),
+  R2 = c(0.06, 0.84, 0.17),
+  Interpretation = c("A bit low, but okay",
+                    "Double-check the model",
+                    "Normal for individual data")
 )
 
 knitr::kable(examples, format = "html") %>%
   kableExtra::kable_styling(full_width = FALSE)
 ```
-]
 
-.pull-right[
-### **Bayesian R²**
-- Accounts for parameter uncertainty
-- More honest assessment
 
-```{r bayes-r2-code, eval=FALSE}
-# Bayesian R² with uncertainty
-bayes_R2(fit)  # Returns posterior distribution
+---
 
-# Plot uncertainty
-r2_dist <- bayes_R2(fit)
-ggplot(data.frame(r2 = r2_dist), aes(x = r2)) +
-  geom_density(fill = "lightblue", alpha = 0.7) +
-  geom_vline(xintercept = median(r2_dist), 
-             linetype = "dashed") +
-  labs(x = "Bayesian R²", y = "Density",
-       title = "Uncertainty in Model Fit")
+```{r rsquared-examples-2, echo=FALSE}
+# Example R² values from political science
+examples <- data.frame(
+  Study = c(
+           "Supreme Court Legitimacy (Gibson 2025)",
+           "Subnational Democratic Backsliding (Grumbach 2023)"),
+  R2 = c(0.24, 0.68),
+  Interpretation = c(
+                    "Good for individual data",
+                    "High numbers because aggregate")
+)
+
+knitr::kable(examples, format = "html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
 ```
 
+---
+
+### **Bayesian $R^2$**
+- Mathematicaly different because the variance of Bayesian predicted values can sometimes be higher than the variance of the original data
+
+---
+
+```{r bayes-r2-code, eval=TRUE}
+# Bayesian R2 with uncertainty
+bayes_R2(fit)  # Returns posterior distribution
+```
+
+---
+
+```{r bayes-r2-code-2, eval=TRUE}
+summary(bayes_R2(fit))
+```
+
+---
+
 ### **Warning Signs**
-- R² > 0.9 in social science → suspect overfitting
-- R² changes dramatically with small changes → unstable
-]
+- $R^2$ > 0.9 in social science: suspect too many variables or close to saturation
+- $R^2$ changes dramatically with small changes: suspect multicollinearity or missing data issues
 
 ---
-# Special Issues in Political Data
+# Practical Workflow
 
-.pull-left[
-### **1. Time-Series Data**
-- Autocorrelation violates independence
-- **Solutions:**
-  - Lagged dependent variables
-  - ARIMA models
-  - Newey-West standard errors
-
-### **2. Spatial/Clustered Data**
-- States, districts, countries
-- **Solutions:**
-  - Cluster-robust SEs
-  - Multilevel models
-  - Spatial regression
-
-### **3. Censored/Truncated Data**
-- Top-coded income
-- Minimum reporting thresholds
-- **Solutions:**
-  - Tobit models
-  - Selection models
-]
-.pull-right[
-### **4. Measurement Error**
-- Survey response error
-- GDP mismeasurement
-- **Solutions:**
-  - Multiple indicators
-  - Measurement models
-  - Bayesian approaches
-
-### **5. Rare Events**
-- Coups, wars, revolutions
-- **Solutions:**
-  - Rare events logistic
-  - Case-control designs
-  - Qualitative follow-up
-
-### **Political Reality:**
-> "All models are wrong, but some are useful."  
-> — George Box
-]
-
----
-# Practical Workflow for Political Scientists
-
-.center[
 ## **The Diagnostic Pipeline**
-]
 
-.pull-left[
 ### **Step 1: Before Modeling**
 1. **Theory-driven variable selection**
 2. **Check data quality**
 3. **Visualize relationships**
 4. **Consider transformations**
 
+---
+
 ### **Step 2: During Modeling**
 1. **Fit multiple specifications**
-2. **Check convergence (Bayesian)**
-3. **Examine residuals**
-4. **Test for nonlinearities**
-]
+2. **Examine residuals**
+3. **Test for nonlinearities**
 
-.pull-right[
+---
+
 ### **Step 3: After Modeling**
 1. **Posterior predictive checks**
 2. **Cross-validation**
 3. **Sensitivity analysis**
 4. **Compare to simpler models**
 
+---
+
 ### **Step 4: Reporting**
 1. **Transparency about assumptions**
 2. **Diagnostic results**
 3. **Model limitations**
 4. **Robustness checks**
-]
 
----
-# Case Study: Election Forecasting
-
-.pull-left[
-### **The Model**
-```{r election-model, eval=FALSE}
-# Simplified forecasting model
-forecast_model <- stan_glm(
-  incumbent_vote ~ 
-    gdp_growth_q2 + 
-    net_approval + 
-    years_in_office +
-    war_indicator,
-  data = historical_elections,
-  prior = normal(0, 2.5),
-  prior_intercept = normal(50, 10)
-)
-```
-]
-
-.pull-right[
-### **Diagnostic Steps**
-1. **Temporal independence?**  
-   → Use time-series CV
-
-2. **Outliers?**  
-   → 1972, 1984 elections different
-
-3. **Structural breaks?**  
-   → Pre/post 1990s politics changed
-
-4. **Predictive accuracy?**  
-   → Compare to fundamentals model
-]
-
----
-class: inverse, center, middle
-
-# Tools & Software
-
----
-# R Packages for Regression Diagnostics
-
-.pull-left[
-### **Core Diagnostics**
-```{r package-list, eval=FALSE}
-# Plotting
-ggplot2      # General plotting
-ggfortify    # Diagnostic plots for lm/glm
-
-# Bayesian workflow
-rstanarm     # Bayesian regression
-bayesplot    # Bayesian diagnostics
-loo          # Cross-validation
-
-# Specialized
-performance  # Comprehensive model checking
-marginaleffects # Understanding effects
-sjPlot       # Presentation-ready tables
-```
-]
-
-.pull-right[
-### **Political Science Specific**
-```{r polisci-packages, eval=FALSE}
-# Time series
-forecast     # Time series forecasting
-vars         # Vector autoregression
-
-# Spatial
-spdep        # Spatial dependence
-splm         # Spatial panel models
-
-# Text as data
-quanteda     # Text analysis
-stm          # Structural topic models
-
-# Causal inference
-MatchIt      # Matching
-ivreg        # Instrumental variables
-```
-]
-
----
-# Common Pitfalls & How to Avoid Them
-
-.pull-left[
-### **Pitfall 1: Overfitting**
-- **Symptom:** Great in-sample, poor out-of-sample
-- **Solution:** Cross-validation, regularization
-
-### **Pitfall 2: Ignoring Dependencies**
-- **Symptom:** SEs too small, false precision
-- **Solution:** Cluster-robust SEs, multilevel models
-
-### **Pitfall 3: Extrapolation**
-- **Symptom:** Predicting beyond data range
-- **Solution:** Restrict predictions, uncertainty bands
-]
-
-.pull-right[
-### **Pitfall 4: Causal Claims**
-- **Symptom:** "Effect of X on Y" from observational data
-- **Solution:** Explicit causal framework, sensitivity
-
-### **Pitfall 5: Black Box Models**
-- **Symptom:** Can't explain why model works
-- **Solution:** Simpler models, effect plots
-
-### **Political Science Reality:**
-> "It's better to be approximately right than precisely wrong."
-]
-
----
-# Summary: Key Principles
-
-.pull-left[
-### **1. Assumptions First**
-- Start with validity & representativeness
-- Statistical assumptions come after
-
-### **2. Visualization is Key**
-- See your data
-- See your residuals
-- See your predictions
-
-### **3. Test, Don't Assume**
-- Predictive checks
-- Cross-validation
-- Sensitivity analysis
-]
-
-.pull-right[
-### **4. Embrace Uncertainty**
-- Political phenomena are stochastic
-- Report uncertainty intervals
-- Bayesian approaches help
-
-### **5. Iterate & Improve**
-- No model is perfect
-- Learn from diagnostics
-- Build better models
-
-### **Final Thought:**
-The goal isn't a "perfect" model, but a **useful** and **honest** one for answering political science questions.
-]
-
----
-class: inverse, center, middle
-
-# Questions & Discussion
-
-<br>
-
-### **Resources:**
-- Book: *Regression and Other Stories* (Ch. 11)
-- Website: https://avehtari.github.io/ROS-Examples/
-- Course materials: [Your link here]
-
-<br>
-
-### **Next Steps:**
-- Try diagnostics on your own data
-- Bring questions to next class
-- Start thinking about final project diagnostics
-
----
-class: inverse, center, middle
-
-# Appendix: Example Code Walkthrough
-
----
-# Full Example: Analyzing Election Data
-
-```{r full-example, eval=FALSE, echo=TRUE}
-# Load packages
-library(tidyverse)
-library(rstanarm)
-library(bayesplot)
-library(loo)
-library(performance)
-
-# 1. Load and explore data
-election_data <- read_csv("election_data.csv") %>%
-  mutate(incumbent_vote = incumbent_vote / 100)  # Convert to proportion
-
-# Explore
-ggplot(election_data, aes(x = gdp_growth, y = incumbent_vote)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE)
-
-# 2. Fit model
-fit <- stan_glm(
-  incumbent_vote ~ gdp_growth + president_approval + years_in_office,
-  data = election_data,
-  family = gaussian(),
-  prior = normal(0, 2.5),
-  prior_intercept = normal(0.5, 0.2),
-  seed = 123
-)
-
-# 3. Diagnostics
-# a. Residuals
-plot(fit, "resid_vs_pred")
-
-# b. Posterior predictive check
-y_rep <- posterior_predict(fit)
-ppc_dens_overlay(election_data$incumbent_vote, y_rep[1:50, ])
-
-# c. Cross-validation
-loo_fit <- loo(fit)
-print(loo_fit)
-
-# d. Check assumptions
-check_model(fit)
-```
-
----
-# Creating Publication-Ready Diagnostics
-
-```{r publication-diagnostics, eval=FALSE, echo=TRUE}
-library(patchwork)  # For combining plots
-
-# Create diagnostic figure
-p1 <- ggplot(election_data, aes(x = fitted(fit), y = resid(fit))) +
-  geom_point(alpha = 0.6) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals vs. Fitted")
-
-p2 <- ggplot(data.frame(resid = resid(fit)), aes(sample = resid)) +
-  stat_qq() + stat_qq_line() +
-  labs(title = "Q-Q Plot of Residuals")
-
-p3 <- bayesplot::mcmc_trace(as.array(fit), pars = c("gdp_growth", 
-                                                    "president_approval"))
-
-# Combine
-(p1 | p2) / p3 +
-  plot_annotation(title = "Model Diagnostics: Election Forecasting Model",
-                  tag_levels = "A")
-
-# Save for publication
-ggsave("model_diagnostics.png", width = 10, height = 8, dpi = 300)
 ```
 
 ---
@@ -807,4 +483,4 @@ ggsave("model_diagnostics.png", width = 10, height = 8, dpi = 300)
 
 ---
 
-![Diagnostics4](Images/Silva4.png)
+![Diagnostics4](Images/Silva4.png){width=50%}

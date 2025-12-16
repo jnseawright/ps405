@@ -92,97 +92,55 @@ m_inch &lt;- lm(earnings ~ height_in)
 m_cm &lt;- lm(earnings ~ height_cm)
 
 heightms &lt;- modelsummary(list("Inches" = m_inch, "Centimeters" = m_cm),
-             stars = TRUE, escape=TRUE, gof_omit = ".*",  output = "tinytable")
+             stars = TRUE, escape=TRUE, gof_omit = ".*",  output = "kableExtra")%&gt;%
+  kable_styling(font_size = 14)
 ```
 
 ---
+&lt;table style="NAborder-bottom: 0; width: auto !important; margin-left: auto; margin-right: auto; font-size: 14px; margin-left: auto; margin-right: auto;" class="table table"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; &amp;amp;nbsp;Inches &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Centimeters &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −27981.301* &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −27981.301* &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (13201.360) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (13201.360) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; height_in &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 742.870*** &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (197.721) &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; height_cm &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 292.469*** &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt;  &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; (77.843) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
+&lt;sup&gt;&lt;/sup&gt; + p &amp;lt; 0.1, * p &amp;lt; 0.05, ** p &amp;lt; 0.01, *** p &amp;lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+&lt;/table&gt;
 
-```{=html}
-&lt;!-- preamble start --&gt;
-
-    &lt;script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"&gt;&lt;/script&gt;
-
-    &lt;script&gt;
-      // Create table-specific functions using external factory
-      const tableFns_2dee2hc15f0yvsibh3ku = TinyTable.createTableFunctions("tinytable_2dee2hc15f0yvsibh3ku");
-      // tinytable span after
-      window.addEventListener('load', function () {
-          var cellsToStyle = [
-            // tinytable style arrays after
-          { positions: [ { i: '6', j: 2 }, { i: '6', j: 3 } ], css_id: 'tinytable_css_z5cdocz8lxb8hu8oxx1j',}, 
-          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 } ], css_id: 'tinytable_css_ztxyy43xhysm9h1xw7lh',}, 
-          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 } ], css_id: 'tinytable_css_sxd3pzg90d4cerjj6vkv',}, 
-          { positions: [ { i: '6', j: 1 } ], css_id: 'tinytable_css_dpsm63bhpgtwxwnxkat7',}, 
-          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 } ], css_id: 'tinytable_css_yz09mpftkzomb6konqrh',}, 
-          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_d7uiggxyqh2n12ftk8pg',}, 
-          ];
-
-          // Loop over the arrays to style the cells
-          cellsToStyle.forEach(function (group) {
-              group.positions.forEach(function (cell) {
-                  tableFns_2dee2hc15f0yvsibh3ku.styleCell(cell.i, cell.j, group.css_id);
-              });
-          });
-      });
-    &lt;/script&gt;
-
-    &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css"&gt;
-    &lt;style&gt;
-    /* tinytable css entries after */
-    #tinytable_2dee2hc15f0yvsibh3ku td.tinytable_css_z5cdocz8lxb8hu8oxx1j, #tinytable_2dee2hc15f0yvsibh3ku th.tinytable_css_z5cdocz8lxb8hu8oxx1j {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_2dee2hc15f0yvsibh3ku td.tinytable_css_ztxyy43xhysm9h1xw7lh, #tinytable_2dee2hc15f0yvsibh3ku th.tinytable_css_ztxyy43xhysm9h1xw7lh { text-align: center }
-    #tinytable_2dee2hc15f0yvsibh3ku td.tinytable_css_sxd3pzg90d4cerjj6vkv, #tinytable_2dee2hc15f0yvsibh3ku th.tinytable_css_sxd3pzg90d4cerjj6vkv {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
-    #tinytable_2dee2hc15f0yvsibh3ku td.tinytable_css_dpsm63bhpgtwxwnxkat7, #tinytable_2dee2hc15f0yvsibh3ku th.tinytable_css_dpsm63bhpgtwxwnxkat7 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.1em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    #tinytable_2dee2hc15f0yvsibh3ku td.tinytable_css_yz09mpftkzomb6konqrh, #tinytable_2dee2hc15f0yvsibh3ku th.tinytable_css_yz09mpftkzomb6konqrh { text-align: left }
-    #tinytable_2dee2hc15f0yvsibh3ku td.tinytable_css_d7uiggxyqh2n12ftk8pg, #tinytable_2dee2hc15f0yvsibh3ku th.tinytable_css_d7uiggxyqh2n12ftk8pg {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: black; --line-color-left: black; --line-color-right: black; --line-color-top: black; --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
-    &lt;/style&gt;
-    &lt;div class="container"&gt;
-      &lt;table class="tinytable" id="tinytable_2dee2hc15f0yvsibh3ku" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing='true'&gt;
-        
-        &lt;thead&gt;
-              &lt;tr&gt;
-                &lt;th scope="col" data-row="0" data-col="1"&gt; &lt;/th&gt;
-                &lt;th scope="col" data-row="0" data-col="2"&gt;Inches&lt;/th&gt;
-                &lt;th scope="col" data-row="0" data-col="3"&gt;Centimeters&lt;/th&gt;
-              &lt;/tr&gt;
-        &lt;/thead&gt;
-        &lt;tfoot&gt;&lt;tr&gt;&lt;td colspan='3'&gt;+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
-        &lt;tbody&gt;
-                &lt;tr&gt;
-                  &lt;td data-row="1" data-col="1"&gt;(Intercept)&lt;/td&gt;
-                  &lt;td data-row="1" data-col="2"&gt;-27981.301*&lt;/td&gt;
-                  &lt;td data-row="1" data-col="3"&gt;-27981.301*&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                  &lt;td data-row="2" data-col="1"&gt;&lt;/td&gt;
-                  &lt;td data-row="2" data-col="2"&gt;(13201.360)&lt;/td&gt;
-                  &lt;td data-row="2" data-col="3"&gt;(13201.360)&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                  &lt;td data-row="3" data-col="1"&gt;height_in&lt;/td&gt;
-                  &lt;td data-row="3" data-col="2"&gt;742.870***&lt;/td&gt;
-                  &lt;td data-row="3" data-col="3"&gt;&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                  &lt;td data-row="4" data-col="1"&gt;&lt;/td&gt;
-                  &lt;td data-row="4" data-col="2"&gt;(197.721)&lt;/td&gt;
-                  &lt;td data-row="4" data-col="3"&gt;&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                  &lt;td data-row="5" data-col="1"&gt;height_cm&lt;/td&gt;
-                  &lt;td data-row="5" data-col="2"&gt;&lt;/td&gt;
-                  &lt;td data-row="5" data-col="3"&gt;292.469***&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;tr&gt;
-                  &lt;td data-row="6" data-col="1"&gt;&lt;/td&gt;
-                  &lt;td data-row="6" data-col="2"&gt;&lt;/td&gt;
-                  &lt;td data-row="6" data-col="3"&gt;(77.843)&lt;/td&gt;
-                &lt;/tr&gt;
-        &lt;/tbody&gt;
-      &lt;/table&gt;
-    &lt;/div&gt;
-&lt;!-- hack to avoid NA insertion in last line --&gt;
-```
 ---
 ###Solution: Standardize to make coefficients comparable:
 

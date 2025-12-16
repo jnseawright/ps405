@@ -51,119 +51,150 @@ pre[class] {
 
 ### **The Problem**
 - Regression models make strong assumptions
+
+---
+### **The Problem**
+
 - Violations can lead to:
   - **Biased coefficients**
   - **Invalid inferences**
   - **Poor predictions**
-- Especially critical for:
-  - Policy evaluation
-  - Election forecasting
-  - Causal inference
-
-.pull-right[
-### **Real Examples**
-
-``` r
-# Election forecasting
-vote_share ~ economy + approval + incumbency
-
-# Policy evaluation
-policy_success ~ spending + implementation + context
-
-# Public opinion
-support ~ demographics + media + events
-```
-**Question:** Can we trust these models?
-]
 
 ---
-# Key Assumptions of Regression (in order of importance)
+# Key Assumptions of Regression
 
-.pull-left[
 ### **1. Validity** 
-Data map to research question
+Data fit the concepts and populations in the research question
 - Outcome measures the phenomenon
 - Model includes relevant predictors
 - Generalizes to target cases
+
+---
+# Key Assumptions of Regression
 
 ### **2. Representativeness**
 Sample reflects population (conditional on X)
 - Selection on X is OK
 - Selection on Y is problematic
 - Even with "all" data (e.g., all elections)
-]
 
-.pull-right[
+
+---
+# Key Assumptions of Regression
+
 ### **3. Additivity &amp; Linearity**
 Predictors combine linearly
-- Most political relationships are nonlinear
+- Some political relationships are nonlinear
 - Age × voting, income × participation
+- Nonlinear relationships are fine if we can include them as linear terms
+
+---
+# Key Assumptions of Regression
+
 
 ### **4. Independence of Errors**
 No autocorrelation (time/space)
 
+---
+# Key Assumptions of Regression
+
+
 ### **5. Equal Variance (Homoscedasticity)**
 Constant prediction uncertainty
 
+---
+# Key Assumptions of Regression
+
+
 ### **6. Normality of Errors**
 Least important for estimation
-]
-
----
-# Validity in Political Research: Examples
-
-![](Diagnostics_files/figure-html/validity-plot-1.png)&lt;!-- --&gt;
-
-**Key Insight:** Most datasets fail perfect validity. The goal is **awareness** and **transparency**.
 
 ---
 # Representativeness: Selection Bias
 
-.pull-left[
 ### **The Core Issue**
 Selection on Y biases coefficients
 
+---
+
+
+``` r
+set.seed(123)
+n &lt;- 1000
+pop_data &lt;- data.frame(
+  ideology = rnorm(n, 0, 1),
+  income = rnorm(n, 50000, 15000)
+)
+
+# Make voting probability depend on ideology and income
+prob_vote &lt;- plogis(0.5 + 0.3*pop_data$ideology + pop_data$income/100000)
+pop_data$vote &lt;- rbinom(n, 1, prob_vote)
+
+# Selection: only voters in sample
+sample_data &lt;- pop_data %&gt;% 
+  filter(vote == 1) %&gt;% 
+  slice_sample(n = 200)
+
+cat("Population correlation (ideology, income):", 
+    round(cor(pop_data$ideology, pop_data$income), 3), "\n")
+```
 
 ```
 ## Population correlation (ideology, income): 0.086
 ```
 
+``` r
+cat("Sample correlation (ideology, income):", 
+    round(cor(sample_data$ideology, sample_data$income), 3))
 ```
-## Sample correlation (ideology, income): 0.102
-```
-]
 
-.pull-right[
+```
+## Sample correlation (ideology, income): 0.075
+```
+
+
+
+---
+# Representativeness: Selection Bias
+
 ### **Political Science Examples**
+
 1. **Survey non-response**
    - Political interest → participation → survey response
-
 2. **Media coverage**
    - Extreme cases get coverage → biased perception
 
-3. **Historical records**
-   - Surviving documents ≠ all documents
+---
+# Representativeness: Selection Bias
 
-4. **Elite interviews**
-   - Accessible elites ≠ all elites
+### **Political Science Examples**
+
+3\. **Historical records**
+  - Surviving documents ≠ all documents
+  
+4\. **Elite interviews**
+  - Accessible elites ≠ all elites
+
+---
+# Representativeness: Selection Bias
 
 ### **Solutions**
 - Weighting
 - Selection models
 - Multiple data sources
-]
 
 ---
-# Additivity &amp; Linearity: Political Reality is Nonlinear
+# Additivity &amp; Linearity: Nonlinear Reality
 
-![](Diagnostics_files/figure-html/nonlinear-plot-1.png)&lt;!-- --&gt;
+| | | |
+|:---:|:---:|:---:|
+| ![Image1](Images/ageturnout.png) | ![Image2](Images/incometurnout.png) | ![Image3](Images/gendertime.jpg) |
 
-**Takeaway:** Always check for nonlinearity. Consider transformations or flexible models.
+Always check for nonlinearity. Consider transformations or flexible models.
 
 ---
 # Diagnostic Tool 1: Residual Plots
 
-.pull-left[
 ### **What to Plot**
 
 ``` r
@@ -183,25 +214,23 @@ ggplot(election_data, aes(x = fitted, y = residuals)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_smooth(se = FALSE)
 ```
-]
 
-.pull-right[
+---
+
 ### **What to Look For**
-.center[
+
 ![](Diagnostics_files/figure-html/residual-patterns-1.png)&lt;!-- --&gt;
-]
-]
 
 ---
 # Diagnostic Tool 2: Posterior Predictive Checks
 
-.pull-left[
 ### **The Idea**
 1. Fit your model
 2. Simulate new data from it
 3. Compare simulated data to real data
 4. If they look different → model problems
 
+---
 ### **Bayesian Implementation**
 
 ``` r
@@ -211,27 +240,32 @@ fit_bayes &lt;- stan_glm(vote ~ economy + war,
                       data = election_data,
                       family = gaussian(),
                       seed = 123)
+```
 
+---
+
+
+``` r
 # Generate posterior predictions
 y_rep &lt;- posterior_predict(fit_bayes)
 
 # Compare distributions
 bayesplot::ppc_dens_overlay(election_data$vote, y_rep[1:50, ])
 ```
-]
 
-.pull-right[
+---
+
 ![](Diagnostics_files/figure-html/ppc-example-1.png)&lt;!-- --&gt;
-]
 
 ---
 # Diagnostic Tool 3: Cross-Validation
 
-.pull-left[
 ### **Why CV?**
 - In-sample fit ≠ out-of-sample performance
 - Prevents overfitting
 - Estimates predictive accuracy
+
+---
 
 ### **Types of CV**
 1. **Leave-One-Out (LOO)**
@@ -245,48 +279,288 @@ bayesplot::ppc_dens_overlay(election_data$vote, y_rep[1:50, ])
 3. **Time-Series CV**
    - Train on past, test on future
    - Critical for political forecasting
-]
 
-.pull-right[
+---
 ### **Implementation in R**
+
 
 ``` r
 library(rstanarm)
 library(loo)
 
 # Fit Bayesian model
-fit &lt;- stan_glm(vote_share ~ gdp_growth + incumbent,
-                data = election_data)
+fit &lt;- stan_glm(vdem_libdem ~ I(log(wdi_gdpcappppcon2017)) + wdi_gerp,
+                data = qogts)
+```
 
+```
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
+## Chain 1: 
+## Chain 1: Gradient evaluation took 8.5e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.85 seconds.
+## Chain 1: Adjust your expectations accordingly!
+## Chain 1: 
+## Chain 1: 
+## Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 1: 
+## Chain 1:  Elapsed Time: 0.048 seconds (Warm-up)
+## Chain 1:                0.314 seconds (Sampling)
+## Chain 1:                0.362 seconds (Total)
+## Chain 1: 
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
+## Chain 2: 
+## Chain 2: Gradient evaluation took 1.1e-05 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+## Chain 2: Adjust your expectations accordingly!
+## Chain 2: 
+## Chain 2: 
+## Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 2: 
+## Chain 2:  Elapsed Time: 0.042 seconds (Warm-up)
+## Chain 2:                0.321 seconds (Sampling)
+## Chain 2:                0.363 seconds (Total)
+## Chain 2: 
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
+## Chain 3: 
+## Chain 3: Gradient evaluation took 1.3e-05 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
+## Chain 3: Adjust your expectations accordingly!
+## Chain 3: 
+## Chain 3: 
+## Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 3: 
+## Chain 3:  Elapsed Time: 0.042 seconds (Warm-up)
+## Chain 3:                0.322 seconds (Sampling)
+## Chain 3:                0.364 seconds (Total)
+## Chain 3: 
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
+## Chain 4: 
+## Chain 4: Gradient evaluation took 1.2e-05 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+## Chain 4: Adjust your expectations accordingly!
+## Chain 4: 
+## Chain 4: 
+## Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 4: 
+## Chain 4:  Elapsed Time: 0.048 seconds (Warm-up)
+## Chain 4:                0.383 seconds (Sampling)
+## Chain 4:                0.431 seconds (Total)
+## Chain 4:
+```
+
+``` r
 # LOO Cross-Validation
 loo_result &lt;- loo(fit)
 print(loo_result)
+```
 
+```
+## 
+## Computed from 4000 by 4177 log-likelihood matrix.
+## 
+##          Estimate   SE
+## elpd_loo    431.4 43.4
+## p_loo         3.8  0.1
+## looic      -862.8 86.8
+## ------
+## MCSE of elpd_loo is 0.0.
+## MCSE and ESS estimates assume independent draws (r_eff=1).
+## 
+## All Pareto k estimates are good (k &lt; 0.7).
+## See help('pareto-k-diagnostic') for details.
+```
+
+``` r
 # Compare models
-fit2 &lt;- stan_glm(vote_share ~ gdp_growth + incumbent + war,
-                 data = election_data)
+fit2 &lt;- stan_glm(vdem_libdem ~ I(log(wdi_gdpcappppcon2017)) + wdi_gerp + as.factor(ht_colonial), data = qogts)
+```
+
+```
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
+## Chain 1: 
+## Chain 1: Gradient evaluation took 1.9e-05 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.19 seconds.
+## Chain 1: Adjust your expectations accordingly!
+## Chain 1: 
+## Chain 1: 
+## Chain 1: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 1: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 1: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 1: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 1: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 1: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 1: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 1: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 1: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 1: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 1: 
+## Chain 1:  Elapsed Time: 0.072 seconds (Warm-up)
+## Chain 1:                0.347 seconds (Sampling)
+## Chain 1:                0.419 seconds (Total)
+## Chain 1: 
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
+## Chain 2: 
+## Chain 2: Gradient evaluation took 1.2e-05 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
+## Chain 2: Adjust your expectations accordingly!
+## Chain 2: 
+## Chain 2: 
+## Chain 2: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 2: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 2: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 2: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 2: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 2: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 2: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 2: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 2: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 2: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 2: 
+## Chain 2:  Elapsed Time: 0.07 seconds (Warm-up)
+## Chain 2:                0.367 seconds (Sampling)
+## Chain 2:                0.437 seconds (Total)
+## Chain 2: 
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
+## Chain 3: 
+## Chain 3: Gradient evaluation took 1.1e-05 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
+## Chain 3: Adjust your expectations accordingly!
+## Chain 3: 
+## Chain 3: 
+## Chain 3: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 3: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 3: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 3: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 3: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 3: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 3: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 3: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 3: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 3: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 3: 
+## Chain 3:  Elapsed Time: 0.067 seconds (Warm-up)
+## Chain 3:                0.374 seconds (Sampling)
+## Chain 3:                0.441 seconds (Total)
+## Chain 3: 
+## 
+## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
+## Chain 4: 
+## Chain 4: Gradient evaluation took 1.6e-05 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.16 seconds.
+## Chain 4: Adjust your expectations accordingly!
+## Chain 4: 
+## Chain 4: 
+## Chain 4: Iteration:    1 / 2000 [  0%]  (Warmup)
+## Chain 4: Iteration:  200 / 2000 [ 10%]  (Warmup)
+## Chain 4: Iteration:  400 / 2000 [ 20%]  (Warmup)
+## Chain 4: Iteration:  600 / 2000 [ 30%]  (Warmup)
+## Chain 4: Iteration:  800 / 2000 [ 40%]  (Warmup)
+## Chain 4: Iteration: 1000 / 2000 [ 50%]  (Warmup)
+## Chain 4: Iteration: 1001 / 2000 [ 50%]  (Sampling)
+## Chain 4: Iteration: 1200 / 2000 [ 60%]  (Sampling)
+## Chain 4: Iteration: 1400 / 2000 [ 70%]  (Sampling)
+## Chain 4: Iteration: 1600 / 2000 [ 80%]  (Sampling)
+## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
+## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
+## Chain 4: 
+## Chain 4:  Elapsed Time: 0.075 seconds (Warm-up)
+## Chain 4:                0.38 seconds (Sampling)
+## Chain 4:                0.455 seconds (Total)
+## Chain 4:
+```
+
+``` r
 loo2 &lt;- loo(fit2)
 loo_compare(loo_result, loo2)
 ```
 
+```
+##      elpd_diff se_diff
+## fit2    0.0       0.0 
+## fit  -215.9      22.6
+```
+
+---
+
 ### **Interpretation**
 - `elpd_diff`: Difference in expected log predictive density
 - Rule of thumb: `elpd_diff &gt; 4` suggests meaningful difference
-]
 
 ---
-# R² and Explained Variance: Political Science Context
+# `\(R^2\)` and Explained Variance
 
-.pull-left[
-### **What R² Tells Us**
+`$$R^2 = 1 - \frac{\sum_{i=1}^{n} e_{i}^2}{\sum_{i=1}^{n} y_{i}^2}$$`
+---
+
+### **What `\(R^2\)` Tells Us**
 - Proportion of variance "explained"
 - Range: 0 (worst) to 1 (best)
 
-### **But in Political Science...**
-- **Low R² is common and OK!**
-- Human behavior is stochastic
-- Many unmeasurable factors
-- Example: Individual voting decisions
+---
+
+### **But in social science...**
+- **Low `\(R^2\)` is common.**
+- Political behavior is noisy
+- Measurement error, multiple causation, heterogeneity
+
+---
 
 &lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
  &lt;thead&gt;
@@ -298,389 +572,688 @@ loo_compare(loo_result, loo2)
  &lt;/thead&gt;
 &lt;tbody&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Vote choice (individual) &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Many factors matter &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Populism and Referenda (Werner and Jacobs 2022) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.06 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; A bit low, but okay &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Election forecasting (aggregate) &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.65 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Structure matters &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Strongmen and Geographic Vote Choice (Hong et al. 2023) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.84 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Double-check the model &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Policy adoption &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.30 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Context dependent &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Conflict onset &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.10 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Hard to predict &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; Public opinion shift &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.25 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Media + events matter &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Explaining Populism (Schafer 2022) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.17 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Normal for individual data &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-]
 
-.pull-right[
-### **Bayesian R²**
-- Accounts for parameter uncertainty
-- More honest assessment
+
+---
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Study &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; R2 &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Interpretation &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Supreme Court Legitimacy (Gibson 2025) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.24 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Good for individual data &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Subnational Democratic Backsliding (Grumbach 2023) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.68 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; High numbers because aggregate &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+### **Bayesian `\(R^2\)`**
+- Mathematicaly different because the variance of Bayesian predicted values can sometimes be higher than the variance of the original data
+
+---
 
 
 ``` r
-# Bayesian R² with uncertainty
+# Bayesian R2 with uncertainty
 bayes_R2(fit)  # Returns posterior distribution
-
-# Plot uncertainty
-r2_dist &lt;- bayes_R2(fit)
-ggplot(data.frame(r2 = r2_dist), aes(x = r2)) +
-  geom_density(fill = "lightblue", alpha = 0.7) +
-  geom_vline(xintercept = median(r2_dist), 
-             linetype = "dashed") +
-  labs(x = "Bayesian R²", y = "Density",
-       title = "Uncertainty in Model Fit")
 ```
 
+```
+##    [1] 0.3457063 0.3478361 0.3450464 0.3575167 0.3322270 0.3357052 0.3584565
+##    [8] 0.3354541 0.3601772 0.3637958 0.3292229 0.3553056 0.3363608 0.3276016
+##   [15] 0.3479622 0.3401645 0.3517773 0.3546182 0.3564162 0.3367551 0.3493293
+##   [22] 0.3349877 0.3572649 0.3651736 0.3608447 0.3299041 0.3304091 0.3594773
+##   [29] 0.3446906 0.3538457 0.3486898 0.3549258 0.3457942 0.3657351 0.3531192
+##   [36] 0.3433559 0.3462843 0.3442795 0.3491341 0.3623504 0.3698145 0.3265289
+##   [43] 0.3510893 0.3268500 0.3459762 0.3410670 0.3611312 0.3303678 0.3566517
+##   [50] 0.3610243 0.3599712 0.3302688 0.3604203 0.3347615 0.3315885 0.3610737
+##   [57] 0.3552271 0.3381470 0.3530990 0.3431095 0.3470530 0.3331676 0.3615673
+##   [64] 0.3613758 0.3511516 0.3494337 0.3372190 0.3529479 0.3490715 0.3428034
+##   [71] 0.3572365 0.3584011 0.3382011 0.3637464 0.3346672 0.3371539 0.3484693
+##   [78] 0.3413666 0.3343441 0.3498098 0.3259003 0.3628066 0.3567989 0.3309493
+##   [85] 0.3399169 0.3340555 0.3367249 0.3457367 0.3409451 0.3412688 0.3382920
+##   [92] 0.3572931 0.3692425 0.3574152 0.3509607 0.3399275 0.3527296 0.3416562
+##   [99] 0.3467211 0.3488789 0.3630355 0.3471217 0.3406418 0.3473850 0.3470875
+##  [106] 0.3431081 0.3383628 0.3344687 0.3487722 0.3372505 0.3487298 0.3447474
+##  [113] 0.3486052 0.3366482 0.3306324 0.3605278 0.3564488 0.3536123 0.3499756
+##  [120] 0.3343655 0.3412360 0.3465541 0.3474745 0.3510940 0.3285233 0.3519162
+##  [127] 0.3328123 0.3466623 0.3558490 0.3354802 0.3368634 0.3489220 0.3427010
+##  [134] 0.3556509 0.3380016 0.3434812 0.3458399 0.3237794 0.3495356 0.3417289
+##  [141] 0.3405959 0.3476806 0.3449279 0.3605667 0.3329776 0.3448422 0.3326572
+##  [148] 0.3386364 0.3533876 0.3386077 0.3450440 0.3467996 0.3352988 0.3449931
+##  [155] 0.3397435 0.3500030 0.3431451 0.3415763 0.3520619 0.3480318 0.3439534
+##  [162] 0.3490281 0.3357154 0.3534126 0.3527309 0.3402714 0.3367031 0.3570679
+##  [169] 0.3477211 0.3356144 0.3537432 0.3436531 0.3392786 0.3568111 0.3591319
+##  [176] 0.3552886 0.3486669 0.3483504 0.3542930 0.3399060 0.3407848 0.3478000
+##  [183] 0.3495788 0.3614644 0.3560785 0.3517639 0.3398193 0.3322635 0.3275039
+##  [190] 0.3383319 0.3339782 0.3310483 0.3592393 0.3230952 0.3657899 0.3749855
+##  [197] 0.3377367 0.3539743 0.3418619 0.3537951 0.3555763 0.3390190 0.3502022
+##  [204] 0.3448603 0.3513595 0.3451858 0.3737922 0.3485438 0.3250825 0.3604480
+##  [211] 0.3360776 0.3346027 0.3379342 0.3311268 0.3431167 0.3443540 0.3466273
+##  [218] 0.3485893 0.3332549 0.3597321 0.3420004 0.3438438 0.3454398 0.3403087
+##  [225] 0.3576920 0.3499153 0.3340053 0.3480002 0.3503794 0.3473242 0.3459463
+##  [232] 0.3480427 0.3389517 0.3638805 0.3365070 0.3415384 0.3382594 0.3514799
+##  [239] 0.3336933 0.3383281 0.3553284 0.3474894 0.3579684 0.3407708 0.3495278
+##  [246] 0.3451923 0.3397820 0.3494188 0.3496054 0.3439868 0.3437736 0.3377688
+##  [253] 0.3339279 0.3675751 0.3252455 0.3186500 0.3429723 0.3378603 0.3577662
+##  [260] 0.3506930 0.3346830 0.3546798 0.3368335 0.3553441 0.3375643 0.3317153
+##  [267] 0.3584263 0.3567291 0.3701912 0.3681312 0.3495124 0.3576530 0.3214025
+##  [274] 0.3536136 0.3214005 0.3429867 0.3620779 0.3469380 0.3423915 0.3496107
+##  [281] 0.3367491 0.3399817 0.3383206 0.3492175 0.3486770 0.3463204 0.3481461
+##  [288] 0.3389012 0.3609877 0.3560500 0.3369533 0.3501557 0.3512458 0.3488290
+##  [295] 0.3299529 0.3549035 0.3391972 0.3318991 0.3388045 0.3656666 0.3618310
+##  [302] 0.3246717 0.3355399 0.3453557 0.3439154 0.3478473 0.3470095 0.3272845
+##  [309] 0.3298166 0.3631182 0.3523596 0.3359695 0.3342784 0.3412931 0.3441813
+##  [316] 0.3577866 0.3347861 0.3633361 0.3333738 0.3212907 0.3435660 0.3512456
+##  [323] 0.3474662 0.3428042 0.3350135 0.3545954 0.3363032 0.3536741 0.3473937
+##  [330] 0.3470279 0.3209048 0.3315701 0.3371690 0.3547966 0.3469233 0.3409236
+##  [337] 0.3445794 0.3431446 0.3459164 0.3508668 0.3428319 0.3486329 0.3518432
+##  [344] 0.3400111 0.3337870 0.3585440 0.3446032 0.3559462 0.3339523 0.3496067
+##  [351] 0.3542160 0.3386830 0.3418140 0.3585026 0.3283202 0.3562509 0.3558024
+##  [358] 0.3455649 0.3566095 0.3306915 0.3651906 0.3330630 0.3389760 0.3386705
+##  [365] 0.3518303 0.3447051 0.3452728 0.3395869 0.3338894 0.3543818 0.3294976
+##  [372] 0.3641447 0.3336316 0.3559905 0.3338218 0.3592763 0.3496488 0.3298444
+##  [379] 0.3482422 0.3388870 0.3417473 0.3600607 0.3391045 0.3448467 0.3542399
+##  [386] 0.3471473 0.3443025 0.3443470 0.3508381 0.3515529 0.3467920 0.3486906
+##  [393] 0.3309504 0.3373694 0.3593776 0.3285336 0.3193006 0.3520536 0.3525584
+##  [400] 0.3482013 0.3499025 0.3533409 0.3439241 0.3696602 0.3598523 0.3553435
+##  [407] 0.3570479 0.3467949 0.3280298 0.3498265 0.3480477 0.3567011 0.3490662
+##  [414] 0.3494655 0.3290952 0.3328332 0.3242511 0.3387227 0.3518377 0.3483224
+##  [421] 0.3283363 0.3325186 0.3314154 0.3348979 0.3328286 0.3300424 0.3603996
+##  [428] 0.3361853 0.3282903 0.3216260 0.3369833 0.3459165 0.3451745 0.3393822
+##  [435] 0.3335244 0.3528751 0.3483820 0.3473994 0.3390235 0.3559832 0.3537479
+##  [442] 0.3278268 0.3462636 0.3472790 0.3286061 0.3567972 0.3232559 0.3637386
+##  [449] 0.3433753 0.3384988 0.3585338 0.3233649 0.3701533 0.3481670 0.3504513
+##  [456] 0.3347131 0.3471543 0.3494679 0.3574316 0.3587138 0.3394572 0.3405784
+##  [463] 0.3534234 0.3349290 0.3551809 0.3481366 0.3470116 0.3570547 0.3384613
+##  [470] 0.3363468 0.3650211 0.3313986 0.3412135 0.3322538 0.3466870 0.3320873
+##  [477] 0.3464701 0.3605811 0.3275803 0.3362168 0.3402752 0.3602607 0.3632301
+##  [484] 0.3470356 0.3316280 0.3560562 0.3455024 0.3325616 0.3427080 0.3341311
+##  [491] 0.3333805 0.3512901 0.3327221 0.3479161 0.3432872 0.3453918 0.3408000
+##  [498] 0.3299497 0.3737298 0.3784331 0.3636157 0.3341055 0.3299650 0.3257072
+##  [505] 0.3614757 0.3340321 0.3599964 0.3281601 0.3606942 0.3407850 0.3412942
+##  [512] 0.3473657 0.3383455 0.3220161 0.3543376 0.3371581 0.3576613 0.3620937
+##  [519] 0.3681188 0.3584261 0.3472166 0.3467570 0.3379903 0.3546782 0.3433155
+##  [526] 0.3278840 0.3450375 0.3468495 0.3531051 0.3365111 0.3275744 0.3401073
+##  [533] 0.3512177 0.3449581 0.3433950 0.3481465 0.3457833 0.3547026 0.3310514
+##  [540] 0.3286134 0.3386278 0.3551646 0.3478398 0.3389614 0.3454109 0.3409287
+##  [547] 0.3511035 0.3543060 0.3382132 0.3385514 0.3500269 0.3439787 0.3636646
+##  [554] 0.3680243 0.3519380 0.3478445 0.3544346 0.3622725 0.3484364 0.3470262
+##  [561] 0.3350371 0.3565137 0.3382357 0.3219626 0.3368110 0.3460066 0.3543683
+##  [568] 0.3387442 0.3374358 0.3509296 0.3406320 0.3637408 0.3457651 0.3540333
+##  [575] 0.3542052 0.3390823 0.3442408 0.3432736 0.3375559 0.3390065 0.3494028
+##  [582] 0.3462629 0.3410704 0.3333307 0.3577088 0.3342161 0.3248800 0.3459095
+##  [589] 0.3430082 0.3445090 0.3357189 0.3539452 0.3540364 0.3455263 0.3439799
+##  [596] 0.3439511 0.3330629 0.3271412 0.3434360 0.3430516 0.3545658 0.3227532
+##  [603] 0.3363319 0.3405127 0.3342941 0.3351067 0.3471237 0.3547735 0.3465688
+##  [610] 0.3509263 0.3418377 0.3415643 0.3565928 0.3455824 0.3351447 0.3311738
+##  [617] 0.3553849 0.3516989 0.3394115 0.3376832 0.3388098 0.3395740 0.3482904
+##  [624] 0.3557380 0.3441073 0.3560832 0.3647321 0.3309488 0.3295555 0.3565281
+##  [631] 0.3370606 0.3436028 0.3611644 0.3308436 0.3499082 0.3457977 0.3472906
+##  [638] 0.3568070 0.3404501 0.3547542 0.3549251 0.3494364 0.3409541 0.3516939
+##  [645] 0.3489892 0.3482017 0.3131665 0.3298941 0.3370512 0.3635068 0.3470467
+##  [652] 0.3435573 0.3341454 0.3290255 0.3435099 0.3454163 0.3533332 0.3460046
+##  [659] 0.3422325 0.3520079 0.3385949 0.3634604 0.3300645 0.3375068 0.3599764
+##  [666] 0.3287730 0.3523546 0.3452225 0.3502945 0.3440119 0.3721101 0.3262225
+##  [673] 0.3499765 0.3491575 0.3409297 0.3357109 0.3707080 0.3301695 0.3641367
+##  [680] 0.3684169 0.3338659 0.3344175 0.3610809 0.3479583 0.3487921 0.3526312
+##  [687] 0.3517292 0.3571968 0.3524183 0.3416975 0.3393692 0.3645277 0.3572197
+##  [694] 0.3482057 0.3450618 0.3491113 0.3398859 0.3449218 0.3297147 0.3611133
+##  [701] 0.3606535 0.3512006 0.3393833 0.3509747 0.3447794 0.3433083 0.3467157
+##  [708] 0.3422183 0.3415527 0.3407320 0.3452446 0.3397164 0.3334526 0.3393031
+##  [715] 0.3487334 0.3715710 0.3336322 0.3384445 0.3559163 0.3606621 0.3457671
+##  [722] 0.3439560 0.3406322 0.3275835 0.3279638 0.3265500 0.3375892 0.3339602
+##  [729] 0.3394733 0.3511629 0.3444608 0.3510510 0.3520681 0.3504967 0.3342503
+##  [736] 0.3426987 0.3486836 0.3456391 0.3501211 0.3600637 0.3707570 0.3200569
+##  [743] 0.3334448 0.3387966 0.3504756 0.3422397 0.3520005 0.3373580 0.3431893
+##  [750] 0.3494350 0.3441292 0.3382817 0.3383595 0.3540118 0.3565419 0.3418856
+##  [757] 0.3604038 0.3292604 0.3534839 0.3518969 0.3625223 0.3552002 0.3353872
+##  [764] 0.3243749 0.3606412 0.3484716 0.3479133 0.3386756 0.3267064 0.3272464
+##  [771] 0.3341009 0.3588058 0.3333727 0.3510247 0.3325238 0.3518863 0.3475406
+##  [778] 0.3412685 0.3399248 0.3338592 0.3222929 0.3629133 0.3477602 0.3573449
+##  [785] 0.3612210 0.3342651 0.3572560 0.3308023 0.3493073 0.3469556 0.3516546
+##  [792] 0.3519368 0.3534609 0.3674994 0.3302196 0.3503787 0.3464333 0.3479482
+##  [799] 0.3685021 0.3238645 0.3433033 0.3551643 0.3527686 0.3339742 0.3332766
+##  [806] 0.3571192 0.3510404 0.3402652 0.3447031 0.3511091 0.3303247 0.3445068
+##  [813] 0.3429290 0.3463512 0.3387260 0.3579391 0.3332438 0.3632508 0.3455358
+##  [820] 0.3264226 0.3496004 0.3455694 0.3501672 0.3329383 0.3478254 0.3599188
+##  [827] 0.3564087 0.3594858 0.3457236 0.3548745 0.3414427 0.3511623 0.3388874
+##  [834] 0.3452388 0.3485847 0.3362201 0.3488812 0.3481369 0.3432712 0.3452788
+##  [841] 0.3474592 0.3475161 0.3510978 0.3525955 0.3470336 0.3495668 0.3308856
+##  [848] 0.3555143 0.3537100 0.3517527 0.3442220 0.3467112 0.3475541 0.3325411
+##  [855] 0.3607953 0.3437815 0.3253381 0.3466706 0.3448962 0.3590745 0.3621583
+##  [862] 0.3755457 0.3506509 0.3553857 0.3477952 0.3482547 0.3478342 0.3552061
+##  [869] 0.3370449 0.3578080 0.3363414 0.3495643 0.3511405 0.3357431 0.3481991
+##  [876] 0.3483777 0.3544407 0.3609938 0.3629403 0.3333862 0.3415967 0.3474284
+##  [883] 0.3340520 0.3425175 0.3457388 0.3603864 0.3614848 0.3214721 0.3492619
+##  [890] 0.3487947 0.3539524 0.3277562 0.3262475 0.3554794 0.3370736 0.3305165
+##  [897] 0.3598471 0.3666554 0.3259359 0.3690630 0.3570321 0.3374634 0.3370612
+##  [904] 0.3596629 0.3407250 0.3511393 0.3428843 0.3650522 0.3441713 0.3422903
+##  [911] 0.3465042 0.3494121 0.3551559 0.3467273 0.3438211 0.3491612 0.3593501
+##  [918] 0.3706224 0.3261012 0.3577102 0.3343517 0.3409891 0.3473363 0.3526638
+##  [925] 0.3529966 0.3377986 0.3384505 0.3404107 0.3533161 0.3342527 0.3550895
+##  [932] 0.3337433 0.3427388 0.3582323 0.3382371 0.3527450 0.3329490 0.3580034
+##  [939] 0.3482850 0.3425062 0.3546713 0.3436636 0.3424152 0.3402042 0.3581030
+##  [946] 0.3590615 0.3327976 0.3430081 0.3517545 0.3454539 0.3418358 0.3484260
+##  [953] 0.3475807 0.3434401 0.3453072 0.3482512 0.3475698 0.3435693 0.3386654
+##  [960] 0.3319101 0.3255277 0.3323895 0.3299510 0.3439361 0.3406276 0.3409467
+##  [967] 0.3481787 0.3285027 0.3354341 0.3193538 0.3733268 0.3277593 0.3487608
+##  [974] 0.3481365 0.3414490 0.3417014 0.3445449 0.3382834 0.3439677 0.3524125
+##  [981] 0.3510348 0.3454040 0.3470136 0.3661338 0.3768276 0.3168477 0.3367423
+##  [988] 0.3310706 0.3384568 0.3458193 0.3446945 0.3235163 0.3649699 0.3724316
+##  [995] 0.3478623 0.3479152 0.3547738 0.3405071 0.3468190 0.3484297 0.3417973
+## [1002] 0.3508108 0.3549677 0.3433290 0.3508028 0.3587185 0.3413611 0.3502270
+## [1009] 0.3610040 0.3342922 0.3552032 0.3366089 0.3419919 0.3498044 0.3378014
+## [1016] 0.3445037 0.3602090 0.3310697 0.3447594 0.3434127 0.3529278 0.3316998
+## [1023] 0.3542929 0.3507403 0.3344784 0.3532818 0.3547668 0.3383439 0.3355430
+## [1030] 0.3434999 0.3407153 0.3300347 0.3252645 0.3802504 0.3698526 0.3351887
+## [1037] 0.3568703 0.3472890 0.3516099 0.3318787 0.3374441 0.3608570 0.3337618
+## [1044] 0.3344399 0.3301258 0.3223277 0.3309390 0.3570009 0.3638873 0.3564786
+## [1051] 0.3724311 0.3445021 0.3588894 0.3514486 0.3734681 0.3639442 0.3439891
+## [1058] 0.3417383 0.3563122 0.3486958 0.3343958 0.3511725 0.3580084 0.3437469
+## [1065] 0.3399202 0.3536250 0.3467884 0.3418341 0.3476045 0.3533555 0.3469492
+## [1072] 0.3483726 0.3391645 0.3388677 0.3469110 0.3476818 0.3475022 0.3465814
+## [1079] 0.3437075 0.3367465 0.3589931 0.3651226 0.3384643 0.3591490 0.3375532
+## [1086] 0.3607890 0.3233082 0.3574623 0.3421044 0.3428909 0.3414445 0.3317650
+## [1093] 0.3565717 0.3378184 0.3584211 0.3493067 0.3368082 0.3349160 0.3492260
+## [1100] 0.3442369 0.3453811 0.3685704 0.3233386 0.3487239 0.3368595 0.3542517
+## [1107] 0.3464775 0.3245974 0.3532102 0.3615935 0.3476791 0.3486764 0.3529530
+## [1114] 0.3287173 0.3401415 0.3235327 0.3450392 0.3474988 0.3572737 0.3389974
+## [1121] 0.3412684 0.3603295 0.3560816 0.3359810 0.3544084 0.3307847 0.3538332
+## [1128] 0.3496887 0.3493704 0.3431655 0.3435059 0.3423909 0.3321760 0.3628034
+## [1135] 0.3632879 0.3248243 0.3607415 0.3362553 0.3518380 0.3530254 0.3530254
+## [1142] 0.3483635 0.3383859 0.3343799 0.3460608 0.3450039 0.3508516 0.3420793
+## [1149] 0.3533283 0.3543952 0.3324014 0.3621576 0.3595545 0.3323965 0.3469047
+## [1156] 0.3470109 0.3483643 0.3528349 0.3530998 0.3449178 0.3477741 0.3588877
+## [1163] 0.3423339 0.3565211 0.3268884 0.3674067 0.3514965 0.3359881 0.3485723
+## [1170] 0.3450304 0.3311916 0.3464681 0.3483398 0.3305635 0.3414820 0.3326611
+## [1177] 0.3589663 0.3613056 0.3350935 0.3323027 0.3337698 0.3335114 0.3483398
+## [1184] 0.3462622 0.3557361 0.3410220 0.3397007 0.3578664 0.3320282 0.3372566
+## [1191] 0.3416167 0.3529716 0.3459281 0.3423065 0.3480343 0.3495587 0.3466042
+## [1198] 0.3400478 0.3438098 0.3494943 0.3495246 0.3432638 0.3472797 0.3452061
+## [1205] 0.3338257 0.3631269 0.3319843 0.3587067 0.3352351 0.3443881 0.3475676
+## [1212] 0.3301116 0.3229716 0.3254258 0.3664122 0.3612280 0.3565149 0.3417590
+## [1219] 0.3486147 0.3592572 0.3374551 0.3431903 0.3463284 0.3461209 0.3448279
+## [1226] 0.3546618 0.3448270 0.3435992 0.3457738 0.3337016 0.3386110 0.3469305
+## [1233] 0.3403987 0.3340090 0.3315811 0.3473083 0.3322296 0.3648593 0.3442227
+## [1240] 0.3272906 0.3249295 0.3317679 0.3398306 0.3616331 0.3555628 0.3316624
+## [1247] 0.3523402 0.3545344 0.3497634 0.3524235 0.3447159 0.3428059 0.3570298
+## [1254] 0.3450840 0.3511596 0.3514366 0.3494104 0.3358690 0.3374552 0.3404149
+## [1261] 0.3457904 0.3424150 0.3406837 0.3462689 0.3380713 0.3467473 0.3426976
+## [1268] 0.3538748 0.3426559 0.3519960 0.3475005 0.3536220 0.3640714 0.3418134
+## [1275] 0.3466461 0.3472939 0.3517778 0.3567064 0.3377049 0.3559288 0.3256983
+## [1282] 0.3291757 0.3332448 0.3590708 0.3515504 0.3373689 0.3170304 0.3647675
+## [1289] 0.3207143 0.3601289 0.3335998 0.3394462 0.3333273 0.3348059 0.3585746
+## [1296] 0.3524293 0.3559189 0.3490131 0.3438711 0.3403508 0.3388017 0.3304301
+## [1303] 0.3613692 0.3431160 0.3433221 0.3434308 0.3396109 0.3555846 0.3406844
+## [1310] 0.3504984 0.3434349 0.3384934 0.3489097 0.3480844 0.3376995 0.3424457
+## [1317] 0.3521793 0.3413559 0.3491988 0.3457275 0.3494427 0.3280072 0.3525755
+## [1324] 0.3304580 0.3455915 0.3464737 0.3428081 0.3358647 0.3531875 0.3551905
+## [1331] 0.3608260 0.3337503 0.3523739 0.3343584 0.3643743 0.3596068 0.3576327
+## [1338] 0.3416416 0.3568680 0.3369612 0.3283636 0.3554847 0.3388222 0.3525726
+## [1345] 0.3342111 0.3531344 0.3410237 0.3344703 0.3470087 0.3476499 0.3407008
+## [1352] 0.3458107 0.3314551 0.3647600 0.3261499 0.3545416 0.3478607 0.3500281
+## [1359] 0.3327954 0.3477394 0.3539810 0.3428299 0.3392298 0.3418724 0.3256628
+## [1366] 0.3349903 0.3480575 0.3410022 0.3396932 0.3391870 0.3509534 0.3328505
+## [1373] 0.3495204 0.3592903 0.3268527 0.3752352 0.3599806 0.3362317 0.3565607
+## [1380] 0.3506650 0.3431739 0.3320449 0.3524071 0.3422008 0.3410969 0.3322597
+## [1387] 0.3618976 0.3564080 0.3426729 0.3412994 0.3446817 0.3463549 0.3519128
+## [1394] 0.3344819 0.3390848 0.3505083 0.3399484 0.3494180 0.3588802 0.3396804
+## [1401] 0.3615457 0.3624610 0.3488163 0.3650913 0.3635657 0.3407720 0.3419226
+## [1408] 0.3504902 0.3447939 0.3474794 0.3486868 0.3453473 0.3469825 0.3355078
+## [1415] 0.3385191 0.3406051 0.3703908 0.3540165 0.3561137 0.3426615 0.3377823
+## [1422] 0.3273710 0.3327451 0.3401774 0.3471124 0.3389896 0.3525385 0.3457317
+## [1429] 0.3457317 0.3479628 0.3340252 0.3395277 0.3517336 0.3501499 0.3508996
+## [1436] 0.3392221 0.3505511 0.3472543 0.3507909 0.3372848 0.3529790 0.3390196
+## [1443] 0.3511437 0.3501956 0.3490561 0.3482831 0.3461627 0.3440197 0.3569708
+## [1450] 0.3406151 0.3458645 0.3518277 0.3533230 0.3344573 0.3402277 0.3427457
+## [1457] 0.3432858 0.3515875 0.3479186 0.3434125 0.3417203 0.3558843 0.3268598
+## [1464] 0.3598440 0.3347804 0.3483461 0.3429944 0.3239865 0.3407406 0.3407775
+## [1471] 0.3421209 0.3372529 0.3456682 0.3428838 0.3454468 0.3447974 0.3364193
+## [1478] 0.3359175 0.3387261 0.3457009 0.3377778 0.3422228 0.3433862 0.3486284
+## [1485] 0.3403197 0.3364757 0.3464768 0.3471634 0.3375883 0.3425677 0.3333689
+## [1492] 0.3333635 0.3500396 0.3479971 0.3541994 0.3381925 0.3440421 0.3377663
+## [1499] 0.3399709 0.3502955 0.3452152 0.3341489 0.3549720 0.3511158 0.3436026
+## [1506] 0.3517060 0.3347097 0.3332961 0.3494551 0.3466180 0.3468421 0.3385240
+## [1513] 0.3558834 0.3351262 0.3510048 0.3482950 0.3257073 0.3602912 0.3330207
+## [1520] 0.3366289 0.3496511 0.3417682 0.3356895 0.3574928 0.3307313 0.3521180
+## [1527] 0.3597421 0.3467989 0.3478798 0.3450306 0.3346057 0.3391025 0.3489001
+## [1534] 0.3460888 0.3516395 0.3466659 0.3495547 0.3383236 0.3472848 0.3405933
+## [1541] 0.3425531 0.3490464 0.3432784 0.3478933 0.3441505 0.3564546 0.3494196
+## [1548] 0.3360095 0.3342050 0.3444524 0.3525372 0.3343532 0.3540251 0.3443911
+## [1555] 0.3424608 0.3294866 0.3393049 0.3500625 0.3387402 0.3452308 0.3314686
+## [1562] 0.3356050 0.3395226 0.3470430 0.3499446 0.3631075 0.3278105 0.3614830
+## [1569] 0.3497352 0.3435820 0.3621126 0.3391473 0.3566296 0.3504704 0.3379100
+## [1576] 0.3542369 0.3486473 0.3312397 0.3620900 0.3763272 0.3555729 0.3494026
+## [1583] 0.3464858 0.3627028 0.3338916 0.3632582 0.3406924 0.3428498 0.3348427
+## [1590] 0.3523923 0.3414438 0.3599660 0.3274185 0.3551403 0.3311005 0.3474905
+## [1597] 0.3511956 0.3336666 0.3491342 0.3449658 0.3424781 0.3413816 0.3450417
+## [1604] 0.3469229 0.3384384 0.3523777 0.3626370 0.3506657 0.3237252 0.3610238
+## [1611] 0.3510963 0.3499368 0.3462285 0.3466987 0.3482322 0.3524629 0.3286808
+## [1618] 0.3553260 0.3450267 0.3582824 0.3394003 0.3375273 0.3495341 0.3531442
+## [1625] 0.3620947 0.3332548 0.3557049 0.3511070 0.3379868 0.3417200 0.3548902
+## [1632] 0.3387309 0.3563990 0.3373589 0.3359209 0.3310370 0.3619876 0.3399235
+## [1639] 0.3514449 0.3497221 0.3582854 0.3416688 0.3500643 0.3481552 0.3372453
+## [1646] 0.3356961 0.3570011 0.3641822 0.3717993 0.3689193 0.3484816 0.3384274
+## [1653] 0.3555901 0.3566469 0.3510996 0.3373937 0.3537717 0.3436364 0.3558209
+## [1660] 0.3349133 0.3624865 0.3432466 0.3477212 0.3415450 0.3435990 0.3506379
+## [1667] 0.3359447 0.3301969 0.3259990 0.3319390 0.3584527 0.3703948 0.3189245
+## [1674] 0.3597415 0.3285740 0.3385334 0.3461662 0.3522729 0.3392477 0.3608203
+## [1681] 0.3565922 0.3405594 0.3528043 0.3581260 0.3412888 0.3474220 0.3577925
+## [1688] 0.3472839 0.3410545 0.3484652 0.3488326 0.3373229 0.3370088 0.3499122
+## [1695] 0.3549202 0.3597838 0.3579576 0.3509939 0.3456655 0.3360847 0.3408142
+## [1702] 0.3355088 0.3535795 0.3394936 0.3610924 0.3630963 0.3192972 0.3228798
+## [1709] 0.3375703 0.3497830 0.3522815 0.3438000 0.3445249 0.3557628 0.3269498
+## [1716] 0.3349900 0.3368114 0.3472224 0.3502015 0.3449567 0.3313359 0.3412619
+## [1723] 0.3616851 0.3419128 0.3494636 0.3486238 0.3441671 0.3455336 0.3491528
+## [1730] 0.3489946 0.3487297 0.3537690 0.3543536 0.3478662 0.3436520 0.3466332
+## [1737] 0.3351724 0.3481128 0.3524646 0.3465485 0.3454996 0.3265091 0.3542588
+## [1744] 0.3441436 0.3485288 0.3358390 0.3810036 0.3250191 0.3389259 0.3459275
+## [1751] 0.3573629 0.3467826 0.3455765 0.3478251 0.3456478 0.3491150 0.3475817
+## [1758] 0.3451977 0.3356604 0.3477403 0.3630765 0.3614818 0.3253002 0.3613583
+## [1765] 0.3346722 0.3534941 0.3340256 0.3482183 0.3413433 0.3508861 0.3422764
+## [1772] 0.3473356 0.3468798 0.3393645 0.3512072 0.3544396 0.3528926 0.3257237
+## [1779] 0.3453397 0.3449025 0.3410757 0.3545859 0.3408198 0.3443442 0.3476755
+## [1786] 0.3407836 0.3461056 0.3516730 0.3565641 0.3329567 0.3660978 0.3554248
+## [1793] 0.3251423 0.3448628 0.3430369 0.3422553 0.3524811 0.3509673 0.3547743
+## [1800] 0.3308735 0.3550339 0.3333689 0.3311041 0.3651342 0.3434580 0.3440633
+## [1807] 0.3456603 0.3466206 0.3430184 0.3472484 0.3457027 0.3492423 0.3484359
+## [1814] 0.3484359 0.3575344 0.3342691 0.3480767 0.3602016 0.3388103 0.3423041
+## [1821] 0.3504689 0.3372704 0.3276613 0.3459898 0.3370347 0.3598306 0.3329597
+## [1828] 0.3494350 0.3339974 0.3408145 0.3424196 0.3514032 0.3368925 0.3547548
+## [1835] 0.3311123 0.3657716 0.3541599 0.3395943 0.3561210 0.3170909 0.3798438
+## [1842] 0.3821029 0.3152721 0.3674327 0.3273952 0.3584332 0.3352433 0.3456085
+## [1849] 0.3527834 0.3403297 0.3530662 0.3507736 0.3537151 0.3424419 0.3577951
+## [1856] 0.3567510 0.3495289 0.3452842 0.3453541 0.3466073 0.3521108 0.3340411
+## [1863] 0.3382514 0.3284446 0.3505235 0.3388209 0.3447487 0.3424471 0.3581471
+## [1870] 0.3364282 0.3523066 0.3485927 0.3472695 0.3375632 0.3481157 0.3453755
+## [1877] 0.3469376 0.3331117 0.3636017 0.3210964 0.3618075 0.3249432 0.3482747
+## [1884] 0.3405496 0.3365658 0.3423282 0.3722902 0.3595564 0.3509280 0.3428731
+## [1891] 0.3508364 0.3373464 0.3572031 0.3535485 0.3420211 0.3513769 0.3548836
+## [1898] 0.3552700 0.3407041 0.3362696 0.3585552 0.3381443 0.3624347 0.3292928
+## [1905] 0.3318081 0.3663658 0.3396147 0.3382341 0.3472356 0.3357525 0.3466088
+## [1912] 0.3412699 0.3481444 0.3384585 0.3394552 0.3737143 0.3183149 0.3461998
+## [1919] 0.3348998 0.3503458 0.3434216 0.3497510 0.3698983 0.3216496 0.3357306
+## [1926] 0.3478676 0.3544771 0.3414993 0.3381998 0.3333190 0.3537720 0.3444279
+## [1933] 0.3419088 0.3574677 0.3473280 0.3543133 0.3472831 0.3452063 0.3559708
+## [1940] 0.3481071 0.3284557 0.3541678 0.3449510 0.3452958 0.3476626 0.3406869
+## [1947] 0.3579782 0.3583108 0.3434212 0.3434617 0.3476314 0.3434024 0.3529897
+## [1954] 0.3350404 0.3564126 0.3422734 0.3460939 0.3401967 0.3503120 0.3423600
+## [1961] 0.3483828 0.3510259 0.3163066 0.3727456 0.3332694 0.3359974 0.3575719
+## [1968] 0.3472347 0.3337271 0.3685591 0.3614979 0.3230834 0.3226478 0.3191756
+## [1975] 0.3047555 0.3570741 0.3552795 0.3296138 0.3461726 0.3468085 0.3414557
+## [1982] 0.3570281 0.3346995 0.3422033 0.3437784 0.3401057 0.3501332 0.3570099
+## [1989] 0.3509957 0.3501704 0.3402378 0.3484426 0.3543579 0.3485857 0.3563318
+## [1996] 0.3355106 0.3368310 0.3486727 0.3293773 0.3462346 0.3478833 0.3445753
+## [2003] 0.3449041 0.3553961 0.3401651 0.3475594 0.3642365 0.3494314 0.3399539
+## [2010] 0.3616010 0.3579961 0.3538346 0.3287058 0.3318681 0.3448618 0.3477767
+## [2017] 0.3375378 0.3348599 0.3557166 0.3569002 0.3570313 0.3483261 0.3439693
+## [2024] 0.3508006 0.3395676 0.3580816 0.3310066 0.3572177 0.3500148 0.3519882
+## [2031] 0.3330376 0.3523883 0.3447438 0.3414393 0.3390597 0.3484202 0.3666836
+## [2038] 0.3220152 0.3186679 0.3280539 0.3554845 0.3224685 0.3669477 0.3576761
+## [2045] 0.3314988 0.3417867 0.3459112 0.3280166 0.3268013 0.3606985 0.3312696
+## [2052] 0.3540017 0.3356802 0.3440153 0.3532683 0.3296827 0.3620120 0.3352549
+## [2059] 0.3357613 0.3543550 0.3639401 0.3364830 0.3561495 0.3314951 0.3385362
+## [2066] 0.3351385 0.3527363 0.3323101 0.3613082 0.3618667 0.3493927 0.3584506
+## [2073] 0.3451533 0.3461729 0.3357328 0.3515917 0.3415299 0.3382331 0.3335742
+## [2080] 0.3314371 0.3391701 0.3496304 0.3544687 0.3185193 0.3434309 0.3459182
+## [2087] 0.3435673 0.3478359 0.3438579 0.3185155 0.3266675 0.3577589 0.3655322
+## [2094] 0.3537598 0.3504810 0.3563357 0.3300524 0.3559684 0.3255854 0.3591309
+## [2101] 0.3511916 0.3384679 0.3544118 0.3619845 0.3355621 0.3436172 0.3354380
+## [2108] 0.3602583 0.3304815 0.3425782 0.3583738 0.3420562 0.3403111 0.3500633
+## [2115] 0.3437161 0.3466270 0.3339617 0.3451644 0.3577011 0.3592403 0.3325034
+## [2122] 0.3476755 0.3404338 0.3433820 0.3422231 0.3434305 0.3445382 0.3413010
+## [2129] 0.3544833 0.3426565 0.3528091 0.3357430 0.3488051 0.3420870 0.3316734
+## [2136] 0.3318355 0.3361743 0.3424129 0.3393805 0.3366894 0.3427371 0.3369777
+## [2143] 0.3359955 0.3410793 0.3654927 0.3593140 0.3388850 0.3437127 0.3426957
+## [2150] 0.3573761 0.3288059 0.3148489 0.3166328 0.3356190 0.3520472 0.3491049
+## [2157] 0.3498952 0.3582802 0.3572939 0.3515016 0.3344500 0.3504898 0.3529774
+## [2164] 0.3422001 0.3543946 0.3559770 0.3345737 0.3361073 0.3573972 0.3371633
+## [2171] 0.3422316 0.3417487 0.3432332 0.3458155 0.3340654 0.3550063 0.3536741
+## [2178] 0.3414529 0.3514134 0.3538488 0.3477146 0.3482199 0.3522445 0.3404010
+## [2185] 0.3415545 0.3604577 0.3362353 0.3345852 0.3651043 0.3479695 0.3461029
+## [2192] 0.3515451 0.3586490 0.3435390 0.3492889 0.3475670 0.3612623 0.3662256
+## [2199] 0.3257528 0.3429447 0.3379790 0.3627425 0.3618998 0.3629596 0.3342827
+## [2206] 0.3272600 0.3311845 0.3520820 0.3427008 0.3362398 0.3300327 0.3582747
+## [2213] 0.3429221 0.3383737 0.3488154 0.3535547 0.3359437 0.3542304 0.3486500
+## [2220] 0.3410992 0.3540058 0.3419111 0.3452667 0.3480406 0.3347557 0.3584848
+## [2227] 0.3400701 0.3423554 0.3498435 0.3496025 0.3358000 0.3479575 0.3461948
+## [2234] 0.3312355 0.3186906 0.3402796 0.3526307 0.3454604 0.3311050 0.3455719
+## [2241] 0.3437965 0.3459729 0.3547599 0.3550722 0.3604680 0.3577546 0.3515659
+## [2248] 0.3376248 0.3493096 0.3456940 0.3617055 0.3496542 0.3571461 0.3223616
+## [2255] 0.3277252 0.3499936 0.3313577 0.3565868 0.3403406 0.3376980 0.3408216
+## [2262] 0.3490420 0.3380691 0.3525182 0.3509757 0.3522867 0.3513225 0.3462033
+## [2269] 0.3442594 0.3378010 0.3500655 0.3452219 0.3445844 0.3428487 0.3443759
+## [2276] 0.3426293 0.3430179 0.3404071 0.3519329 0.3330319 0.3338420 0.3535424
+## [2283] 0.3628799 0.3520525 0.3369890 0.3360054 0.3557048 0.3327298 0.3564875
+## [2290] 0.3333202 0.3388604 0.3515699 0.3602394 0.3385973 0.3445691 0.3440387
+## [2297] 0.3567091 0.3525649 0.3361518 0.3428830 0.3423281 0.3423650 0.3387092
+## [2304] 0.3428722 0.3497580 0.3381994 0.3342416 0.3445857 0.3424857 0.3492222
+## [2311] 0.3461688 0.3498171 0.3411039 0.3404381 0.3582112 0.3265745 0.3561980
+## [2318] 0.3291268 0.3373902 0.3404790 0.3459001 0.3557591 0.3523226 0.3531131
+## [2325] 0.3382581 0.3409156 0.3453894 0.3576226 0.3615246 0.3565851 0.3560022
+## [2332] 0.3587154 0.3577251 0.3361615 0.3556012 0.3566036 0.3442731 0.3554969
+## [2339] 0.3508572 0.3351976 0.3304609 0.3360182 0.3501404 0.3360782 0.3183497
+## [2346] 0.3551658 0.3323202 0.3328054 0.3443464 0.3528366 0.3380122 0.3484723
+## [2353] 0.3452325 0.3515080 0.3419256 0.3408779 0.3299039 0.3450871 0.3426896
+## [2360] 0.3416022 0.3501009 0.3429290 0.3210310 0.3384552 0.3533374 0.3323546
+## [2367] 0.3568176 0.3408602 0.3525988 0.3431281 0.3459278 0.3444151 0.3474584
+## [2374] 0.3603745 0.3708324 0.3208602 0.3750737 0.3382193 0.3381944 0.3559329
+## [2381] 0.3347307 0.3490524 0.3430792 0.3614329 0.3388307 0.3478885 0.3587964
+## [2388] 0.3544825 0.3610091 0.3568191 0.3485469 0.3358316 0.3387310 0.3472456
+## [2395] 0.3396732 0.3520382 0.3335048 0.3536563 0.3440619 0.3560166 0.3525856
+## [2402] 0.3412682 0.3384867 0.3227263 0.3354737 0.3327553 0.3234372 0.3222501
+## [2409] 0.3628278 0.3186827 0.3665347 0.3484044 0.3429959 0.3441934 0.3377286
+## [2416] 0.3600957 0.3284002 0.3174585 0.3739676 0.3427555 0.3425121 0.3631602
+## [2423] 0.3661678 0.3300110 0.3657084 0.3280207 0.3578127 0.3387223 0.3334706
+## [2430] 0.3610903 0.3563966 0.3404304 0.3572458 0.3416769 0.3360589 0.3523911
+## [2437] 0.3543355 0.3560893 0.3496684 0.3379317 0.3356366 0.3500455 0.3613027
+## [2444] 0.3358794 0.3484184 0.3495318 0.3440669 0.3480283 0.3530189 0.3406532
+## [2451] 0.3401920 0.3382603 0.3469600 0.3460616 0.3459748 0.3420315 0.3454284
+## [2458] 0.3379500 0.3410824 0.3483188 0.3485738 0.3436938 0.3447040 0.3449632
+## [2465] 0.3360077 0.3346966 0.3313477 0.3608297 0.3458995 0.3422215 0.3374666
+## [2472] 0.3407387 0.3361034 0.3479139 0.3410474 0.3600888 0.3385771 0.3550578
+## [2479] 0.3340803 0.3302902 0.3491443 0.3522866 0.3412278 0.3455090 0.3643126
+## [2486] 0.3606499 0.3375726 0.3366171 0.3485029 0.3357762 0.3375206 0.3552677
+## [2493] 0.3663359 0.3550306 0.3370046 0.3272178 0.3236721 0.3527602 0.3520769
+## [2500] 0.3556557 0.3576793 0.3336922 0.3631310 0.3517636 0.3564532 0.3315698
+## [2507] 0.3566237 0.3607544 0.3584361 0.3439220 0.3384757 0.3665992 0.3594477
+## [2514] 0.3395075 0.3326222 0.3544472 0.3380198 0.3377320 0.3359358 0.3539111
+## [2521] 0.3349834 0.3610438 0.3314280 0.3523082 0.3504875 0.3461795 0.3655134
+## [2528] 0.3513610 0.3427745 0.3459845 0.3505104 0.3420987 0.3600556 0.3411771
+## [2535] 0.3583954 0.3377863 0.3440462 0.3282458 0.3717392 0.3521215 0.3290644
+## [2542] 0.3606096 0.3482304 0.3523745 0.3438812 0.3392722 0.3358149 0.3420833
+## [2549] 0.3381398 0.3504299 0.3399604 0.3453561 0.3434850 0.3463458 0.3454180
+## [2556] 0.3481469 0.3377271 0.3353233 0.3289263 0.3422747 0.3348521 0.3494288
+## [2563] 0.3422201 0.3500834 0.3534595 0.3375900 0.3594331 0.3331071 0.3449890
+## [2570] 0.3575368 0.3352579 0.3393998 0.3532118 0.3389810 0.3505998 0.3431673
+## [2577] 0.3586742 0.3154672 0.3144564 0.3631019 0.3292580 0.3505242 0.3586395
+## [2584] 0.3490007 0.3491793 0.3433208 0.3492870 0.3471985 0.3517589 0.3422804
+## [2591] 0.3584419 0.3523298 0.3456861 0.3506160 0.3487667 0.3479293 0.3486091
+## [2598] 0.3535179 0.3413869 0.3461262 0.3417770 0.3508285 0.3482364 0.3537104
+## [2605] 0.3412929 0.3497656 0.3439533 0.3457137 0.3604474 0.3337949 0.3316461
+## [2612] 0.3560478 0.3561725 0.3348556 0.3346796 0.3411574 0.3479758 0.3452833
+## [2619] 0.3487244 0.3528096 0.3571045 0.3618151 0.3551981 0.3686131 0.3737384
+## [2626] 0.3299548 0.3504961 0.3498962 0.3446371 0.3369518 0.3632320 0.3470022
+## [2633] 0.3730027 0.3298973 0.3575741 0.3640311 0.3261451 0.3639212 0.3413729
+## [2640] 0.3467765 0.3387171 0.3483202 0.3551800 0.3166440 0.3336622 0.3499172
+## [2647] 0.3565753 0.3580349 0.3353681 0.3473767 0.3427016 0.3569190 0.3359177
+## [2654] 0.3367450 0.3370816 0.3373881 0.3529761 0.3492702 0.3522551 0.3505957
+## [2661] 0.3535442 0.3397743 0.3308770 0.3453873 0.3543774 0.3574165 0.3364918
+## [2668] 0.3350594 0.3503705 0.3418937 0.3490056 0.3478050 0.3484527 0.3532425
+## [2675] 0.3519330 0.3379895 0.3383084 0.3528215 0.3428769 0.3342163 0.3503265
+## [2682] 0.3455465 0.3448990 0.3682530 0.3272927 0.3377836 0.3553786 0.3415280
+## [2689] 0.3465352 0.3488581 0.3625732 0.3299694 0.3637766 0.3606506 0.3420375
+## [2696] 0.3437542 0.3531949 0.3451723 0.3405340 0.3549282 0.3541337 0.3383903
+## [2703] 0.3422715 0.3440061 0.3435538 0.3535158 0.3495406 0.3546813 0.3304330
+## [2710] 0.3580110 0.3228108 0.3572756 0.3512603 0.3453071 0.3368438 0.3483808
+## [2717] 0.3547604 0.3297914 0.3493399 0.3594286 0.3409615 0.3364126 0.3326183
+## [2724] 0.3571280 0.3406611 0.3433373 0.3503737 0.3582304 0.3408272 0.3447008
+## [2731] 0.3540060 0.3440924 0.3279877 0.3706943 0.3484927 0.3404340 0.3499440
+## [2738] 0.3468457 0.3470616 0.3484011 0.3486748 0.3318558 0.3543224 0.3312391
+## [2745] 0.3511937 0.3364125 0.3454073 0.3542088 0.3417697 0.3205795 0.3235975
+## [2752] 0.3515493 0.3323208 0.3561423 0.3586583 0.3280031 0.3501099 0.3361718
+## [2759] 0.3465440 0.3475408 0.3436077 0.3408200 0.3556463 0.3411694 0.3687538
+## [2766] 0.3290695 0.3545151 0.3337226 0.3730227 0.3245120 0.3440180 0.3539998
+## [2773] 0.3667429 0.3639373 0.3648626 0.3262552 0.3232442 0.3346925 0.3491381
+## [2780] 0.3432891 0.3559299 0.3229321 0.3219003 0.3504831 0.3377038 0.3506858
+## [2787] 0.3495858 0.3331178 0.3396572 0.3565981 0.3580161 0.3356924 0.3575677
+## [2794] 0.3670206 0.3577125 0.3573798 0.3374448 0.3319952 0.3552464 0.3553385
+## [2801] 0.3559865 0.3374689 0.3374689 0.3458648 0.3449033 0.3627350 0.3654058
+## [2808] 0.3564122 0.3312553 0.3465763 0.3323470 0.3451966 0.3322817 0.3579756
+## [2815] 0.3484906 0.3422866 0.3460717 0.3487491 0.3622459 0.3345064 0.3524992
+## [2822] 0.3587532 0.3516831 0.3514466 0.3444423 0.3443793 0.3399405 0.3482437
+## [2829] 0.3417436 0.3539485 0.3402929 0.3394644 0.3519636 0.3553666 0.3580685
+## [2836] 0.3288874 0.3428573 0.3607147 0.3410061 0.3176582 0.3372808 0.3163579
+## [2843] 0.3689239 0.3594711 0.3327703 0.3600331 0.3547379 0.3352075 0.3325103
+## [2850] 0.3474463 0.3430125 0.3437726 0.3450602 0.3425066 0.3383402 0.3485616
+## [2857] 0.3393820 0.3708569 0.3278676 0.3392325 0.3514476 0.3421592 0.3513495
+## [2864] 0.3503617 0.3408183 0.3545952 0.3403465 0.3426209 0.3475342 0.3258565
+## [2871] 0.3149652 0.3729956 0.3594677 0.3253703 0.3296076 0.3659374 0.3350761
+## [2878] 0.3524223 0.3498209 0.3443473 0.3347215 0.3423797 0.3495025 0.3329747
+## [2885] 0.3398157 0.3383908 0.3596801 0.3424095 0.3561380 0.3428425 0.3483114
+## [2892] 0.3399647 0.3436168 0.3464772 0.3563937 0.3322498 0.3711106 0.3290641
+## [2899] 0.3335234 0.3500878 0.3704978 0.3533901 0.3440991 0.3114630 0.3304217
+## [2906] 0.3680245 0.3328672 0.3487166 0.3467407 0.3561963 0.3616717 0.3532438
+## [2913] 0.3403262 0.3340863 0.3439986 0.3285293 0.3418047 0.3563268 0.3431851
+## [2920] 0.3550168 0.3515847 0.3326069 0.3473645 0.3309161 0.3519639 0.3475795
+## [2927] 0.3549800 0.3347694 0.3262674 0.3511991 0.3571878 0.3573091 0.3382296
+## [2934] 0.3752928 0.3666413 0.3311746 0.3549725 0.3576288 0.3423023 0.3382687
+## [2941] 0.3472618 0.3507757 0.3363523 0.3271738 0.3601504 0.3478458 0.3383166
+## [2948] 0.3582791 0.3514841 0.3364827 0.3565660 0.3531305 0.3449813 0.3559605
+## [2955] 0.3595280 0.3426934 0.3351365 0.3423280 0.3522268 0.3394879 0.3325361
+## [2962] 0.3525393 0.3498414 0.3450633 0.3479126 0.3433462 0.3469562 0.3467270
+## [2969] 0.3609374 0.3482526 0.3350771 0.3620081 0.3332483 0.3644836 0.3272943
+## [2976] 0.3688479 0.3285839 0.3405760 0.3537651 0.3357947 0.3287682 0.3609524
+## [2983] 0.3589625 0.3559154 0.3355230 0.3676610 0.3642085 0.3315891 0.3275942
+## [2990] 0.3605663 0.3274646 0.3384361 0.3578005 0.3331680 0.3360709 0.3455720
+## [2997] 0.3533457 0.3235072 0.3350313 0.3524763 0.3268398 0.3563651 0.3553429
+## [3004] 0.3622127 0.3632022 0.3517275 0.3389118 0.3553572 0.3399186 0.3574156
+## [3011] 0.3483442 0.3510600 0.3592311 0.3552435 0.3426677 0.3467555 0.3484346
+## [3018] 0.3512440 0.3443342 0.3552903 0.3582156 0.3511533 0.3348547 0.3274528
+## [3025] 0.3497259 0.3462097 0.3440996 0.3317963 0.3629438 0.3545193 0.3419024
+## [3032] 0.3443848 0.3489147 0.3415730 0.3423201 0.3619460 0.3491162 0.3394351
+## [3039] 0.3485613 0.3426053 0.3460177 0.3376806 0.3456940 0.3296461 0.3381993
+## [3046] 0.3468205 0.3575173 0.3402621 0.3511860 0.3461962 0.3380764 0.3456018
+## [3053] 0.3550259 0.3402629 0.3561512 0.3515761 0.3671408 0.3362711 0.3422131
+## [3060] 0.3426705 0.3370148 0.3558087 0.3408205 0.3464645 0.3586376 0.3412763
+## [3067] 0.3543820 0.3522240 0.3616622 0.3590756 0.3442089 0.3401106 0.3485191
+## [3074] 0.3250402 0.3444253 0.3226926 0.3650859 0.3263694 0.3524412 0.3659556
+## [3081] 0.3576503 0.3457897 0.3425470 0.3406544 0.3299901 0.3454254 0.3385699
+## [3088] 0.3377921 0.3621647 0.3321429 0.3486068 0.3613976 0.3481316 0.3267948
+## [3095] 0.3306623 0.3350288 0.3465233 0.3527437 0.3360096 0.3471149 0.3499771
+## [3102] 0.3402547 0.3413067 0.3568964 0.3410749 0.3508459 0.3473104 0.3498141
+## [3109] 0.3453559 0.3446351 0.3302258 0.3692755 0.3405456 0.3373997 0.3513994
+## [3116] 0.3522967 0.3424302 0.3446800 0.3510879 0.3369332 0.3406229 0.3458822
+## [3123] 0.3689728 0.3572927 0.3561603 0.3452604 0.3524773 0.3605669 0.3573691
+## [3130] 0.3433506 0.3351638 0.3595029 0.3351057 0.3330027 0.3472919 0.3556327
+## [3137] 0.3409871 0.3401678 0.3517038 0.3439037 0.3509578 0.3416236 0.3556582
+## [3144] 0.3211274 0.3229211 0.3669417 0.3571778 0.3441552 0.3528642 0.3584682
+## [3151] 0.3240069 0.3622042 0.3260883 0.3583618 0.3349005 0.3598927 0.3422672
+## [3158] 0.3544032 0.3619539 0.3311667 0.3591814 0.3540703 0.3411663 0.3747602
+## [3165] 0.3104409 0.3544360 0.3218721 0.3244201 0.3432106 0.3499793 0.3343994
+## [3172] 0.3561578 0.3316369 0.3567995 0.3536274 0.3547654 0.3508362 0.3594405
+## [3179] 0.3276871 0.3580834 0.3293550 0.3312773 0.3430128 0.3570844 0.3352702
+## [3186] 0.3428775 0.3573052 0.3518609 0.3444299 0.3477996 0.3548685 0.3494358
+## [3193] 0.3401539 0.3383677 0.3376389 0.3377480 0.3545552 0.3576198 0.3503112
+## [3200] 0.3398136 0.3394549 0.3357974 0.3416504 0.3520449 0.3395094 0.3619136
+## [3207] 0.3682958 0.3572262 0.3544911 0.3364474 0.3594681 0.3502018 0.3346185
+## [3214] 0.3492164 0.3512176 0.3493499 0.3504824 0.3397181 0.3518370 0.3483632
+## [3221] 0.3633374 0.3583747 0.3473294 0.3218509 0.3648587 0.3658757 0.3460444
+## [3228] 0.3338993 0.3303787 0.3524003 0.3664847 0.3607740 0.3343193 0.3348192
+## [3235] 0.3321458 0.3600707 0.3360271 0.3440534 0.3491755 0.3330491 0.3341554
+## [3242] 0.3532729 0.3523650 0.3502079 0.3596410 0.3497355 0.3457017 0.3563170
+## [3249] 0.3308354 0.3555870 0.3451244 0.3588381 0.3467561 0.3464431 0.3386034
+## [3256] 0.3439909 0.3563781 0.3466604 0.3597379 0.3377413 0.3505938 0.3395221
+## [3263] 0.3463825 0.3315206 0.3414377 0.3535811 0.3240360 0.3581726 0.3397558
+## [3270] 0.3468038 0.3353607 0.3606305 0.3441538 0.3502298 0.3414978 0.3411342
+## [3277] 0.3560270 0.3515557 0.3513638 0.3370890 0.3438064 0.3604449 0.3342468
+## [3284] 0.3442555 0.3539820 0.3658730 0.3303008 0.3672724 0.3460133 0.3428612
+## [3291] 0.3351184 0.3520556 0.3534478 0.3333818 0.3455344 0.3232092 0.3392462
+## [3298] 0.3596194 0.3566566 0.3490828 0.3396022 0.3556334 0.3389130 0.3622666
+## [3305] 0.3486496 0.3580317 0.3428698 0.3374321 0.3396852 0.3500463 0.3581269
+## [3312] 0.3527359 0.3523167 0.3305811 0.3464776 0.3563969 0.3573951 0.3526400
+## [3319] 0.3539106 0.3428487 0.3437331 0.3428974 0.3257495 0.3351614 0.3537388
+## [3326] 0.3636733 0.3452615 0.3468985 0.3437634 0.3452523 0.3451979 0.3485766
+## [3333] 0.3403590 0.3519889 0.3448974 0.3455631 0.3580217 0.3442991 0.3533594
+## [3340] 0.3285668 0.3289070 0.3407015 0.3569680 0.3530151 0.3462787 0.3198425
+## [3347] 0.3668392 0.3366254 0.3290941 0.3687042 0.3540152 0.3403527 0.3417398
+## [3354] 0.3512639 0.3406071 0.3424486 0.3453640 0.3425501 0.3284124 0.3363852
+## [3361] 0.3607964 0.3620541 0.3616478 0.3453743 0.3690478 0.3368913 0.3414488
+## [3368] 0.3285869 0.3291961 0.3441357 0.3518352 0.3355173 0.3554872 0.3615245
+## [3375] 0.3472686 0.3493985 0.3415159 0.3534725 0.3422677 0.3543127 0.3607893
+## [3382] 0.3519272 0.3437489 0.3237808 0.3691385 0.3653809 0.3394136 0.3426983
+## [3389] 0.3546329 0.3572785 0.3525080 0.3534579 0.3376695 0.3342272 0.3611440
+## [3396] 0.3399229 0.3379785 0.3520062 0.3744475 0.3593200 0.3560577 0.3352881
+## [3403] 0.3443861 0.3500805 0.3340287 0.3548566 0.3409758 0.3467317 0.3558501
+## [3410] 0.3325576 0.3509447 0.3430062 0.3542405 0.3595570 0.3313378 0.3488306
+## [3417] 0.3320091 0.3593730 0.3637546 0.3592542 0.3636723 0.3569450 0.3449999
+## [3424] 0.3437626 0.3365439 0.3287872 0.3542331 0.3384528 0.3369929 0.3400340
+## [3431] 0.3562801 0.3391496 0.3575257 0.3552626 0.3350435 0.3457982 0.3462519
+## [3438] 0.3478576 0.3513889 0.3479139 0.3447072 0.3492395 0.3432202 0.3378576
+## [3445] 0.3348024 0.3637434 0.3240855 0.3352042 0.3384599 0.3400559 0.3479500
+## [3452] 0.3519077 0.3363646 0.3445252 0.3562597 0.3457284 0.3379831 0.3495798
+## [3459] 0.3432339 0.3384619 0.3473999 0.3436246 0.3534102 0.3560243 0.3346610
+## [3466] 0.3332939 0.3380614 0.3410446 0.3392479 0.3460523 0.3337876 0.3418835
+## [3473] 0.3524477 0.3330701 0.3403757 0.3462890 0.3496989 0.3216154 0.3302639
+## [3480] 0.3603815 0.3360388 0.3353473 0.3460758 0.3345106 0.3493413 0.3549192
+## [3487] 0.3462232 0.3516704 0.3352610 0.3569656 0.3380421 0.3373007 0.3558946
+## [3494] 0.3472246 0.3528110 0.3521036 0.3511171 0.3440596 0.3456672 0.3381073
+## [3501] 0.3387435 0.3555859 0.3259760 0.3271354 0.3611638 0.3275468 0.3470317
+## [3508] 0.3176130 0.3623375 0.3699843 0.3270368 0.3292734 0.3380746 0.3293717
+## [3515] 0.3298198 0.3133650 0.3401922 0.3343059 0.3303510 0.3521391 0.3517372
+## [3522] 0.3393779 0.3301951 0.3406882 0.3421427 0.3348290 0.3153715 0.3693174
+## [3529] 0.3723176 0.3459536 0.3356324 0.3520763 0.3413099 0.3495166 0.3461584
+## [3536] 0.3497820 0.3544658 0.3549555 0.3359879 0.3228270 0.3223783 0.3217837
+## [3543] 0.3459841 0.3433108 0.3373872 0.3535355 0.3340377 0.3518967 0.3487664
+## [3550] 0.3502434 0.3457653 0.3397494 0.3475223 0.3557738 0.3351215 0.3575873
+## [3557] 0.3506973 0.3283573 0.3176393 0.3201894 0.3553410 0.3394537 0.3472539
+## [3564] 0.3504962 0.3438863 0.3479517 0.3416031 0.3455323 0.3416165 0.3407787
+## [3571] 0.3455939 0.3401650 0.3415182 0.3380612 0.3412955 0.3578133 0.3536512
+## [3578] 0.3568236 0.3353361 0.3351281 0.3314864 0.3425151 0.3343623 0.3499475
+## [3585] 0.3341320 0.3319584 0.3627722 0.3511406 0.3379927 0.3470828 0.3370555
+## [3592] 0.3256218 0.3349374 0.3536197 0.3322088 0.3513308 0.3453792 0.3323298
+## [3599] 0.3496450 0.3555704 0.3354749 0.3474038 0.3403755 0.3319888 0.3297562
+## [3606] 0.3613951 0.3716146 0.3539013 0.3374936 0.3392126 0.3352320 0.3537346
+## [3613] 0.3211736 0.3661136 0.3240606 0.3328484 0.3599250 0.3375737 0.3573221
+## [3620] 0.3307734 0.3464857 0.3417186 0.3463661 0.3286491 0.3317241 0.3303423
+## [3627] 0.3334607 0.3496763 0.3396213 0.3499274 0.3509439 0.3611653 0.3305581
+## [3634] 0.3331118 0.3557918 0.3509198 0.3444649 0.3496070 0.3662757 0.3573452
+## [3641] 0.3604159 0.3374536 0.3341118 0.3412272 0.3411993 0.3185013 0.3165106
+## [3648] 0.3626503 0.3524603 0.3612637 0.3643880 0.3315544 0.3619405 0.3563469
+## [3655] 0.3243950 0.3405838 0.3226589 0.3530942 0.3459867 0.3365236 0.3579815
+## [3662] 0.3269141 0.3515834 0.3347787 0.3587492 0.3256142 0.3436047 0.3533395
+## [3669] 0.3429121 0.3357596 0.3350858 0.3439803 0.3513826 0.3430979 0.3394039
+## [3676] 0.3338211 0.3516070 0.3569920 0.3504519 0.3440655 0.3469323 0.3449439
+## [3683] 0.3472002 0.3480015 0.3495491 0.3434972 0.3527715 0.3342908 0.3505333
+## [3690] 0.3371263 0.3211821 0.3573965 0.3366084 0.3487933 0.3347429 0.3507899
+## [3697] 0.3380310 0.3490672 0.3456702 0.3461444 0.3611959 0.3348416 0.3301093
+## [3704] 0.3242412 0.3469840 0.3469976 0.3477469 0.3559311 0.3446360 0.3468858
+## [3711] 0.3357816 0.3512831 0.3333669 0.3550096 0.3820708 0.3798344 0.3437592
+## [3718] 0.3566509 0.3424437 0.3651578 0.3578146 0.3399754 0.3471810 0.3704955
+## [3725] 0.3120929 0.3240902 0.3652180 0.3488094 0.3497882 0.3411911 0.3376802
+## [3732] 0.3468156 0.3428260 0.3459605 0.3251030 0.3642360 0.3288633 0.3362363
+## [3739] 0.3454711 0.3421514 0.3348972 0.3384790 0.3559072 0.3341370 0.3535080
+## [3746] 0.3349503 0.3369109 0.3653250 0.3674783 0.3280090 0.3414697 0.3462018
+## [3753] 0.3426049 0.3429092 0.3466516 0.3443789 0.3479924 0.3487351 0.3376674
+## [3760] 0.3399864 0.3439332 0.3455161 0.3600464 0.3526243 0.3428107 0.3360586
+## [3767] 0.3478691 0.3399459 0.3469982 0.3462246 0.3356593 0.3609715 0.3627751
+## [3774] 0.3520926 0.3338815 0.3539695 0.3221466 0.3231061 0.3188387 0.3309939
+## [3781] 0.3162813 0.3593026 0.3512060 0.3340523 0.3596799 0.3348997 0.3218376
+## [3788] 0.3166383 0.3248158 0.3184487 0.3450157 0.3409236 0.3588041 0.3365878
+## [3795] 0.3325118 0.3423567 0.3246838 0.3355702 0.3349578 0.3470646 0.3560117
+## [3802] 0.3565727 0.3402758 0.3634735 0.3403262 0.3371674 0.3531621 0.3455521
+## [3809] 0.3362185 0.3598438 0.3433327 0.3496165 0.3485708 0.3533582 0.3526654
+## [3816] 0.3385143 0.3436690 0.3505030 0.3350534 0.3670510 0.3194551 0.3423274
+## [3823] 0.3398800 0.3491685 0.3326081 0.3513123 0.3318480 0.3264262 0.3618952
+## [3830] 0.3630900 0.3264964 0.3270658 0.3467530 0.3574739 0.3307670 0.3630845
+## [3837] 0.3369762 0.3553843 0.3343130 0.3781860 0.3838231 0.3232755 0.3206849
+## [3844] 0.3444363 0.3478754 0.3384531 0.3395619 0.3347018 0.3647407 0.3485403
+## [3851] 0.3573169 0.3442425 0.3504924 0.3296528 0.3397367 0.3388573 0.3470923
+## [3858] 0.3470451 0.3463985 0.3477097 0.3510250 0.3477167 0.3396736 0.3545945
+## [3865] 0.3494688 0.3450426 0.3404657 0.3544843 0.3308101 0.3414970 0.3511247
+## [3872] 0.3426762 0.3531633 0.3314201 0.3432546 0.3412088 0.3458235 0.3446815
+## [3879] 0.3497402 0.3455738 0.3437345 0.3464882 0.3453707 0.3484902 0.3363860
+## [3886] 0.3425932 0.3510815 0.3609170 0.3557151 0.3472271 0.3561258 0.3437513
+## [3893] 0.3626718 0.3170655 0.3286883 0.3203246 0.3361195 0.3407459 0.3456886
+## [3900] 0.3581691 0.3391899 0.3541267 0.3668517 0.3484646 0.3344635 0.3567730
+## [3907] 0.3348906 0.3601764 0.3572815 0.3555959 0.3539567 0.3673427 0.3614964
+## [3914] 0.3247809 0.3313269 0.3529072 0.3429494 0.3407173 0.3183994 0.3118933
+## [3921] 0.3188535 0.3607636 0.3586899 0.3319162 0.3317633 0.3666963 0.3359946
+## [3928] 0.3355906 0.3308389 0.3585997 0.3308116 0.3372136 0.3379839 0.3189618
+## [3935] 0.3396202 0.3339279 0.3268889 0.3287328 0.3478257 0.3431125 0.3555195
+## [3942] 0.3361151 0.3344970 0.3370915 0.3549344 0.3307726 0.3495361 0.3593314
+## [3949] 0.3469173 0.3671512 0.3516002 0.3623339 0.3388764 0.3400553 0.3408039
+## [3956] 0.3436532 0.3553502 0.3453276 0.3501398 0.3401250 0.3527452 0.3421749
+## [3963] 0.3312039 0.3698777 0.3687559 0.3458298 0.3414957 0.3553093 0.3351457
+## [3970] 0.3520001 0.3421089 0.3413310 0.3275619 0.3591456 0.3477698 0.3325276
+## [3977] 0.3642031 0.3452303 0.3561302 0.3587958 0.3541471 0.3515011 0.3478686
+## [3984] 0.3523731 0.3492962 0.3505157 0.3557224 0.3406510 0.3527879 0.3417613
+## [3991] 0.3340009 0.3496467 0.3471550 0.3556467 0.3439353 0.3552552 0.3386237
+## [3998] 0.3611560 0.3391421 0.3638470
+```
+
+---
+
+
+``` r
+summary(bayes_R2(fit))
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.3048  0.3380  0.3457  0.3455  0.3531  0.3838
+```
+
+---
+
 ### **Warning Signs**
-- R² &gt; 0.9 in social science → suspect overfitting
-- R² changes dramatically with small changes → unstable
-]
+- `\(R^2\)` &gt; 0.9 in social science: suspect too many variables or close to saturation
+- `\(R^2\)` changes dramatically with small changes: suspect multicollinearity or missing data issues
 
 ---
-# Special Issues in Political Data
+# Practical Workflow
 
-.pull-left[
-### **1. Time-Series Data**
-- Autocorrelation violates independence
-- **Solutions:**
-  - Lagged dependent variables
-  - ARIMA models
-  - Newey-West standard errors
-
-### **2. Spatial/Clustered Data**
-- States, districts, countries
-- **Solutions:**
-  - Cluster-robust SEs
-  - Multilevel models
-  - Spatial regression
-
-### **3. Censored/Truncated Data**
-- Top-coded income
-- Minimum reporting thresholds
-- **Solutions:**
-  - Tobit models
-  - Selection models
-]
-.pull-right[
-### **4. Measurement Error**
-- Survey response error
-- GDP mismeasurement
-- **Solutions:**
-  - Multiple indicators
-  - Measurement models
-  - Bayesian approaches
-
-### **5. Rare Events**
-- Coups, wars, revolutions
-- **Solutions:**
-  - Rare events logistic
-  - Case-control designs
-  - Qualitative follow-up
-
-### **Political Reality:**
-&gt; "All models are wrong, but some are useful."  
-&gt; — George Box
-]
-
----
-# Practical Workflow for Political Scientists
-
-.center[
 ## **The Diagnostic Pipeline**
-]
 
-.pull-left[
 ### **Step 1: Before Modeling**
 1. **Theory-driven variable selection**
 2. **Check data quality**
 3. **Visualize relationships**
 4. **Consider transformations**
 
+---
+
 ### **Step 2: During Modeling**
 1. **Fit multiple specifications**
-2. **Check convergence (Bayesian)**
-3. **Examine residuals**
-4. **Test for nonlinearities**
-]
+2. **Examine residuals**
+3. **Test for nonlinearities**
 
-.pull-right[
+---
+
 ### **Step 3: After Modeling**
 1. **Posterior predictive checks**
 2. **Cross-validation**
 3. **Sensitivity analysis**
 4. **Compare to simpler models**
 
+---
+
 ### **Step 4: Reporting**
 1. **Transparency about assumptions**
 2. **Diagnostic results**
 3. **Model limitations**
 4. **Robustness checks**
-]
 
----
-# Case Study: Election Forecasting
-
-.pull-left[
-### **The Model**
-
-``` r
-# Simplified forecasting model
-forecast_model &lt;- stan_glm(
-  incumbent_vote ~ 
-    gdp_growth_q2 + 
-    net_approval + 
-    years_in_office +
-    war_indicator,
-  data = historical_elections,
-  prior = normal(0, 2.5),
-  prior_intercept = normal(50, 10)
-)
-```
-]
-
-.pull-right[
-### **Diagnostic Steps**
-1. **Temporal independence?**  
-   → Use time-series CV
-
-2. **Outliers?**  
-   → 1972, 1984 elections different
-
-3. **Structural breaks?**  
-   → Pre/post 1990s politics changed
-
-4. **Predictive accuracy?**  
-   → Compare to fundamentals model
-]
-
----
-class: inverse, center, middle
-
-# Tools &amp; Software
-
----
-# R Packages for Regression Diagnostics
-
-.pull-left[
-### **Core Diagnostics**
-
-``` r
-# Plotting
-ggplot2      # General plotting
-ggfortify    # Diagnostic plots for lm/glm
-
-# Bayesian workflow
-rstanarm     # Bayesian regression
-bayesplot    # Bayesian diagnostics
-loo          # Cross-validation
-
-# Specialized
-performance  # Comprehensive model checking
-marginaleffects # Understanding effects
-sjPlot       # Presentation-ready tables
-```
-]
-
-.pull-right[
-### **Political Science Specific**
-
-``` r
-# Time series
-forecast     # Time series forecasting
-vars         # Vector autoregression
-
-# Spatial
-spdep        # Spatial dependence
-splm         # Spatial panel models
-
-# Text as data
-quanteda     # Text analysis
-stm          # Structural topic models
-
-# Causal inference
-MatchIt      # Matching
-ivreg        # Instrumental variables
-```
-]
-
----
-# Common Pitfalls &amp; How to Avoid Them
-
-.pull-left[
-### **Pitfall 1: Overfitting**
-- **Symptom:** Great in-sample, poor out-of-sample
-- **Solution:** Cross-validation, regularization
-
-### **Pitfall 2: Ignoring Dependencies**
-- **Symptom:** SEs too small, false precision
-- **Solution:** Cluster-robust SEs, multilevel models
-
-### **Pitfall 3: Extrapolation**
-- **Symptom:** Predicting beyond data range
-- **Solution:** Restrict predictions, uncertainty bands
-]
-
-.pull-right[
-### **Pitfall 4: Causal Claims**
-- **Symptom:** "Effect of X on Y" from observational data
-- **Solution:** Explicit causal framework, sensitivity
-
-### **Pitfall 5: Black Box Models**
-- **Symptom:** Can't explain why model works
-- **Solution:** Simpler models, effect plots
-
-### **Political Science Reality:**
-&gt; "It's better to be approximately right than precisely wrong."
-]
-
----
-# Summary: Key Principles
-
-.pull-left[
-### **1. Assumptions First**
-- Start with validity &amp; representativeness
-- Statistical assumptions come after
-
-### **2. Visualization is Key**
-- See your data
-- See your residuals
-- See your predictions
-
-### **3. Test, Don't Assume**
-- Predictive checks
-- Cross-validation
-- Sensitivity analysis
-]
-
-.pull-right[
-### **4. Embrace Uncertainty**
-- Political phenomena are stochastic
-- Report uncertainty intervals
-- Bayesian approaches help
-
-### **5. Iterate &amp; Improve**
-- No model is perfect
-- Learn from diagnostics
-- Build better models
-
-### **Final Thought:**
-The goal isn't a "perfect" model, but a **useful** and **honest** one for answering political science questions.
-]
-
----
-class: inverse, center, middle
-
-# Questions &amp; Discussion
-
-&lt;br&gt;
-
-### **Resources:**
-- Book: *Regression and Other Stories* (Ch. 11)
-- Website: https://avehtari.github.io/ROS-Examples/
-- Course materials: [Your link here]
-
-&lt;br&gt;
-
-### **Next Steps:**
-- Try diagnostics on your own data
-- Bring questions to next class
-- Start thinking about final project diagnostics
-
----
-class: inverse, center, middle
-
-# Appendix: Example Code Walkthrough
-
----
-# Full Example: Analyzing Election Data
-
-
-``` r
-# Load packages
-library(tidyverse)
-library(rstanarm)
-library(bayesplot)
-library(loo)
-library(performance)
-
-# 1. Load and explore data
-election_data &lt;- read_csv("election_data.csv") %&gt;%
-  mutate(incumbent_vote = incumbent_vote / 100)  # Convert to proportion
-
-# Explore
-ggplot(election_data, aes(x = gdp_growth, y = incumbent_vote)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE)
-
-# 2. Fit model
-fit &lt;- stan_glm(
-  incumbent_vote ~ gdp_growth + president_approval + years_in_office,
-  data = election_data,
-  family = gaussian(),
-  prior = normal(0, 2.5),
-  prior_intercept = normal(0.5, 0.2),
-  seed = 123
-)
-
-# 3. Diagnostics
-# a. Residuals
-plot(fit, "resid_vs_pred")
-
-# b. Posterior predictive check
-y_rep &lt;- posterior_predict(fit)
-ppc_dens_overlay(election_data$incumbent_vote, y_rep[1:50, ])
-
-# c. Cross-validation
-loo_fit &lt;- loo(fit)
-print(loo_fit)
-
-# d. Check assumptions
-check_model(fit)
-```
-
----
-# Creating Publication-Ready Diagnostics
-
-
-``` r
-library(patchwork)  # For combining plots
-
-# Create diagnostic figure
-p1 &lt;- ggplot(election_data, aes(x = fitted(fit), y = resid(fit))) +
-  geom_point(alpha = 0.6) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  labs(x = "Fitted Values", y = "Residuals", 
-       title = "Residuals vs. Fitted")
-
-p2 &lt;- ggplot(data.frame(resid = resid(fit)), aes(sample = resid)) +
-  stat_qq() + stat_qq_line() +
-  labs(title = "Q-Q Plot of Residuals")
-
-p3 &lt;- bayesplot::mcmc_trace(as.array(fit), pars = c("gdp_growth", 
-                                                    "president_approval"))
-
-# Combine
-(p1 | p2) / p3 +
-  plot_annotation(title = "Model Diagnostics: Election Forecasting Model",
-                  tag_levels = "A")
-
-# Save for publication
-ggsave("model_diagnostics.png", width = 10, height = 8, dpi = 300)
 ```
 
 ---
@@ -699,7 +1272,7 @@ ggsave("model_diagnostics.png", width = 10, height = 8, dpi = 300)
 
 ---
 
-![Diagnostics4](Images/Silva4.png)
+![Diagnostics4](Images/Silva4.png){width=50%}
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

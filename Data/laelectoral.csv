@@ -1,0 +1,90 @@
+"","countryname","electionround","electiondate","incumbentparty","partywinner","alliancewinner","voteswoninc","votesinclag","gdpgrowthlag","winstability","country","time","tradegdp"
+"1","Argentina",1,"05/14/89","Uni—n C’vica Radical","Partido Justicialista","",47.5,51.7999992370605,-1.95000004768372,50,1,8,19.6299991607666
+"2","Argentina",1,"05/14/95","Partido Justicialista","Partido Justicialista","",49.9000015258789,47.5,5.84000015258789,50,1,14,19.7700004577637
+"3","Argentina",1,"10/24/99","Partido Justicialista","Uni—n C’vica Radical","Alianza para el Trabajo, la Justicia y la Educaci—n",38.2999992370605,49.9000015258789,3.84999990463257,50,1,18,21.3799991607666
+"4","Argentina",1,"04/27/03","Uni—n C’vica Radical","Partido Justicialista","Frente para la Victoria",2.33999991416931,48.4000015258789,-10.8999996185303,50,1,22,40.6399993896484
+"5","Argentina",1,"10/28/07","Frente para la Victoria Ð Partido Justicialista","Partido Justicialista","Frente para la Victoria",45.2900009155273,46.7000007629395,8.38000011444092,50,1,26,35.8600006103516
+"6","Argentina",1,"10/23/11","Frente para la Victoria Ð Partido Justicialista","Partido Justicialista","Frente para la Victoria",54.1100006103516,45.2999992370605,9.44999980926514,50,1,30,33.5699996948242
+"7","Brazil",1,"10/03/94","Partido da Reconstru‹o Nacional","Partido da Social Democracia Brasileira","",0.600000023841858,53,4.65999984741211,67,2,13,19.3299999237061
+"8","Brazil",1,"10/04/98","Partido da Social Democracia Brasileira","Partido da Social Democracia Brasileira","",53.0999984741211,54.2999992370605,3.38000011444092,67,2,17,16.4300003051758
+"9","Brazil",1,"10/06/02","Partido da Social Democracia Brasileira","Partido dos Trabalhadores","Para o Brasil Seguir Mudando",23.2000007629395,53.0999984741211,1.27999997138977,67,2,20,27.6100006103516
+"10","Brazil",2,"10/27/02","Partido da Social Democracia Brasileira","Partido dos Trabalhadores","Para o Brasil Seguir Mudando",38.7299995422363,53.0999984741211,1.27999997138977,67,2,21,27.6100006103516
+"11","Brazil",1,"10/01/06","Partido dos Trabalhadores","Partido dos Trabalhadores","Para o Brasil Seguir Mudando",48.6100006103516,46.4000015258789,3.15000009536743,67,2,24,26.0400009155273
+"12","Brazil",2,"10/29/06","Partido dos Trabalhadores","Partido dos Trabalhadores","Para o Brasil Seguir Mudando",60.8300018310547,61.2999992370605,3.15000009536743,67,2,25,26.0400009155273
+"13","Brazil",1,"10/03/10","Partido dos Trabalhadores","Partido dos Trabalhadores","Para o Brasil Seguir Mudando",46.9099998474121,48.6100006103516,-0.239999994635582,67,2,28,22.5100002288818
+"14","Brazil",2,"10/31/10","Partido dos Trabalhadores","Partido dos Trabalhadores","Para o Brasil Seguir Mudando",56.0499992370605,60.8300018310547,-0.239999994635582,67,2,29,22.5100002288818
+"15","Brazil",1,"10/05/14","Partido dos Trabalhadores","Partido dos Trabalhadores","Coliga‹o Com a Fora do Povo (formerly Para o Brasil Seguir Mudando)",41.5900001525879,46.9099998474121,2.74000000953674,67,2,32,25.1000003814697
+"16","Brazil",2,"10/26/14","Partido dos Trabalhadores","Partido dos Trabalhadores","Coliga‹o Com a Fora do Povo (formerly Para o Brasil Seguir Mudando)",51.6399993896484,56.0499992370605,2.74000000953674,67,2,33,25.1000003814697
+"17","Chile",1,"12/11/93","Concertaci—n de Partidos por la Democracia","Partido Dem—crata Cristiano","Concertaci—n de Partidos por la Democracia",57.9799995422363,55.2000007629395,12.210000038147,60,3,12,55.2400016784668
+"18","Chile",1,"12/12/99","Concertaci—n de Partidos por la Democracia","","Concertaci—n de Partidos por la Democracia",47.9599990844727,58,-0.709999978542328,60,3,18,57.8600006103516
+"19","Chile",2,"01/16/00","Concertaci—n de Partidos por la Democracia","Partido por la Democracia","Concertaci—n de Partidos por la Democracia",51.310001373291,58,-0.709999978542328,60,3,19,57.8600006103516
+"20","chile",1,"12/11/05","Concertaci—n de Partidos por la Democracia","Partido Socialista de Chile","Concertaci—n de Partidos por la Democracia",45.9599990844727,48,6.30000019073486,60,3,24,71.9400024414062
+"21","Chile",2,"01/15/06","Concertaci—n de Partidos por la Democracia","Partido Socialista de Chile","Concertaci—n de Partidos por la Democracia",53.5,51.310001373291,6.30000019073486,60,3,25,71.9400024414062
+"22","Chile",1,"12/13/09","Concertaci—n de Partidos por la Democracia","Renovaci—n Nacional","Coalici—n por el Cambio",29.4300003051758,46,-1.02999997138977,60,3,28,69.7200012207031
+"23","Chile",2,"01/17/10","Concertaci—n de Partidos por la Democracia","Renovaci—n Nacional","Coalici—n por el Cambio",48.3899993896484,53.5,-1.02999997138977,60,3,29,69.7200012207031
+"24","Chile",1,"11/17/13","Renovaci˜n Nacional","Partido Socialista de Chile","Nueva Mayoria",25.0300006866455,44.0999984741211,5.51999998092651,60,3,31,65.4700012207031
+"25","Chile",2,"12/15/13","Renovaci˜n Nacional","Partido Socialista de Chile","Nueva Mayoria",37.8300018310547,51.6100006103516,5.51999998092651,60,3,32,65.4700012207031
+"26","Colombia",1,"05/29/94","Partido Liberal Colombiano","Partido Liberal Colombiano","",45.2999992370605,48.2000007629395,5.71000003814697,67,4,12,35.9099998474121
+"27","Colombia",2,"06/19/94","Partido Liberal Colombiano","Partido Liberal Colombiano","",51.0699996948242,48.2000007629395,5.71000003814697,67,4,13,35.9099998474121
+"28","Colombia",1,"05/31/98","Partido Liberal Colombiano","Partido Liberal Colombiano","",34.4000015258789,45.2999992370605,0.569999992847443,67,4,16,35.9000015258789
+"29","Colombia",2,"06/21/98","Partido Liberal Colombiano","Partido Conservador Colombiano","",48.060001373291,51.0999984741211,0.569999992847443,67,4,17,35.9000015258789
+"30","Colombia",1,"05/26/02","Partido Conservador Colombiano","Colombia Primero","",0,51.9000015258789,1.66999995708466,67,4,21,32.9799995422363
+"31","Colombia",1,"05/28/06","Colombia Primero","Colombia Primero","",62.3499984741211,54,4.71000003814697,67,4,25,38.1699981689453
+"32","Colombia",1,"05/30/10","Party: Primero Colombia (renamed: Partido Social de Unidad Nacional, aka Partido de la U in 2010)","Partido Social de Unidad Nacional","",46.6800003051758,62.3499984741211,1.64999997615814,67,4,28,33.7000007629395
+"33","Colombia",2,"06/20/10","Party: Primero Colombia (renamed: Partido Social de Unidad Nacional, aka Partido de la U in 2010)","Partido Social de Unidad Nacional","",69.0999984741211,62.2000007629395,1.64999997615814,67,4,29,33.7000007629395
+"34","Colombia",1,"05/25/14","Partido Social de Unidad Nacional","Centro Democr‡tico","",25.6900005340576,46.6800003051758,4.94000005722046,67,4,32,37.4700012207031
+"35","Colombia",2,"06/15/14","Partido Social de Unidad Nacional","Partido Social de Unidad Nacional","",50.9500007629395,69.0999984741211,4.94000005722046,67,4,33,37.4700012207031
+"36","Costa Rica",1,"02/07/82","Coalici—n Unidad","Partido Liberaci—n Nacional","",33.5999984741211,50.5,-2.25999999046326,33,5,1,87.2399978637695
+"37","Costa Rica",1,"02/02/86","Partido Liberaci—n Nacional","Partido Liberaci—n Nacional","",52.2999992370605,58.7999992370605,0.720000028610229,33,5,5,53.9799995422363
+"38","Costa Rica",1,"02/04/90","Partido Liberaci—n Nacional","Partido de Unidad Socialcristiana","",47.2000007629395,52.2999992370605,5.65999984741211,33,5,9,66.5
+"39","Costa Rica",1,"02/06/94","Partido de Unidad Socialcristiana","Partido Liberaci—n Nacional","",47.7000007629395,51.5,7.40999984741211,33,5,13,76.6900024414062
+"40","Costa Rica",1,"02/01/98","Partido Liberaci—n Nacional","Partido de Unidad Socialcristiana","",44.5999984741211,49.5999984741211,5.57000017166138,33,5,17,97.5299987792969
+"41","Costa Rica",1,"02/03/02","Partido de Unidad Socialcristiana","Partido de Unidad Socialcristiana","",38.5999984741211,47,1.08000004291534,33,5,20,90.0100021362305
+"42","Costa Rica",2,"04/07/02","Partido de Unidad Socialcristiana","Partido de Unidad Socialcristiana","",58,47.0999984741211,1.08000004291534,33,5,21,90.0100021362305
+"43","Costa Rica",1,"02/05/06","Partido de Unidad Socialcristiana","Partido Liberaci—n Nacional","",3.54999995231628,58,5.8899998664856,33,5,25,104.400001525879
+"44","Costa Rica",1,"02/07/10","Partido Liberaci—n Nacional","Partido Liberaci—n Nacional","",46.9099998474121,40.9199981689453,-1.01999998092651,33,5,29,79.0899963378906
+"45","Costa Rica",1,"02/02/14","Partido Liberaci—n Nacional","Partido Acci—n Ciudadana","",29.7099990844727,46.9000015258789,3.44000005722046,33,5,32,72.3000030517578
+"46","Costa Rica",2,"04/06/14","Partido Liberaci—n Nacional","Partido Acci—n Ciudadana","",22.1900005340576,46.9000015258789,3.44000005722046,33,5,33,72.3000030517578
+"47","Dominican Republic",1,"05/16/00","Partido de la Liberaci—n Dominicana","Partido Revoluncionario Dominicano","",24.9400005340576,51.2999992370605,6.69999980926514,50,6,19,82.9100036621094
+"48","Dominican Republic",1,"05/16/04","Partido Revoluncionario Dominicano","Partido de la Liberaci—n Dominicana","",33.7000007629395,49.8699989318848,-0.25,50,6,23,83.879997253418
+"49","Dominican Republic",1,"05/16/08","Partido de la Liberaci—n Dominicana","Partido de la Liberaci—n Dominicana","",53.8300018310547,57.0999984741211,8.47999954223633,50,6,27,61.4300003051758
+"50","Dominican Republic",1,"05/20/12","Partido de la Liberaci—n Dominicana","Partido de la Liberaci—n Dominicana","",51.2099990844727,53.7999992370605,2.8199999332428,50,6,31,57.4900016784668
+"51","Ecuador",1,"01/31/88","Partido Social Cristiano","Izquierda Democr‡tica","",14.6999998092651,27.2000007629395,-5.96999979019165,33,7,6,42.6599998474121
+"52","Ecuador",2,"05/08/88","Partido Social Cristiano","Izquierda Democr‡tica","",0,51.5,-5.96999979019165,33,7,7,42.6599998474121
+"53","Ecuador",1,"05/17/92","Izquierda Democr‡tica","Partido Uni—n Republicana","Partido Uni—n Republicana - Partido Conservador Ecuatoriano",8.5,24.5,5.1100001335144,33,7,10,44.7999992370605
+"54","Ecuador",2,"07/05/92","Izquierda Democr‡tica","Partido Uni—n Republicana","Partido Uni—n Republicana - Partido Conservador Ecuatoriano",0,54,5.1100001335144,33,7,11,44.7999992370605
+"55","Ecuador",1,"05/19/96","Partido Uni—n Republicana","Partido Social Cristiano","",13.5,31.8999996185303,2.25,33,7,14,44.2099990844727
+"56","Ecuador",2,"07/07/96","Partido Uni—n Republicana","Partido Roldosista Ecuatoriano","",0,57.2999992370605,2.25,33,7,15,44.2099990844727
+"57","Ecuador",1,"04/26/09","Alianza PAIS","Alianza PAIS","",51.9900016784668,56.5999984741211,6.34999990463257,33,7,28,52.0999984741211
+"58","Ecuador",1,"02/17/13","Alianza PAIS","Alianza PAIS","",57.1699981689453,51.7900009155273,5.21999979019165,33,7,32,60.6800003051758
+"59","Guatemala",1,"11/07/99","Partido de Advanzada Nacional","Frente Republicano Guatemalteco","",30.3199996948242,36.5,4.59999990463257,0,8,17,46.3600006103516
+"60","Guatemala",2,"12/26/99","Partido de Advanzada Nacional","Frente Republicano Guatemalteco","",31.6900005340576,51.2000007629395,4.59999990463257,0,8,18,46.3600006103516
+"61","Guatemala",1,"11/09/03","Frente Republicano Guatemalteco","Partido Solidaridad Nacional","",19.2999992370605,47.7200012207031,3.86999988555908,0,8,21,65.9499969482422
+"62","Guatemala",2,"12/28/03","Frente Republicano Guatemalteco","Partido Solidaridad Nacional","Gran Alianza Nacional (GANA) Ñ Partido Patriota, Movimiento Reformador, Partido Solidaridad Nacional",0,68.3099975585938,3.86999988555908,0,8,22,65.9499969482422
+"63","Guatemala",1,"09/09/07","Gran Alianza Nacional (GANA)","Unidad Nacional de la Esperanza","",17.2299995422363,34.2999992370605,5.38000011444092,0,8,25,67.8899993896484
+"64","Guatemala",2,"11/04/07","Gran Alianza Nacional (GANA)","Unidad Nacional de la Esperanza","",0,54.0999984741211,5.38000011444092,0,8,26,67.8899993896484
+"65","Peru",1,"04/14/85","Acci—n Popular","Alianza Popular Revoluncionaria Americana - Partido Aprista Peruano","",7.30000019073486,44.9000015258789,3.79999995231628,20,9,4,27.4899997711182
+"66","Peru",1,"04/08/90","Alianza Popular Revoluncionaria Americana - Partido Aprista Peruano","Frente Democr‡tico","",22.5,53.0999984741211,-13.4200000762939,20,9,8,30.2700004577637
+"67","Peru",2,"06/10/90","Alianza Popular Revoluncionaria Americana - Partido Aprista Peruano","Cambio 90","",0,53.0999984741211,-13.4200000762939,20,9,9,30.2700004577637
+"68","Peru",1,"04/09/95","Cambio 90","Cambio 90","",64.3000030517578,62.4000015258789,12.3100004196167,20,9,14,31.6399993896484
+"69","Peru",1,"04/09/06","Perœ Posible","Uni—n por el Perœ","",0,36.5,6.28000020980835,20,9,24,50.8300018310547
+"70","Peru",2,"06/04/06","Perœ Posible","Partido Aprista Peruano","",0,53.0999984741211,6.28000020980835,20,9,25,50.8300018310547
+"71","Peru",1,"04/10/11","Partido Aprista Peruano","Partido Nacionalista Peruano","Gana Peru (Partido Nacionalista Peruano, Partido Socialista, Partido Comunista Peruano, Partido Socialista Revolucionario, Movimiento Pol’tico Voz Socialista)",0,24.3199996948242,8.44999980926514,20,9,29,55.2400016784668
+"72","Peru",2,"06/05/11","Partido Aprista Peruano","Partido Nacionalista Peruano","Gana Peru (Partido Nacionalista Peruano, Partido Socialista, Partido Comunista Peruano, Partido Socialista Revolucionario, Movimiento Pol’tico Voz Socialista)",0,52.5999984741211,8.44999980926514,20,9,30,55.2400016784668
+"73","El Salvador",1,"03/19/89","Partido Dem—crata Cristiano","Alianza Republicana Nacionalista (AReNa)","",36.5,53.5999984741211,1.87000000476837,67,10,8,36.9199981689453
+"74","El Salvador",1,"03/20/94","Alianza Republicana Nacionalista (AReNa)","Alianza Republicana Nacionalista (AReNa)","",49,53.7999992370605,7.36999988555908,67,10,12,55.1699981689453
+"75","El Salvador",2,"04/24/94","Alianza Republicana Nacionalista (AReNa)","Alianza Republicana Nacionalista (AReNa)","",68.3000030517578,53.7999992370605,7.36999988555908,67,10,13,55.1699981689453
+"76","El Salvador",1,"03/07/99","Alianza Republicana Nacionalista (AReNa)","Alianza Republicana Nacionalista (AReNa)","",51.9599990844727,68.3000030517578,3.75,67,10,18,62.2099990844727
+"77","El Salvador",1,"03/21/04","Alianza Republicana Nacionalista (AReNa)","Alianza Republicana Nacionalista (AReNa)","",57.7099990844727,51.9000015258789,2.29999995231628,67,10,23,71.25
+"78","El Salvador",1,"03/15/09","Alianza Republicana Nacionalista (AReNa)","Frente Farabundo Mart’ para la Liberaci—n Nacional","",48.6800003051758,57.7000007629395,1.26999998092651,67,10,28,61.8699989318848
+"79","El Salvador",1,"02/02/14","Frente Farabundo Mart’ para la Liberaci—n Nacional","Frente Farabundo Mart’ para la Liberaci—n Nacional","",48.9300003051758,51.3199996948242,1.8400000333786,67,10,32,69.2699966430664
+"80","El Salvador",2,"03/09/14","Frente Farabundo Mart’ para la Liberaci—n Nacional","Frente Farabundo Mart’ para la Liberaci—n Nacional","",50.1100006103516,51.2999992370605,1.8400000333786,67,10,33,69.2699966430664
+"81","Uruguay",1,"11/26/89","Partido Colorado","Partido Nacional","",29.0300006866455,41.2000007629395,1.46000003814697,50,11,8,41.189998626709
+"82","Uruguay",1,"11/27/94","Partido Nacional","Partido Colorado","",31.2000007629395,37.7000007629395,2.66000008583069,50,11,13,40.1399993896484
+"83","Uruguay",1,"10/31/99","Partido Colorado","Frente Amplio","",32.7999992370605,32.2999992370605,4.28000020980835,50,11,17,33.3800010681152
+"84","Uruguay",2,"11/29/99","Partido Colorado","Partido Colorado","",54.0999984741211,32.2999992370605,4.28000020980835,50,11,18,33.3800010681152
+"85","Uruguay",1,"10/31/04","Partido Colorado","Frente Amplio","",10.6000003814697,54.0999984741211,2.32999992370605,50,11,23,61.4700012207031
+"86","Uruguay",1,"10/25/09","Frente Amplio","Frente Amplio","",49.3400001525879,51.7000007629395,7.17000007629395,50,11,27,53.4000015258789
+"87","Uruguay",2,"11/29/09","Frente Amplio","Frente Amplio","",54.6300010681152,51.7000007629395,7.17000007629395,50,11,28,53.4000015258789
+"88","Uruguay",1,"10/26/14","Frente Amplio","Frente Amplio","",43.3699989318848,49.3400001525879,5.09999990463257,50,11,32,48.9199981689453
+"89","Uruguay",2,"11/30/14","Frente Amplio","Frente Amplio","",56.6300010681152,54.5999984741211,5.09999990463257,50,11,33,48.9199981689453

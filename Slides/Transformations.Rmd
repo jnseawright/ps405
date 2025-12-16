@@ -107,13 +107,15 @@ m_inch <- lm(earnings ~ height_in)
 m_cm <- lm(earnings ~ height_cm)
 
 heightms <- modelsummary(list("Inches" = m_inch, "Centimeters" = m_cm),
-             stars = TRUE, escape=TRUE, gof_omit = ".*",  output = "tinytable")
+             stars = TRUE, escape=TRUE, gof_omit = ".*",  output = "kableExtra")%>%
+  kable_styling(font_size = 14)
 ```
 
 ---
-```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center', results='asis'}
+```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
 heightms
 ```
+
 ---
 ###Solution: Standardize to make coefficients comparable:
 
