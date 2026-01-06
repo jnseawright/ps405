@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="author" content="Jaye Seawright" />
     <meta name="date" content="2026-01-07" />
-    <script src="StartingWithRegression_files/header-attrs-2.29/header-attrs.js"></script>
+    <script src="StartingWithRegression_files/header-attrs-2.30/header-attrs.js"></script>
     <script src="StartingWithRegression_files/kePrint-0.0.1/kePrint.js"></script>
     <link href="StartingWithRegression_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
@@ -62,9 +62,9 @@ library(tidyverse)
 
 ```
 ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
-## ✔ purrr     1.0.2     ✔ tidyr     1.3.1
+## ✔ forcats   1.0.1     ✔ stringr   1.6.0
+## ✔ lubridate 1.9.4     ✔ tibble    3.3.0
+## ✔ purrr     1.2.0     ✔ tidyr     1.3.1
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ nlme::collapse() masks dplyr::collapse()
 ## ✖ mice::filter()   masks dplyr::filter(), stats::filter()
@@ -177,8 +177,8 @@ econvote.lm.bayes &lt;- stan_glm(vote ~ growth, data = hibbs)
 ## 
 ## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 1).
 ## Chain 1: 
-## Chain 1: Gradient evaluation took 8.9e-05 seconds
-## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.89 seconds.
+## Chain 1: Gradient evaluation took 0.003087 seconds
+## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 30.87 seconds.
 ## Chain 1: Adjust your expectations accordingly!
 ## Chain 1: 
 ## Chain 1: 
@@ -195,15 +195,15 @@ econvote.lm.bayes &lt;- stan_glm(vote ~ growth, data = hibbs)
 ## Chain 1: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 1: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 1: 
-## Chain 1:  Elapsed Time: 0.079 seconds (Warm-up)
-## Chain 1:                0.072 seconds (Sampling)
-## Chain 1:                0.151 seconds (Total)
+## Chain 1:  Elapsed Time: 0.038 seconds (Warm-up)
+## Chain 1:                0.037 seconds (Sampling)
+## Chain 1:                0.075 seconds (Total)
 ## Chain 1: 
 ## 
 ## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 2).
 ## Chain 2: 
-## Chain 2: Gradient evaluation took 2.1e-05 seconds
-## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+## Chain 2: Gradient evaluation took 1.4e-05 seconds
+## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
 ## Chain 2: Adjust your expectations accordingly!
 ## Chain 2: 
 ## Chain 2: 
@@ -220,15 +220,15 @@ econvote.lm.bayes &lt;- stan_glm(vote ~ growth, data = hibbs)
 ## Chain 2: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 2: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 2: 
-## Chain 2:  Elapsed Time: 0.094 seconds (Warm-up)
-## Chain 2:                0.091 seconds (Sampling)
-## Chain 2:                0.185 seconds (Total)
+## Chain 2:  Elapsed Time: 0.041 seconds (Warm-up)
+## Chain 2:                0.035 seconds (Sampling)
+## Chain 2:                0.076 seconds (Total)
 ## Chain 2: 
 ## 
 ## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 3).
 ## Chain 3: 
-## Chain 3: Gradient evaluation took 2.1e-05 seconds
-## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
+## Chain 3: Gradient evaluation took 1.2e-05 seconds
+## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
 ## Chain 3: Adjust your expectations accordingly!
 ## Chain 3: 
 ## Chain 3: 
@@ -245,15 +245,15 @@ econvote.lm.bayes &lt;- stan_glm(vote ~ growth, data = hibbs)
 ## Chain 3: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 3: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 3: 
-## Chain 3:  Elapsed Time: 0.084 seconds (Warm-up)
-## Chain 3:                0.072 seconds (Sampling)
-## Chain 3:                0.156 seconds (Total)
+## Chain 3:  Elapsed Time: 0.04 seconds (Warm-up)
+## Chain 3:                0.036 seconds (Sampling)
+## Chain 3:                0.076 seconds (Total)
 ## Chain 3: 
 ## 
 ## SAMPLING FOR MODEL 'continuous' NOW (CHAIN 4).
 ## Chain 4: 
-## Chain 4: Gradient evaluation took 2e-05 seconds
-## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.2 seconds.
+## Chain 4: Gradient evaluation took 1.2e-05 seconds
+## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
 ## Chain 4: Adjust your expectations accordingly!
 ## Chain 4: 
 ## Chain 4: 
@@ -270,9 +270,9 @@ econvote.lm.bayes &lt;- stan_glm(vote ~ growth, data = hibbs)
 ## Chain 4: Iteration: 1800 / 2000 [ 90%]  (Sampling)
 ## Chain 4: Iteration: 2000 / 2000 [100%]  (Sampling)
 ## Chain 4: 
-## Chain 4:  Elapsed Time: 0.088 seconds (Warm-up)
-## Chain 4:                0.116 seconds (Sampling)
-## Chain 4:                0.204 seconds (Total)
+## Chain 4:  Elapsed Time: 0.037 seconds (Warm-up)
+## Chain 4:                0.033 seconds (Sampling)
+## Chain 4:                0.07 seconds (Total)
 ## Chain 4:
 ```
 
@@ -404,19 +404,19 @@ econvote.bayes.summary &lt;- modelsummary( list("Bayesian Voting Model" = econvo
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 46.250 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 46.240 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; [42.878, 49.779] &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; [42.698, 49.570] &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; growth &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 3.059 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.069 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;box-shadow: 0px 1.5px"&gt;  &lt;/td&gt;
-   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [1.578, 4.448] &lt;/td&gt;
+   &lt;td style="text-align:center;box-shadow: 0px 1.5px"&gt; [1.617, 4.539] &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Num.Obs. &lt;/td&gt;
@@ -424,35 +424,35 @@ econvote.bayes.summary &lt;- modelsummary( list("Bayesian Voting Model" = econvo
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; R2 &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 0.545 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.551 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; R2 Adj. &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 0.527 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0.522 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Log.Lik. &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −43.830 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −43.766 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; ELPD &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; −46.2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; −46.4 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; ELPD s.e. &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 3.7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.9 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; LOOIC &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 92.4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 92.8 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; LOOIC s.e. &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 7.3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 7.7 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; WAIC &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 92.1 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 92.2 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; RMSE &lt;/td&gt;
@@ -460,7 +460,7 @@ econvote.bayes.summary &lt;- modelsummary( list("Bayesian Voting Model" = econvo
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Sigma &lt;/td&gt;
-   &lt;td style="text-align:center;"&gt; 3.912 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3.875 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;tfoot&gt;&lt;tr&gt;&lt;td style="padding: 0; " colspan="100%"&gt;
@@ -474,6 +474,10 @@ A large literature in political science worries that Republicans and Democrats a
 ---
 
 
+``` r
+hibbs$inc_party_candidate
+```
+
 ```
 ##  [1] "Stevenson"  "Eisenhower" "Nixon"      "Johnson"    "Humphrey"  
 ##  [6] "Nixon"      "Ford"       "Carter"     "Reagan"     "Bush, Sr." 
@@ -484,6 +488,9 @@ A large literature in political science worries that Republicans and Democrats a
 ---
 
 
+``` r
+hibbs$inc_party &lt;- 1*(hibbs$inc_party_candidate %in% c("Johnson", "Humphrey", "Carter", "Clinton", "Gore", "Obama"))
+```
 
 ---
 
@@ -795,6 +802,12 @@ library(interplot)
 ```
 
 ```
+## The following object is masked from 'package:mice':
+## 
+##     toenail
+```
+
+```
 ## The following object is masked from 'package:nlme':
 ## 
 ##     lmList
@@ -806,7 +819,7 @@ library(interplot)
 ```
 
 ```
-## Working directory is C:/Users/jws780/Documents/GitHub/ps405/Slides
+## Working directory is C:/Users/jnsno/Documents/GitHub/ps405/Slides
 ```
 
 ```

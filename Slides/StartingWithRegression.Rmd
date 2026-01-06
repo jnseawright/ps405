@@ -31,10 +31,8 @@ library(dplyr)
 library(readr)
 library(nlme)
 library(jtools)
-library(hrbrthemes)
 library(mice)
 library(knitr)
-library(renderthis)
 
 BibOptions(check.entries = FALSE,
            bib.style = "authoryear", # Bibliography style
@@ -183,13 +181,13 @@ A large literature in political science worries that Republicans and Democrats a
 
 ---
 
-```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
 hibbs$inc_party_candidate
 ```
 
 ---
 
-```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
 hibbs$inc_party <- 1*(hibbs$inc_party_candidate %in% c("Johnson", "Humphrey", "Carter", "Clinton", "Gore", "Obama"))
 ```
 
