@@ -211,6 +211,11 @@ econvoteplot <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
      theme_minimal()
 ```
 
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+econvoteplot 
+```
 
 ---
 
@@ -278,7 +283,7 @@ demeconplot.shapes <- ggplot(qogts, aes(x = wdi_gdpcappppcon2017, y = vdem_libde
 
 ---
 
-```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+```{r, echo = FALSE, eval=TRUE, out.width="60%", fig.retina = 1, fig.align='center'}
 demeconplot.shapes 
 ```
 
@@ -290,7 +295,7 @@ $$m(\mathbb{X}) = \beta_{0} + \beta_{1} X_{1} + \beta_{2} X_{2} + \cdots + \beta
 
 ---
 
-```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+```{r, echo = TRUE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
 coords <- read.csv("https://gist.githubusercontent.com/metal3d/5b925077e66194551df949de64e910f6/raw/c5f20a037409d96958553e2eb6b8251265c6fd63/country-coord.csv")
 
 qogts$latitude <- NA
@@ -319,7 +324,7 @@ demlatplot.shapes <- ggplot(qogts, aes(x = latitude, y = vdem_libdem)) +
 
 ---
 
-```{r, echo = FALSE, eval=TRUE, out.width="80%", fig.retina = 1, fig.align='center'}
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
 demlatplot.shapes 
 ```
 
@@ -327,6 +332,29 @@ demlatplot.shapes
 
 ```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
 dem.lm <- lm(vdem_libdem ~ latitude + wdi_gdpcappppcon2017, data = qogts)
+```
+
+---
+
+```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+library(modelsummary)
+library(kableExtra)
+
+demlm.summary <- modelsummary( list("Modernization and Latitude" = dem.lm),
+             output = "kableExtra",
+             stars = TRUE,
+             statistic = "std.error",  
+             coef_rename = TRUE,
+             escape = FALSE,
+             fmt = fmt_decimal(5),
+             gof_map = "all") %>%      
+  kable_styling(
+    font_size = 24,                    # Even larger font
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE
+  )
+
+demlm.summary
 ```
 
 ---
@@ -343,9 +371,11 @@ dem.lm <- lm(vdem_libdem ~ latitude + wdi_gdpcappppcon2017, data = qogts)
 
 ---
 
-* If the CEF involves multiple variables, the 
 * A *model* is a simplified mathematical representation that stands in for and helps explore a more complex, often unknown, and harder to understand true descriptive relationship.
 
+---
+
+* If the CEF involves multiple predictor variables, the model will involve a relationship through a scatterplot in a space that is more than two-dimensional.
 
 ---
 
