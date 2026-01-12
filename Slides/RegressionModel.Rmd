@@ -369,9 +369,6 @@ demlm.summary
 * Even at the population level, we sometimes use models.
 * A *model* is a simplified mathematical representation that stands in for and helps explore a more complex, often unknown, and harder to understand true descriptive relationship.
 
----
-
-* A *model* is a simplified mathematical representation that stands in for and helps explore a more complex, often unknown, and harder to understand true descriptive relationship.
 
 ---
 
