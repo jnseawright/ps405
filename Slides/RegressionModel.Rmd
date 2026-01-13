@@ -252,8 +252,8 @@ qogts <- read_qog(which_data = "standard", data_type = "time-series")
 ```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
 demeconplot <- ggplot(qogts, aes(x = wdi_gdpcappppcon2017, y = vdem_libdem)) +
      geom_point() +
-     scale_x_continuous(labels = function(x) paste0(x, "%")) +
-     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     scale_x_continuous() +
+     scale_y_continuous() +
      labs(title = "Modernization Theory and Democracy",
           x = "Per Capita GDP in Constant 2017 Dollars",
           y = "VDem Liberal Democracy Score") +
@@ -271,8 +271,8 @@ demeconplot
 ```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
 demeconplot.shapes <- ggplot(qogts, aes(x = wdi_gdpcappppcon2017, y = vdem_libdem)) +
      geom_point() +
-     scale_x_continuous(labels = function(x) paste0(x, "%")) +
-     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     scale_x_continuous() +
+     scale_y_continuous() +
      labs(title = "Modernization Theory and Democracy",
           x = "Per Capita GDP in Constant 2017 Dollars",
           y = "VDem Liberal Democracy Score") +
@@ -312,8 +312,8 @@ for (i in 1:nrow(qogts)){
 ```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
 demlatplot.shapes <- ggplot(qogts, aes(x = latitude, y = vdem_libdem)) +
      geom_point() +
-     scale_x_continuous(labels = function(x) paste0(x, "%")) +
-     scale_y_continuous(labels = function(x) paste0(x, "%")) +
+     scale_x_continuous() +
+     scale_y_continuous() +
      labs(title = "Geography and Democracy",
           x = "Latitude",
           y = "VDem Liberal Democracy Score") +
