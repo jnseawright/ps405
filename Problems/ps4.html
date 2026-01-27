@@ -416,8 +416,11 @@ when the true CEF is nonlinear?</li>
 <p>Return to your voter turnout analysis from Problem Set 3.</p>
 <p><strong>3a.</strong> Re-examine the difference between your bivariate
 model (turnout ~ income) and multivariate model (turnout ~ income +
-religiosity + age). Calculate the omitted variable bias using the
-formula from Problem 1.</p>
+religiosity + age). Set up a version of the multivariate model that uses
+only income and religiosity and does not use age (turnout ~ income +
+religiosity). Calculate the omitted variable bias for income comparing
+this new multivariate model to the bivariate model using the formula
+from Problem 1.</p>
 <pre class="r"><code># Calculate the components needed for OVB formula
 # You&#39;ll need:
 # 1. β2 from multivariate model (coefficient for religiosity)
