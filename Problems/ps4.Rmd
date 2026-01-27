@@ -151,11 +151,10 @@ colnames(X) <- c("Intercept", "GDP", "Temperature")
 y <- turnout_clean$Turnout
 
 # Calculate OLS coefficients using matrix algebra
-beta_hat <- solve(t(X) %*% X) %*% t(X) %*% y
-beta_hat
+
 
 # Compare with lm() output
-lm(Turnout ~ GDP + Temperature, data = turnout_clean)
+
 ```
 
 1. Verify that your matrix calculation matches the `lm()` output.

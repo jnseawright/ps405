@@ -518,11 +518,9 @@ colnames(X) &lt;- c(&quot;Intercept&quot;, &quot;GDP&quot;, &quot;Temperature&qu
 y &lt;- turnout_clean$Turnout
 
 # Calculate OLS coefficients using matrix algebra
-beta_hat &lt;- solve(t(X) %*% X) %*% t(X) %*% y
-beta_hat
 
-# Compare with lm() output
-lm(Turnout ~ GDP + Temperature, data = turnout_clean)</code></pre>
+
+# Compare with lm() output</code></pre>
 <ol style="list-style-type: decimal">
 <li>Verify that your matrix calculation matches the <code>lm()</code>
 output.</li>

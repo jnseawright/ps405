@@ -64,8 +64,7 @@ model_collinear <- lm(y ~ x1 + x2 + x3)
 summary(model_collinear)
 
 # Check variance inflation factors (VIF)
-library(car)
-vif(model_collinear)
+
 ```
 
 **Questions:**
@@ -89,16 +88,13 @@ model <- lm(Turnout ~ GDP + Temperature, data = turnout_clean)
 leverage1 <- hatvalues(model)
 
 # Method 2: Calculate manually
-X <- model.matrix(model)
-H <- X %*% solve(t(X) %*% X) %*% t(X)
-leverage2 <- diag(H)
+
 
 # Compare
-all.equal(leverage1, leverage2)
+
 
 # Identify high leverage points
-high_leverage <- which(leverage1 > 2*mean(leverage1))  # Common rule of thumb
-turnout_clean[high_leverage, ]
+
 ```
 
 **Questions:**
@@ -121,25 +117,8 @@ Using the turnout model:
 
 ```{r problem4b, eval=FALSE}
 # Calculate DFBETA
-dfbeta_vals <- dfbeta(model)
 
 # Plot DFBETA for Temperature coefficient
-library(ggplot2)
-n <- nrow(turnout_clean)
-threshold <- 2/sqrt(n)
-
-ggplot(data.frame(index = 1:n, dfbeta_temp = dfbeta_vals[, "Temperature"]),
-       aes(x = index, y = dfbeta_temp)) +
-  geom_point() +
-  geom_hline(yintercept = c(-threshold, threshold), 
-             color = "red", linetype = "dashed") +
-  geom_hline(yintercept = 0, color = "gray") +
-  labs(title = "DFBETA for Temperature Coefficient",
-       y = "DFBETA",
-       x = "Observation Index") +
-  geom_text(aes(label = ifelse(abs(dfbeta_temp) > threshold, 
-                               as.character(index), "")),
-            vjust = -0.5)
 ```
 
 **Questions:**
@@ -152,22 +131,12 @@ Identify the most influential observation in your model and analyze it:
 
 ```{r problem4c, eval=FALSE}
 # Find most influential observation
-cook_d <- cooks.distance(model)
-most_influential <- which.max(cook_d)
 
 # Analyze this observation
-influential_obs <- turnout_clean[most_influential, ]
 
 # Run model without this observation
-model_without <- lm(Turnout ~ GDP + Temperature, 
-                    data = turnout_clean[-most_influential, ])
 
 # Compare coefficients
-coef_comparison <- data.frame(
-  "Full Model" = coef(model),
-  "Without Influential" = coef(model_without),
-  "Difference" = coef(model) - coef(model_without)
-)
 ```
 
 **Questions:**

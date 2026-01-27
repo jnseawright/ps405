@@ -395,31 +395,16 @@ qogts &lt;- read_qog(which_data = &quot;standard&quot;, data_type = &quot;time-s
 model1 &lt;- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)), 
              data = qogts)
 
-# Model 2: Robust standard errors
-library(sandwich)
-library(lmtest)
-robust_vcov &lt;- vcovHC(model1, type = &quot;HC3&quot;)</code></pre>
+# Model 2: Robust standard errors</code></pre>
 <p><strong>Questions:</strong> 1. Extract and compare the standard
-errors from both models. Which are larger? 2. Calculate the t-statistics
-manually: <span class="math inline">\(t =
-\frac{\hat{\beta}}{SE(\hat{\beta})}\)</span> 3. Compute p-values for
-both sets of standard errors 4. At α = 0.05, would you reject the null
-hypothesis for each coefficient in both models?</p>
+errors. Which are larger? 2. Calculate the t-statistics manually: <span class="math inline">\(t = \frac{\hat{\beta}}{SE(\hat{\beta})}\)</span>
+3. Compute p-values for both sets of standard errors 4. At α = 0.05,
+would you reject the null hypothesis for each coefficient in both
+models?</p>
 <p><strong>2b.</strong> 1. Construct 95% confidence intervals for each
 coefficient using: - Homoskedastic standard errors -
 Heteroskedasticity-robust standard errors 2. Create a visualization
 comparing these intervals</p>
-<pre class="r"><code># Your code for confidence interval visualization
-library(ggplot2)
-library(broom)
-
-# Extract coefficients and standard errors
-tidy_homo &lt;- tidy(model1)
-tidy_robust &lt;- tidy(model1)
-tidy_robust$std.error &lt;- sqrt(diag(robust_vcov))
-
-# Create comparison plot
-# (Include your plotting code here)</code></pre>
 <p><strong>2c.</strong> The lecture notes that with small samples and
 normal errors, we use the t-distribution.</p>
 <ol style="list-style-type: decimal">
@@ -521,10 +506,6 @@ correlated?</p>
 <p><strong>4a.</strong> 1. Explain how the Bonferroni correction works
 2. What is the adjusted significance level for 20 tests with α = 0.05?
 3. Apply Bonferroni correction to your simulation from Problem 3b:</p>
-<pre class="r"><code># Apply Bonferroni correction
-alpha_bonf &lt;- alpha / n_tests
-false_positives_bonf &lt;- rowSums(p_values &lt; alpha_bonf)
-prop_bonf &lt;- mean(false_positives_bonf &gt; 0)</code></pre>
 <p><strong>Questions:</strong> 1. What is the FWER after Bonferroni
 correction? 2. What is the cost of this correction in terms of
 statistical power? 3. Create a plot showing the trade-off between false
