@@ -39,7 +39,7 @@
 
 ### Summative Problem Set
 
-* [Summative Problem Set](https://jnseawright.github.io/PS406/Problems/summative.html)
+* [Summative Problem Set](https://jnseawright.github.io/ps405/Problems/summative.html)
 
 ### Grades
 
