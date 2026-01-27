@@ -33,6 +33,8 @@ where \(\varepsilon_i \sim N(0, \sigma^2)\).
 
 ## Problem 3: Multiple Regression & Interpretation (20%)
 
+For the remainder, you may use data and a research problem of your choice, or rely on the one provided below. If you use your own, please briefly explain it.
+
 Use the `states` dataset provided in the `poliscidata` package, which contains state-level political and demographic variables.
 
 ```{r load-data}
