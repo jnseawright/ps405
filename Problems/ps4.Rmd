@@ -42,7 +42,7 @@ The lecture slides show a nonlinear CEF for GDP and turnout, with different line
 
 Return to your voter turnout analysis from Problem Set 3.
 
-**3a.** Re-examine the difference between your bivariate model (turnout ~ income) and multivariate model (turnout ~ income + religiosity + age). Calculate the omitted variable bias using the formula from Problem 1.
+**3a.** Re-examine the difference between your bivariate model (turnout ~ income) and multivariate model (turnout ~ income + religiosity + age). Set up a version of the multivariate model that uses only income and religiosity and does not use age (turnout ~ income + religiosity). Calculate the omitted variable bias for income comparing this new multivariate model to the bivariate model using the formula from Problem 1.
 
 ```{r problem3a, eval=FALSE}
 # Calculate the components needed for OVB formula
@@ -151,11 +151,10 @@ colnames(X) <- c("Intercept", "GDP", "Temperature")
 y <- turnout_clean$Turnout
 
 # Calculate OLS coefficients using matrix algebra
-beta_hat <- solve(t(X) %*% X) %*% t(X) %*% y
-beta_hat
+
 
 # Compare with lm() output
-lm(Turnout ~ GDP + Temperature, data = turnout_clean)
+
 ```
 
 1. Verify that your matrix calculation matches the `lm()` output.

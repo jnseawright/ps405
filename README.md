@@ -27,6 +27,7 @@
 ### Problem Sets
 
 * [Problem Set 1](https://jnseawright.github.io/ps405/Problems/ps1.html)
+* [Problem Set 1 Solution](https://jnseawright.github.io/ps405/Problems/ps1-answers.html)
 * [Problem Set 2](https://jnseawright.github.io/ps405/Problems/ps2.html) 
 * [Problem Set 3](https://jnseawright.github.io/ps405/Problems/ps3.html)
 * [Problem Set 4](https://jnseawright.github.io/ps405/Problems/ps4.html)
@@ -38,7 +39,7 @@
 
 ### Summative Problem Set
 
-* [Summative Problem Set](https://jnseawright.github.io/PS406/Problems/summative.html)
+* [Summative Problem Set](https://jnseawright.github.io/ps405/Problems/summative.html)
 
 ### Grades
 

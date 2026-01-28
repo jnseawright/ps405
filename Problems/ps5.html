@@ -416,9 +416,7 @@ y &lt;- 2 + 1.5*x1 + 0.8*x3 + rnorm(n)
 model_collinear &lt;- lm(y ~ x1 + x2 + x3)
 summary(model_collinear)
 
-# Check variance inflation factors (VIF)
-library(car)
-vif(model_collinear)</code></pre>
+# Check variance inflation factors (VIF)</code></pre>
 <p><strong>Questions:</strong> 1. What happens to the standard errors
 when multicollinearity is present? 2. How do the VIF values indicate
 multicollinearity? 3. What are the practical implications for
@@ -441,16 +439,12 @@ model &lt;- lm(Turnout ~ GDP + Temperature, data = turnout_clean)
 leverage1 &lt;- hatvalues(model)
 
 # Method 2: Calculate manually
-X &lt;- model.matrix(model)
-H &lt;- X %*% solve(t(X) %*% X) %*% t(X)
-leverage2 &lt;- diag(H)
+
 
 # Compare
-all.equal(leverage1, leverage2)
 
-# Identify high leverage points
-high_leverage &lt;- which(leverage1 &gt; 2*mean(leverage1))  # Common rule of thumb
-turnout_clean[high_leverage, ]</code></pre>
+
+# Identify high leverage points</code></pre>
 <p><strong>Questions:</strong> 1. What does leverage measure? Why do we
 care about high leverage points? 2. What is the average leverage value?
 What’s the theoretical value? 3. Create a plot of leverage
@@ -471,25 +465,8 @@ each measure? 2. What’s the difference between an outlier and an
 influential point?</p>
 <p><strong>4b.</strong> Using the turnout model:</p>
 <pre class="r"><code># Calculate DFBETA
-dfbeta_vals &lt;- dfbeta(model)
 
-# Plot DFBETA for Temperature coefficient
-library(ggplot2)
-n &lt;- nrow(turnout_clean)
-threshold &lt;- 2/sqrt(n)
-
-ggplot(data.frame(index = 1:n, dfbeta_temp = dfbeta_vals[, &quot;Temperature&quot;]),
-       aes(x = index, y = dfbeta_temp)) +
-  geom_point() +
-  geom_hline(yintercept = c(-threshold, threshold), 
-             color = &quot;red&quot;, linetype = &quot;dashed&quot;) +
-  geom_hline(yintercept = 0, color = &quot;gray&quot;) +
-  labs(title = &quot;DFBETA for Temperature Coefficient&quot;,
-       y = &quot;DFBETA&quot;,
-       x = &quot;Observation Index&quot;) +
-  geom_text(aes(label = ifelse(abs(dfbeta_temp) &gt; threshold, 
-                               as.character(index), &quot;&quot;)),
-            vjust = -0.5)</code></pre>
+# Plot DFBETA for Temperature coefficient</code></pre>
 <p><strong>Questions:</strong> 1. Which observations are influential for
 the Temperature coefficient? 2. What happens to the Temperature
 coefficient if you remove the most influential observation? 3. Calculate
@@ -498,22 +475,12 @@ Cook’s Distance for all observations. Which observations have Cook’s D
 <p><strong>4c. Case Study Analysis:</strong> Identify the most
 influential observation in your model and analyze it:</p>
 <pre class="r"><code># Find most influential observation
-cook_d &lt;- cooks.distance(model)
-most_influential &lt;- which.max(cook_d)
 
 # Analyze this observation
-influential_obs &lt;- turnout_clean[most_influential, ]
 
 # Run model without this observation
-model_without &lt;- lm(Turnout ~ GDP + Temperature, 
-                    data = turnout_clean[-most_influential, ])
 
-# Compare coefficients
-coef_comparison &lt;- data.frame(
-  &quot;Full Model&quot; = coef(model),
-  &quot;Without Influential&quot; = coef(model_without),
-  &quot;Difference&quot; = coef(model) - coef(model_without)
-)</code></pre>
+# Compare coefficients</code></pre>
 <p><strong>Questions:</strong> 1. Why is this observation influential?
 Consider its leverage and residual. 2. Should this observation be
 removed? What are the ethical and methodological considerations? 3. What

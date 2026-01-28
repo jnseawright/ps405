@@ -38,13 +38,10 @@ model1 <- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)),
              data = qogts)
 
 # Model 2: Robust standard errors
-library(sandwich)
-library(lmtest)
-robust_vcov <- vcovHC(model1, type = "HC3")
 ```
 
 **Questions:**
-1. Extract and compare the standard errors from both models. Which are larger?
+1. Extract and compare the standard errors. Which are larger?
 2. Calculate the t-statistics manually: $t = \frac{\hat{\beta}}{SE(\hat{\beta})}$
 3. Compute p-values for both sets of standard errors
 4. At α = 0.05, would you reject the null hypothesis for each coefficient in both models?
@@ -55,19 +52,6 @@ robust_vcov <- vcovHC(model1, type = "HC3")
    - Heteroskedasticity-robust standard errors
 2. Create a visualization comparing these intervals
 
-```{r problem2b, eval=FALSE}
-# Your code for confidence interval visualization
-library(ggplot2)
-library(broom)
-
-# Extract coefficients and standard errors
-tidy_homo <- tidy(model1)
-tidy_robust <- tidy(model1)
-tidy_robust$std.error <- sqrt(diag(robust_vcov))
-
-# Create comparison plot
-# (Include your plotting code here)
-```
 
 **2c.**
 The lecture notes that with small samples and normal errors, we use the t-distribution.
@@ -175,12 +159,6 @@ prop_cor <- mean(false_positives_cor > 0)
 2. What is the adjusted significance level for 20 tests with α = 0.05?
 3. Apply Bonferroni correction to your simulation from Problem 3b:
 
-```{r problem4a, eval=FALSE}
-# Apply Bonferroni correction
-alpha_bonf <- alpha / n_tests
-false_positives_bonf <- rowSums(p_values < alpha_bonf)
-prop_bonf <- mean(false_positives_bonf > 0)
-```
 
 **Questions:**
 1. What is the FWER after Bonferroni correction?
