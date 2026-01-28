@@ -218,7 +218,7 @@ plot_data <- data.frame(GDP = gdp_seq, Turnout = turnout_pred)
 turnoutplot <- ggplot(plot_data, aes(x = GDP, y = Turnout)) +
   geom_line(linewidth = 1.2, color = "steelblue") +
   labs(
-    title = "Hypothetical Nonlinear CEF: Turnout ~ GDP",
+    title = "Estimated Nonlinear CEF: Turnout ~ GDP",
     x = "GDP",
     y = "Predicted Turnout"
   ) +
@@ -266,7 +266,7 @@ plot_data <- data.frame(GDP = gdp_seq, Turnout = turnout_pred)
 turnoutplot <- ggplot(plot_data, aes(x = GDP, y = Turnout)) +
   geom_line(linewidth = 1.2, color = "steelblue") +
   labs(
-    title = "Hypothetical Nonlinear CEF: Turnout ~ GDP",
+    title = "Estimated Nonlinear CEF: Turnout ~ GDP",
     x = "GDP",
     y = "Predicted Turnout"
   ) +
@@ -310,7 +310,7 @@ plot_data <- data.frame(GDP = gdp_seq, Turnout = turnout_pred)
 turnoutplot <- ggplot(plot_data, aes(x = GDP, y = Turnout)) +
   geom_line(linewidth = 1.2, color = "steelblue") +
   labs(
-    title = "Hypothetical Nonlinear CEF: Turnout ~ GDP",
+    title = "Estimated Nonlinear CEF: Turnout ~ GDP",
     x = "GDP",
     y = "Predicted Turnout"
   ) +
