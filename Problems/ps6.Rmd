@@ -13,22 +13,10 @@
 ####################
 
 
-List and explain the four key assumptions needed for OLS to be consistent. For each assumption:
-1. State the mathematical condition
-2. Explain in plain language what it means
-3. Give an example of a situation where it might fail
-
----
-
-####################
-## Problem 2      ##
-####################
-
-
-**2a.**
+**1a.**
 Using the democracy and internet access data from the lecture:
 
-```{r problem2a, eval=FALSE}
+```{r problem1a, eval=FALSE}
 # Load data and run models
 library(rqog)
 qogts <- read_qog(which_data = "standard", data_type = "time-series")
@@ -46,14 +34,14 @@ model1 <- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)),
 3. Compute p-values for both sets of standard errors
 4. At α = 0.05, would you reject the null hypothesis for each coefficient in both models?
 
-**2b.**
+**1b.**
 1. Construct 95% confidence intervals for each coefficient using:
    - Homoskedastic standard errors
    - Heteroskedasticity-robust standard errors
 2. Create a visualization comparing these intervals
 
 
-**2c.**
+**1c.**
 The lecture notes that with small samples and normal errors, we use the t-distribution.
 
 1. What is the degrees of freedom for the t-distribution in your model?
@@ -63,19 +51,19 @@ The lecture notes that with small samples and normal errors, we use the t-distri
 ---
 
 ####################
-## Problem 3      ##
+## Problem 2      ##
 ####################
 
-**3a.**
+**2a.**
 1. In your own words, explain the multiple comparisons problem
 2. Define:
    - Family-Wise Error Rate (FWER)
    - False Discovery Rate (FDR)
 
-**3b.**
+**2b.**
 Simulate the multiple comparisons problem:
 
-```{r problem3b, eval=FALSE}
+```{r problem2b, eval=FALSE}
 set.seed(123)
 n_tests <- 20
 n_obs <- 100
@@ -105,7 +93,7 @@ prop_at_least_one <- mean(false_positives > 0)
 2. What is the average number of false positives per simulation?
 3. Create a histogram of the number of false positives across simulations.
 
-**3c.**
+**2c.**
 Now simulate correlated tests:
 
 ```{r problem3c, eval=FALSE}
@@ -151,10 +139,10 @@ prop_cor <- mean(false_positives_cor > 0)
 ---
 
 ####################
-## Problem 4      ##
+## Problem 3      ##
 ####################
 
-**4a.**
+**3a.**
 1. Explain how the Bonferroni correction works
 2. What is the adjusted significance level for 20 tests with α = 0.05?
 3. Apply Bonferroni correction to your simulation from Problem 3b:
@@ -165,12 +153,12 @@ prop_cor <- mean(false_positives_cor > 0)
 2. What is the cost of this correction in terms of statistical power?
 3. Create a plot showing the trade-off between false positives and power.
 
-**4b.**
+**3b.**
 1. Explain the difference between controlling FWER and FDR
 2. When might FDR control be more appropriate than FWER control?
 3. Implement the Benjamini-Hochberg procedure:
 
-```{r problem4b, eval=FALSE}
+```{r problem3b, eval=FALSE}
 # Simulate some true effects
 set.seed(123)
 n_tests <- 100
@@ -222,7 +210,7 @@ fdr <- false_discoveries / max(1, sum(sig_tests))
 2. How many true effects were discovered? What proportion?
 3. Compare the performance of Bonferroni vs. BH for this scenario.
 
-**4c.**
+**3c.**
 Return to the democracy model from Problem 2. Suppose you're testing 10 different potential determinants of democracy (not just internet access and GDP).
 
 ```{r problem4c, eval=FALSE}
@@ -254,10 +242,10 @@ bh_sig <- p_vals <= bh_threshold
 ---
 
 ####################
-## Problem 5      ##
+## Problem 4      ##
 ####################
 
-**5a.**
+**4a.**
 Find a published political science article that reports multiple hypothesis tests (e.g., a table with many coefficients and stars).
 
 1. Count how many hypothesis tests are reported
@@ -265,7 +253,7 @@ Find a published political science article that reports multiple hypothesis test
 3. Would multiple testing corrections change their conclusions?
 4. Write a brief critique (1 paragraph) of their statistical reporting
 
-**5b.**
+**4b.**
 You're designing a study to test 15 different hypotheses about voter behavior.
 
 1. How would you adjust your analysis plan to account for multiple comparisons?
@@ -273,7 +261,7 @@ You're designing a study to test 15 different hypotheses about voter behavior.
 3. How would sample size affect your decision?
 4. What would you report in the methods section about multiple testing?
 
-**5c.**
+**4c.**
 Based on what you've learned about inference and multiple comparisons:
 
 1. What are the most common misconceptions about p-values?

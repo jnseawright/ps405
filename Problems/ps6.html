@@ -371,21 +371,7 @@ display: none;
 <h2>Problem 1</h2>
 <div id="section-3" class="section level20">
 <p class="heading"></p>
-<p>List and explain the four key assumptions needed for OLS to be
-consistent. For each assumption: 1. State the mathematical condition 2.
-Explain in plain language what it means 3. Give an example of a
-situation where it might fail</p>
-<hr />
-</div>
-<div id="section-4" class="section level20">
-<p class="heading"></p>
-</div>
-</div>
-<div id="problem-2" class="section level2">
-<h2>Problem 2</h2>
-<div id="section-5" class="section level20">
-<p class="heading"></p>
-<p><strong>2a.</strong> Using the democracy and internet access data
+<p><strong>1a.</strong> Using the democracy and internet access data
 from the lecture:</p>
 <pre class="r"><code># Load data and run models
 library(rqog)
@@ -401,11 +387,11 @@ errors. Which are larger? 2. Calculate the t-statistics manually: <span class="m
 3. Compute p-values for both sets of standard errors 4. At α = 0.05,
 would you reject the null hypothesis for each coefficient in both
 models?</p>
-<p><strong>2b.</strong> 1. Construct 95% confidence intervals for each
+<p><strong>1b.</strong> 1. Construct 95% confidence intervals for each
 coefficient using: - Homoskedastic standard errors -
 Heteroskedasticity-robust standard errors 2. Create a visualization
 comparing these intervals</p>
-<p><strong>2c.</strong> The lecture notes that with small samples and
+<p><strong>1c.</strong> The lecture notes that with small samples and
 normal errors, we use the t-distribution.</p>
 <ol style="list-style-type: decimal">
 <li>What is the degrees of freedom for the t-distribution in your
@@ -417,18 +403,18 @@ the normal approximation?</li>
 </ol>
 <hr />
 </div>
-<div id="section-6" class="section level20">
+<div id="section-4" class="section level20">
 <p class="heading"></p>
 </div>
 </div>
-<div id="problem-3" class="section level2">
-<h2>Problem 3</h2>
-<div id="section-7" class="section level20">
+<div id="problem-2" class="section level2">
+<h2>Problem 2</h2>
+<div id="section-5" class="section level20">
 <p class="heading"></p>
-<p><strong>3a.</strong> 1. In your own words, explain the multiple
+<p><strong>2a.</strong> 1. In your own words, explain the multiple
 comparisons problem 2. Define: - Family-Wise Error Rate (FWER) - False
 Discovery Rate (FDR)</p>
-<p><strong>3b.</strong> Simulate the multiple comparisons problem:</p>
+<p><strong>2b.</strong> Simulate the multiple comparisons problem:</p>
 <pre class="r"><code>set.seed(123)
 n_tests &lt;- 20
 n_obs &lt;- 100
@@ -455,7 +441,7 @@ prop_at_least_one &lt;- mean(false_positives &gt; 0)</code></pre>
 least one false positive? 2. What is the average number of false
 positives per simulation? 3. Create a histogram of the number of false
 positives across simulations.</p>
-<p><strong>3c.</strong> Now simulate correlated tests:</p>
+<p><strong>2c.</strong> Now simulate correlated tests:</p>
 <pre class="r"><code># Create correlated predictors
 set.seed(123)
 n_tests &lt;- 20
@@ -495,22 +481,22 @@ implications for social science research where predictors are often
 correlated?</p>
 <hr />
 </div>
-<div id="section-8" class="section level20">
+<div id="section-6" class="section level20">
 <p class="heading"></p>
 </div>
 </div>
-<div id="problem-4" class="section level2">
-<h2>Problem 4</h2>
-<div id="section-9" class="section level20">
+<div id="problem-3" class="section level2">
+<h2>Problem 3</h2>
+<div id="section-7" class="section level20">
 <p class="heading"></p>
-<p><strong>4a.</strong> 1. Explain how the Bonferroni correction works
+<p><strong>3a.</strong> 1. Explain how the Bonferroni correction works
 2. What is the adjusted significance level for 20 tests with α = 0.05?
 3. Apply Bonferroni correction to your simulation from Problem 3b:</p>
 <p><strong>Questions:</strong> 1. What is the FWER after Bonferroni
 correction? 2. What is the cost of this correction in terms of
 statistical power? 3. Create a plot showing the trade-off between false
 positives and power.</p>
-<p><strong>4b.</strong> 1. Explain the difference between controlling
+<p><strong>3b.</strong> 1. Explain the difference between controlling
 FWER and FDR 2. When might FDR control be more appropriate than FWER
 control? 3. Implement the Benjamini-Hochberg procedure:</p>
 <pre class="r"><code># Simulate some true effects
@@ -560,7 +546,7 @@ fdr &lt;- false_discoveries / max(1, sum(sig_tests))</code></pre>
 <p><strong>Questions:</strong> 1. What is the actual FDR in your
 simulation? 2. How many true effects were discovered? What proportion?
 3. Compare the performance of Bonferroni vs. BH for this scenario.</p>
-<p><strong>4c.</strong> Return to the democracy model from Problem 2.
+<p><strong>3c.</strong> Return to the democracy model from Problem 2.
 Suppose you’re testing 10 different potential determinants of democracy
 (not just internet access and GDP).</p>
 <pre class="r"><code># Imagine you&#39;ve run 10 different regressions
@@ -587,15 +573,15 @@ these results? 3. What additional information would help you decide
 which correction to use?</p>
 <hr />
 </div>
-<div id="section-10" class="section level20">
+<div id="section-8" class="section level20">
 <p class="heading"></p>
 </div>
 </div>
-<div id="problem-5" class="section level2">
-<h2>Problem 5</h2>
-<div id="section-11" class="section level20">
+<div id="problem-4" class="section level2">
+<h2>Problem 4</h2>
+<div id="section-9" class="section level20">
 <p class="heading"></p>
-<p><strong>5a.</strong> Find a published political science article that
+<p><strong>4a.</strong> Find a published political science article that
 reports multiple hypothesis tests (e.g., a table with many coefficients
 and stars).</p>
 <ol style="list-style-type: decimal">
@@ -606,7 +592,7 @@ true</li>
 <li>Write a brief critique (1 paragraph) of their statistical
 reporting</li>
 </ol>
-<p><strong>5b.</strong> You’re designing a study to test 15 different
+<p><strong>4b.</strong> You’re designing a study to test 15 different
 hypotheses about voter behavior.</p>
 <ol style="list-style-type: decimal">
 <li>How would you adjust your analysis plan to account for multiple
@@ -616,7 +602,7 @@ comparisons?</li>
 <li>What would you report in the methods section about multiple
 testing?</li>
 </ol>
-<p><strong>5c.</strong> Based on what you’ve learned about inference and
+<p><strong>4c.</strong> Based on what you’ve learned about inference and
 multiple comparisons:</p>
 <ol style="list-style-type: decimal">
 <li>What are the most common misconceptions about p-values?</li>
