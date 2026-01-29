@@ -30,23 +30,17 @@ model1 <- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)),
 
 **Questions:**
 1. Extract and compare the standard errors. Which are larger?
-2. Calculate the t-statistics manually: $t = \frac{\hat{\beta}}{SE(\hat{\beta})}$
+2. Calculate the t-statistics manually (i.e., using a calculator or direct math in R and not just summary): $t = \frac{\hat{\beta}}{SE(\hat{\beta})}$
 3. Compute p-values for both sets of standard errors
 4. At α = 0.05, would you reject the null hypothesis for each coefficient in both models?
 
+
 **1b.**
-1. Construct 95% confidence intervals for each coefficient using:
-   - Homoskedastic standard errors
-   - Heteroskedasticity-robust standard errors
-2. Create a visualization comparing these intervals
-
-
-**1c.**
 The lecture notes that with small samples and normal errors, we use the t-distribution.
 
 1. What is the degrees of freedom for the t-distribution in your model?
-2. How do t-critical values compare to z-critical values for your sample size?
-3. Recompute p-values using the t-distribution. How do they differ from the normal approximation?
+2. How do t-critical values compare to z-critical values for your sample size? How much difference does it make to choose the t versus normal distribution at this sample size?
+
 
 ---
 
@@ -133,8 +127,6 @@ prop_cor <- mean(false_positives_cor > 0)
 
 **Questions:**
 1. How does correlation affect the multiple comparisons problem?
-2. Is the Bonferroni correction more or less conservative when tests are correlated?
-3. What are the implications for social science research where predictors are often correlated?
 
 ---
 
@@ -143,109 +135,6 @@ prop_cor <- mean(false_positives_cor > 0)
 ####################
 
 **3a.**
-1. Explain how the Bonferroni correction works
-2. What is the adjusted significance level for 20 tests with α = 0.05?
-3. Apply Bonferroni correction to your simulation from Problem 3b:
-
-
-**Questions:**
-1. What is the FWER after Bonferroni correction?
-2. What is the cost of this correction in terms of statistical power?
-3. Create a plot showing the trade-off between false positives and power.
-
-**3b.**
-1. Explain the difference between controlling FWER and FDR
-2. When might FDR control be more appropriate than FWER control?
-3. Implement the Benjamini-Hochberg procedure:
-
-```{r problem3b, eval=FALSE}
-# Simulate some true effects
-set.seed(123)
-n_tests <- 100
-n_obs <- 100
-prop_true <- 0.1  # 10% of tests have true effects
-n_true <- round(n_tests * prop_true)
-
-p_values_mixed <- numeric(n_tests)
-beta_true <- numeric(n_tests)
-
-for (j in 1:n_tests) {
-  x <- rnorm(n_obs)
-  if (j <= n_true) {
-    # True effect
-    beta_true[j] <- 0.3
-    y <- 0.3 * x + rnorm(n_obs)
-  } else {
-    # No effect
-    beta_true[j] <- 0
-    y <- rnorm(n_obs)
-  }
-  p_values_mixed[j] <- summary(lm(y ~ x))$coefficients[2, 4]
-}
-
-# Apply Benjamini-Hochberg procedure
-alpha_fdr <- 0.05
-sorted_p <- sort(p_values_mixed)
-m <- length(sorted_p)
-critical_values <- (1:m) * alpha_fdr / m
-
-# Find cutoff
-discoveries <- sorted_p <= critical_values
-if (any(discoveries)) {
-  k <- max(which(discoveries))
-  threshold <- sorted_p[k]
-} else {
-  threshold <- 0
-}
-
-# Evaluate performance
-sig_tests <- p_values_mixed <= threshold
-true_discoveries <- sum(sig_tests[1:n_true])
-false_discoveries <- sum(sig_tests[(n_true+1):n_tests])
-fdr <- false_discoveries / max(1, sum(sig_tests))
-```
-
-**Questions:**
-1. What is the actual FDR in your simulation?
-2. How many true effects were discovered? What proportion?
-3. Compare the performance of Bonferroni vs. BH for this scenario.
-
-**3c.**
-Return to the democracy model from Problem 2. Suppose you're testing 10 different potential determinants of democracy (not just internet access and GDP).
-
-```{r problem4c, eval=FALSE}
-# Imagine you've run 10 different regressions
-# with p-values: p_vals <- c(0.04, 0.01, 0.07, 0.001, 0.23, 0.05, 0.11, 0.008, 0.32, 0.02)
-
-p_vals <- c(0.04, 0.01, 0.07, 0.001, 0.23, 0.05, 0.11, 0.008, 0.32, 0.02)
-
-# Apply corrections
-alpha <- 0.05
-n_tests <- length(p_vals)
-
-# Bonferroni
-bonf_threshold <- alpha / n_tests
-bonf_sig <- p_vals < bonf_threshold
-
-# Benjamini-Hochberg
-sorted_p <- sort(p_vals)
-critical_values <- (1:n_tests) * alpha / n_tests
-bh_threshold <- max(sorted_p[sorted_p <= critical_values], na.rm = TRUE)
-bh_sig <- p_vals <= bh_threshold
-```
-
-**Questions:**
-1. Which hypotheses would you reject under each correction method?
-2. What would you report in a paper using these results?
-3. What additional information would help you decide which correction to use?
-
----
-
-####################
-## Problem 4      ##
-####################
-
-**4a.**
 Find a published political science article that reports multiple hypothesis tests (e.g., a table with many coefficients and stars).
 
 1. Count how many hypothesis tests are reported
@@ -253,7 +142,7 @@ Find a published political science article that reports multiple hypothesis test
 3. Would multiple testing corrections change their conclusions?
 4. Write a brief critique (1 paragraph) of their statistical reporting
 
-**4b.**
+**3b.**
 You're designing a study to test 15 different hypotheses about voter behavior.
 
 1. How would you adjust your analysis plan to account for multiple comparisons?
@@ -261,7 +150,7 @@ You're designing a study to test 15 different hypotheses about voter behavior.
 3. How would sample size affect your decision?
 4. What would you report in the methods section about multiple testing?
 
-**4c.**
+**3c.**
 Based on what you've learned about inference and multiple comparisons:
 
 1. What are the most common misconceptions about p-values?

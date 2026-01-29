@@ -383,23 +383,19 @@ model1 &lt;- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)),
 
 # Model 2: Robust standard errors</code></pre>
 <p><strong>Questions:</strong> 1. Extract and compare the standard
-errors. Which are larger? 2. Calculate the t-statistics manually: <span class="math inline">\(t = \frac{\hat{\beta}}{SE(\hat{\beta})}\)</span>
+errors. Which are larger? 2. Calculate the t-statistics manually (i.e.,
+using a calculator or direct math in R and not just summary): <span class="math inline">\(t = \frac{\hat{\beta}}{SE(\hat{\beta})}\)</span>
 3. Compute p-values for both sets of standard errors 4. At α = 0.05,
 would you reject the null hypothesis for each coefficient in both
 models?</p>
-<p><strong>1b.</strong> 1. Construct 95% confidence intervals for each
-coefficient using: - Homoskedastic standard errors -
-Heteroskedasticity-robust standard errors 2. Create a visualization
-comparing these intervals</p>
-<p><strong>1c.</strong> The lecture notes that with small samples and
+<p><strong>1b.</strong> The lecture notes that with small samples and
 normal errors, we use the t-distribution.</p>
 <ol style="list-style-type: decimal">
 <li>What is the degrees of freedom for the t-distribution in your
 model?</li>
 <li>How do t-critical values compare to z-critical values for your
-sample size?</li>
-<li>Recompute p-values using the t-distribution. How do they differ from
-the normal approximation?</li>
+sample size? How much difference does it make to choose the t versus
+normal distribution at this sample size?</li>
 </ol>
 <hr />
 </div>
@@ -475,10 +471,7 @@ for (i in 1:1000) {
 false_positives_cor &lt;- rowSums(p_values_cor &lt; alpha)
 prop_cor &lt;- mean(false_positives_cor &gt; 0)</code></pre>
 <p><strong>Questions:</strong> 1. How does correlation affect the
-multiple comparisons problem? 2. Is the Bonferroni correction more or
-less conservative when tests are correlated? 3. What are the
-implications for social science research where predictors are often
-correlated?</p>
+multiple comparisons problem?</p>
 <hr />
 </div>
 <div id="section-6" class="section level20">
@@ -489,99 +482,7 @@ correlated?</p>
 <h2>Problem 3</h2>
 <div id="section-7" class="section level20">
 <p class="heading"></p>
-<p><strong>3a.</strong> 1. Explain how the Bonferroni correction works
-2. What is the adjusted significance level for 20 tests with α = 0.05?
-3. Apply Bonferroni correction to your simulation from Problem 3b:</p>
-<p><strong>Questions:</strong> 1. What is the FWER after Bonferroni
-correction? 2. What is the cost of this correction in terms of
-statistical power? 3. Create a plot showing the trade-off between false
-positives and power.</p>
-<p><strong>3b.</strong> 1. Explain the difference between controlling
-FWER and FDR 2. When might FDR control be more appropriate than FWER
-control? 3. Implement the Benjamini-Hochberg procedure:</p>
-<pre class="r"><code># Simulate some true effects
-set.seed(123)
-n_tests &lt;- 100
-n_obs &lt;- 100
-prop_true &lt;- 0.1  # 10% of tests have true effects
-n_true &lt;- round(n_tests * prop_true)
-
-p_values_mixed &lt;- numeric(n_tests)
-beta_true &lt;- numeric(n_tests)
-
-for (j in 1:n_tests) {
-  x &lt;- rnorm(n_obs)
-  if (j &lt;= n_true) {
-    # True effect
-    beta_true[j] &lt;- 0.3
-    y &lt;- 0.3 * x + rnorm(n_obs)
-  } else {
-    # No effect
-    beta_true[j] &lt;- 0
-    y &lt;- rnorm(n_obs)
-  }
-  p_values_mixed[j] &lt;- summary(lm(y ~ x))$coefficients[2, 4]
-}
-
-# Apply Benjamini-Hochberg procedure
-alpha_fdr &lt;- 0.05
-sorted_p &lt;- sort(p_values_mixed)
-m &lt;- length(sorted_p)
-critical_values &lt;- (1:m) * alpha_fdr / m
-
-# Find cutoff
-discoveries &lt;- sorted_p &lt;= critical_values
-if (any(discoveries)) {
-  k &lt;- max(which(discoveries))
-  threshold &lt;- sorted_p[k]
-} else {
-  threshold &lt;- 0
-}
-
-# Evaluate performance
-sig_tests &lt;- p_values_mixed &lt;= threshold
-true_discoveries &lt;- sum(sig_tests[1:n_true])
-false_discoveries &lt;- sum(sig_tests[(n_true+1):n_tests])
-fdr &lt;- false_discoveries / max(1, sum(sig_tests))</code></pre>
-<p><strong>Questions:</strong> 1. What is the actual FDR in your
-simulation? 2. How many true effects were discovered? What proportion?
-3. Compare the performance of Bonferroni vs. BH for this scenario.</p>
-<p><strong>3c.</strong> Return to the democracy model from Problem 2.
-Suppose you’re testing 10 different potential determinants of democracy
-(not just internet access and GDP).</p>
-<pre class="r"><code># Imagine you&#39;ve run 10 different regressions
-# with p-values: p_vals &lt;- c(0.04, 0.01, 0.07, 0.001, 0.23, 0.05, 0.11, 0.008, 0.32, 0.02)
-
-p_vals &lt;- c(0.04, 0.01, 0.07, 0.001, 0.23, 0.05, 0.11, 0.008, 0.32, 0.02)
-
-# Apply corrections
-alpha &lt;- 0.05
-n_tests &lt;- length(p_vals)
-
-# Bonferroni
-bonf_threshold &lt;- alpha / n_tests
-bonf_sig &lt;- p_vals &lt; bonf_threshold
-
-# Benjamini-Hochberg
-sorted_p &lt;- sort(p_vals)
-critical_values &lt;- (1:n_tests) * alpha / n_tests
-bh_threshold &lt;- max(sorted_p[sorted_p &lt;= critical_values], na.rm = TRUE)
-bh_sig &lt;- p_vals &lt;= bh_threshold</code></pre>
-<p><strong>Questions:</strong> 1. Which hypotheses would you reject
-under each correction method? 2. What would you report in a paper using
-these results? 3. What additional information would help you decide
-which correction to use?</p>
-<hr />
-</div>
-<div id="section-8" class="section level20">
-<p class="heading"></p>
-</div>
-</div>
-<div id="problem-4" class="section level2">
-<h2>Problem 4</h2>
-<div id="section-9" class="section level20">
-<p class="heading"></p>
-<p><strong>4a.</strong> Find a published political science article that
+<p><strong>3a.</strong> Find a published political science article that
 reports multiple hypothesis tests (e.g., a table with many coefficients
 and stars).</p>
 <ol style="list-style-type: decimal">
@@ -592,7 +493,7 @@ true</li>
 <li>Write a brief critique (1 paragraph) of their statistical
 reporting</li>
 </ol>
-<p><strong>4b.</strong> You’re designing a study to test 15 different
+<p><strong>3b.</strong> You’re designing a study to test 15 different
 hypotheses about voter behavior.</p>
 <ol style="list-style-type: decimal">
 <li>How would you adjust your analysis plan to account for multiple
@@ -602,7 +503,7 @@ comparisons?</li>
 <li>What would you report in the methods section about multiple
 testing?</li>
 </ol>
-<p><strong>4c.</strong> Based on what you’ve learned about inference and
+<p><strong>3c.</strong> Based on what you’ve learned about inference and
 multiple comparisons:</p>
 <ol style="list-style-type: decimal">
 <li>What are the most common misconceptions about p-values?</li>
