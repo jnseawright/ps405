@@ -119,7 +119,7 @@ For multivariate models, the process of the argument is basically the same, but 
 
 $$Y = \mathbb{X} \beta + \epsilon$$
 
-Here, $Y$ and \epsilon are $N$ by 1 vectors. $\mathbb{X}$ is an $N$ by $k$ matrix, where $k$ is one plus the number of independent variables in the regression. Finally, $\beta$ is a $k$ by 1 vector of coefficients (including the intercept).
+Here, $Y$ and $\epsilon$ are $N$ by 1 vectors. $\mathbb{X}$ is an $N$ by $k$ matrix, where $k$ is one plus the number of independent variables in the regression. Finally, $\beta$ is a $k$ by 1 vector of coefficients (including the intercept).
 
 ---
 
