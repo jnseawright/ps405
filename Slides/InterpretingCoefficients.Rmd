@@ -87,28 +87,37 @@ library(dplyr)
 blp.multivariate <- lm(Stateterrorism ~ TrumpShare + D12Margin, data = election2016)
 
 
-trump_range <- seq(min(election2016$TrumpShare, na.rm = TRUE), 
-                   max(election2016$TrumpShare, na.rm = TRUE), length.out = 20)
-margin_range <- seq(min(election2016$D12Margin, na.rm = TRUE), 
-                    max(election2016$D12Margin, na.rm = TRUE), length.out = 20)
+x_vals <- seq(min(election2016$TrumpShare), max(election2016$TrumpShare), length.out = 30)
+y_vals <- seq(min(election2016$D12Margin), max(election2016$D12Margin), length.out = 30)
 
-grid <- expand.grid(TrumpShare = trump_range, D12Margin = margin_range)
-grid$Stateterrorism <- predict(blp.multivariate, newdata = grid)
+grid_data <- expand.grid(TrumpShare = x_vals, D12Margin = y_vals)
+grid_data$Stateterrorism <- predict(blp.multivariate, newdata = grid_data)
 
+z_matrix <- matrix(grid_data$Stateterrorism, 
+                   nrow = length(y_vals),  # Rows = TrumpShare
+                   ncol = length(x_vals),  # Columns = D12Margin
+                   byrow = TRUE)  # THIS IS CRITICAL
 
 p <- plot_ly() %>%
     
+   # Add regression plane with correct orientation
+    add_surface(
+        x = x_vals,  # TrumpShare
+        y = y_vals,  # D12Margin  
+        z = z_matrix,  # Attack predictions
+        opacity = 0.6,
+        colorscale = list(c(0, "#6495ED"), c(1, "#6495ED")),  # Cornflower blue
+        showscale = FALSE,
+        name = "Regression Plane",
+        contours = list(
+            z = list(show = TRUE, width = 1, color = "white", highlight = FALSE)
+        )
+    ) %>%
     add_trace(data = election2016, 
-              x = ~TrumpShare, y = ~D12Margin, z = ~Stateterrorism,
+    x = ~TrumpShare, y = ~D12Margin, z = ~Stateterrorism,
               type = 'scatter3d', mode = 'markers',
               marker = list(size = 5, color = 'blue', opacity = 0.7),
-              name = 'Actual Data') %>%
-   
-    add_trace(data = grid,
-              x = ~TrumpShare, y = ~D12Margin, z = ~Stateterrorism,
-              type = 'mesh3d', 
-              opacity = 0.5, color = 'orange',
-              name = 'Regression Plane') %>%
+              name = 'Actual Data')  %>%
     layout(scene = list(
         xaxis = list(title = 'Trump Vote Share'),
         yaxis = list(title = '2012 Margin'),
@@ -116,7 +125,6 @@ p <- plot_ly() %>%
         camera = list(eye = list(x = 1.5, y = 1.5, z = 1.5))
     ),
     title = 'Multivariate Regression: Terrorism ~ TrumpShare + D12Margin')
-
 
 ```
 

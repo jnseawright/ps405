@@ -1,0 +1,319 @@
+---
+title: "Responsible Conduct of Research I"
+subtitle: "RCR"
+author: "<large>Jaye Seawright</large>"
+institute: "<small>Northwestern Political Science</small>" 
+date: "Feb. 2, 2026"
+output: 
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+  
+---
+class: center, middle
+
+```{css, echo=FALSE}
+pre {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 200px;
+}
+```
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+# Initializes
+library(RefManageR)
+
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(nlme)
+library(jtools)
+library(mice)
+library(knitr)
+library(modelsummary)
+library(kableExtra)
+library(stringr)
+
+BibOptions(check.entries = FALSE,
+           bib.style = "authoryear", # Bibliography style
+           max.names = 3, # Max author names displayed in bibliography
+           sorting = "nyt", #Name, year, title sorting
+           cite.style = "authoryear", # citation style
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+
+```
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer,MnSymbol)
+style_mono_accent(
+  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono"),
+  text_font_size = "1.6rem"
+)
+```
+
+
+---
+What is research?
+
+What is a human subject?
+
+What makes research ethical?
+
+
+---
+### IRB Review
+
+Formal institutional review is required for all human-subjects research
+
+
+---
+
+![NU IRB](nuirb1.png)
+
+
+---
+
+![image](whatishumansubjects.png)
+
+
+---
+![image](grievancehoax.png)
+
+
+---
+![image](grievancehoax2.png)
+
+
+---
+![image](grievancehoax4.png)
+
+
+---
+![image](grievancehoax3.png)
+
+
+---
+### Kinds of IRB Review
+
+-   Exempt review
+
+    -   This is available for some kinds of low-risk surveys,
+        interviews, and observation-based research
+
+---
+### Kinds of IRB Review
+
+-   Exempt review
+
+    -   It is also available for some kinds of low-risk experiments,
+        involving benign behavioral interventions in conjunction with
+        the collection of information from an adult subject through
+        verbal or written responses (including data entry) or
+        audiovisual recording if the subject prospectively agrees to the
+        intervention and information collection
+
+---
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("exempt1.png")
+```
+
+
+---
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("exempt2.png")
+```
+
+---
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("exempt3.png")
+```
+
+
+---
+### Kinds of IRB Review
+
+-   Expedited review
+
+    -   Collection of data from voice, video, digital, or image
+        recordings made for research purposes.
+
+
+---
+### Kinds of IRB Review
+
+-   Expedited review
+
+    -   Research on individual or group characteristics or behavior
+        (including, but not limited to, research on perception,
+        cognition, motivation, identity, language, communication,
+        cultural beliefs or practices, and social behavior) or research
+        employing survey, interview, oral history, focus group, program
+        evaluation, human factors evaluation, or quality assurance
+        methodologies.
+
+
+---
+### Kinds of IRB Review
+
+-   Full review
+
+
+---
+### The IRB Process
+
+<https://irb.northwestern.edu/submitting-to-the-irb/eirb/>
+
+
+---
+### The IRB Process
+
+<https://irb.northwestern.edu/resources-guidance/protocol-templates-forms/docs/social-behavioral-protocol---protocol---583.docx>
+
+
+---
+If an IRB approves of our research, does that mean we are ethically all
+set?
+
+
+---
+![image](montana1.png)
+
+
+---
+![image](montana1-5.png)
+
+
+---
+![image](montana2.png)
+
+
+---
+![image](montana3.png)
+
+
+---
+### Fraud/Misconduct
+
+-   Fabrication
+
+-   Falsification
+
+-   Plagiarism, etc.
+
+
+---
+### Fabrication
+
+Inventing research data or analytic results from scratch, and
+distributing them in some way.
+
+
+---
+![image](lacour1.png)
+
+
+---
+![image](lacour2.png)
+
+
+---
+![image](lacour3.png)
+
+
+---
+![image](lacour4.png)
+
+
+---
+![image](lacour5.png)
+
+
+---
+![image](lacour6.png)
+
+
+---
+![image](goffman1.png)
+
+
+---
+![image](goffman2.png)
+
+
+---
+![image](goffman3.png)
+
+
+---
+![image](goffman4.png)
+
+
+---
+![image](goffman5.png)
+
+
+---
+![image](goffman6.png)
+
+
+---
+![image](goffman7.png)
+
+
+---
+### Falsification
+
+Manipulating real data or analytic results to distort their meaning and
+implications.
+
+
+---
+![image](falsification1.png)
+
+
+---
+![image](falsification2.png)
+
+
+---
+![image](falsification3.png)
+
+
+---
+### Human Subjects: Belmont Report
+
+-   Respect for persons
+
+-   Beneficence
+
+-   Justice
+
+
+---
+### Human Subjects: Belmont Report
+
+Respect for persons: informed consent
+
+
+---
+### Human Subjects: Belmont Report
+
+Beneficence: maximize benefits and minimize risk
+
+
+---
+### Human Subjects: Belmont Report
+
+Justice: protect vulnerable people and make sure costs and benefits of
+research are distributed equitably
+
