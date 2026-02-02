@@ -125,7 +125,7 @@ Here, $Y$ and $\epsilon$ are $N$ by 1 vectors. $\mathbb{X}$ is an $N$ by $k$ mat
 
 It will turn out that the plug-in estimate here is:
 
-$$\hat\beta = (\sum_{i=1}^N \mathbf{X}_{i}\mathbf{X}_{i}^T)^{-1}(\sum_{i=1}^N\mathbf{X}_{i}\mathbf{Y}_{i})$$
+$$\hat\beta = ( \mathbf{X}^T\mathbf{X})^{-1}(\mathbf{X}^T\mathbf{Y})$$
 
 ---
 
