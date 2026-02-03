@@ -140,7 +140,6 @@ Find a published political science article that reports multiple hypothesis test
 1. Count how many hypothesis tests are reported
 2. Calculate the expected number of false positives if all nulls were true
 3. Would multiple testing corrections change their conclusions?
-4. Write a brief critique (1 paragraph) of their statistical reporting
 
 **3b.**
 You're designing a study to test 15 different hypotheses about voter behavior.
@@ -150,9 +149,3 @@ You're designing a study to test 15 different hypotheses about voter behavior.
 3. How would sample size affect your decision?
 4. What would you report in the methods section about multiple testing?
 
-**3c.**
-Based on what you've learned about inference and multiple comparisons:
-
-1. What are the most common misconceptions about p-values?
-2. How should researchers balance the risk of false positives against the risk of missing true effects?
-3. What practices would you recommend for transparent statistical reporting?
