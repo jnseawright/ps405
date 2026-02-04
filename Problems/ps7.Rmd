@@ -109,10 +109,9 @@ analysis_data <- qog_data %>%
   )
 
 # Your tasks:
-# 1. Run three models:
+# 1. Run two models:
 #    a. Main effects only: democracy ~ log_gdp + colonized
 #    b. With interaction: democracy ~ log_gdp * colonized
-#    c. Alternative parameterization (if needed)
 
 # 2. Calculate and interpret:
 #    a. The marginal effect of log_gdp when colonized = 0
@@ -128,5 +127,5 @@ analysis_data <- qog_data %>%
 **Questions:**
 1. How does the relationship between GDP and democracy differ between former colonies and never-colonized countries?
 2. Is the interaction statistically significant? What does this mean substantively?
-3. What are the intercepts for each group, and how do you interpret them?
+
 

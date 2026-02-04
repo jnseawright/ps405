@@ -6,7 +6,7 @@
     <meta name="author" content="Jaye Seawright" />
     <meta name="date" content="2026-02-23" />
     <script src="Interactions_files/header-attrs-2.30/header-attrs.js"></script>
-    <link href="Interactions_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet" />
+    <link href="Interactions_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
     <script src="Interactions_files/htmlwidgets-1.6.4/htmlwidgets.js"></script>
     <script src="Interactions_files/viz-1.8.2/viz.js"></script>
     <link href="Interactions_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
@@ -88,14 +88,14 @@ We need more complicated tools of statistical analysis to study mediators.
 ---
 ###Moderator
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-0e9d472f1d98f8e97c4d" style="width:80%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-0e9d472f1d98f8e97c4d">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR, layout = dot]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\"]\n  Y [label = \"Y (Democracy)\"]\n  M [label = \"M (Oil Wealth)\", fillcolor = lightyellow]\n  \n  // Main effect\n  X -> Y [label = \"β₁\"]\n  \n  // Moderation effect\n  M -> X [label = \"Moderates\", style = dashed, color = red]\n  \n  // Direct effect of moderator\n  M -> Y [label = \"β₂\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-6c683017131a123d2dff" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-6c683017131a123d2dff">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR, layout = dot]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\"]\n  Y [label = \"Y (Democracy)\"]\n  M [label = \"M (Oil Wealth)\", fillcolor = lightyellow]\n  \n  // Main effect\n  X -> Y [label = \"β₁\"]\n  \n  // Moderation effect\n  M -> X [label = \"Moderates\", style = dashed, color = red]\n  \n  // Direct effect of moderator\n  M -> Y [label = \"β₂\"]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 ###Mediator
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-e5a19d0cfca787e0874c" style="width:80%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-e5a19d0cfca787e0874c">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\", fillcolor = palegreen]\n  M [label = \"M (Education)\", fillcolor = lightyellow]\n  Y [label = \"Y (Democracy)\", fillcolor = lightblue]\n  \n  // Mediation paths\n  X -> M [label = \"α\", color = blue]\n  M -> Y [label = \"β\", color = blue]\n  \n  // Direct effect (optional)\n  X -> Y [label = \"Direct effect\", style = dashed, color = gray]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-cd0c05d70cf160dd82a8" style="width:80%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-cd0c05d70cf160dd82a8">{"x":{"diagram":"\ndigraph {\n  graph [rankdir = LR]\n  node [shape = box, style = filled, fillcolor = lightblue]\n  \n  X [label = \"X (GDP)\", fillcolor = palegreen]\n  M [label = \"M (Education)\", fillcolor = lightyellow]\n  Y [label = \"Y (Democracy)\", fillcolor = lightblue]\n  \n  // Mediation paths\n  X -> M [label = \"α\", color = blue]\n  M -> Y [label = \"β\", color = blue]\n  \n  // Direct effect (optional)\n  X -> Y [label = \"Direct effect\", style = dashed, color = gray]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 
