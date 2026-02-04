@@ -143,6 +143,20 @@ econvoteplot.line &lt;- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
 ---
 
 
+``` r
+econvoteplot.resids &lt;- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+    geom_smooth(method = "lm", se = TRUE) +
+    # Add vertical residual lines
+    geom_segment(aes(xend = growth, yend = predict(lm(vote ~ growth, data = hibbs))), 
+                 color = "maroon", alpha = 1, linetype = "dashed", linewidth=1) +
+    geom_text(size = 3) +
+    scale_x_continuous(labels = function(x) paste0(x, "%")) +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    labs(title = "Forecasting the Election from the Economy",
+         x = "Average recent growth in personal income",
+         y = "Incumbent party's vote share") +
+    theme_minimal()
+```
 
 ---
 
@@ -188,6 +202,20 @@ Consider a regression with no explanatory variables.
 ---
 
 
+``` r
+econvoteplot.constant &lt;- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
+    geom_smooth(method = "lm", formula = y ~ 1, se = TRUE) +
+    # Add vertical residual lines
+    geom_segment(aes(xend = growth, yend = predict(lm(vote ~ 1, data = hibbs))), 
+                 color = "navy", alpha = 1, linetype = "dashed", linewidth=1) +
+    geom_text(size = 3) +
+    scale_x_continuous(labels = function(x) paste0(x, "%")) +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    labs(title = "Forecasting the Election from the Economy",
+         x = "Average recent growth in personal income",
+         y = "Incumbent party's vote share") +
+    theme_minimal()
+```
 
 ---
 

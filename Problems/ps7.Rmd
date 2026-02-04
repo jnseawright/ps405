@@ -11,20 +11,10 @@
 ## Problem 1      ##
 ####################
 
-## 1a. 
 
 1. Define statistical power in your own words.
-2. Explain the relationship between Type I error (α), Type II error (β), and power.
+2. Explain the relationship between Type I error ($\alpha$), Type II error ($\beta$), and power.
 
-## 1b. 
-
-For each of the following factors, explain how increasing it affects statistical power (holding other factors constant), and provide the mathematical relationship:
-
-1. Sample size (n)
-2. Effect size (β or d)
-3. Significance level (α)
-4. Variance/standard deviation of the outcome
-5. Predictor variance
 
 ---
 

@@ -117,7 +117,7 @@ econvoteplot.line
 
 ---
 
-```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
 econvoteplot.resids <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
     geom_smooth(method = "lm", se = TRUE) +
     # Add vertical residual lines
@@ -162,7 +162,7 @@ Consider a regression with no explanatory variables.
 
 ---
 
-```{r, echo = FALSE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
+```{r, echo = TRUE, eval=TRUE, out.width="70%", fig.retina = 1, fig.align='center'}
 econvoteplot.constant <- ggplot(hibbs, aes(x = growth, y = vote, label = year)) +
     geom_smooth(method = "lm", formula = y ~ 1, se = TRUE) +
     # Add vertical residual lines
