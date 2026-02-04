@@ -31,6 +31,7 @@
 * [Problem Set 2](https://jnseawright.github.io/ps405/Problems/ps2.html) 
 * [Problem Set 2 Solution](https://jnseawright.github.io/ps405/Problems/ps2-answers.pdf)
 * [Problem Set 3](https://jnseawright.github.io/ps405/Problems/ps3.html)
+* [Problem Set 3 Solution](https://jnseawright.github.io/ps405/Problems/ps3-answers.pdf)
 * [Problem Set 4](https://jnseawright.github.io/ps405/Problems/ps4.html)
 * [Problem Set 5](https://jnseawright.github.io/ps405/Problems/ps5.html)
 * [Problem Set 6](https://jnseawright.github.io/ps405/Problems/ps6.html)
