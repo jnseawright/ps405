@@ -370,34 +370,15 @@ display: none;
 <h2>Problem 1</h2>
 <div id="section-3" class="section level20">
 <p class="heading"></p>
-</div>
-</div>
-<div id="a." class="section level2">
-<h2>1a.</h2>
 <ol style="list-style-type: decimal">
 <li><p>Define heteroskedasticity in your own words. Why is it common in
-political science data? Provide three specific examples from different
-subfields (e.g., comparative politics, international relations, American
-politics).</p></li>
-<li><p>Consider the classical linear regression model assumptions. Which
-assumption does heteroskedasticity violate? What are the consequences
-for:</p>
-<ul>
-<li>Coefficient estimates</li>
-<li>Standard errors</li>
-<li>Hypothesis tests</li>
-<li>Confidence intervals</li>
-</ul></li>
+political science data? Provide three specific examples from at least
+two different subfields (e.g., comparative politics, international
+relations, American politics).</p></li>
 <li><p>Explain why OLS coefficient estimates remain unbiased under
 heteroskedasticity, but inference becomes invalid.</p></li>
 </ol>
 </div>
-<div id="b." class="section level2">
-<h2>1b.</h2>
-<ol style="list-style-type: decimal">
-<li>Why is HC3 generally recommended for political science applications?
-What are its advantages and disadvantages?</li>
-</ol>
 <div id="section-4" class="section level20">
 <p class="heading"></p>
 </div>
@@ -406,10 +387,6 @@ What are its advantages and disadvantages?</li>
 <h2>Problem 2</h2>
 <div id="section-5" class="section level20">
 <p class="heading"></p>
-</div>
-</div>
-<div id="a.-1" class="section level2">
-<h2>2a.</h2>
 <p>Using the QOG data on democracy and development:</p>
 <pre class="r"><code>library(rqog)
 library(dplyr)
@@ -453,33 +430,6 @@ standard errors? Which gives the smallest? 2. How do conclusions about
 statistical significance change across estimators? 3. Based on residual
 analysis, which estimator seems most appropriate for this data?</p>
 </div>
-<div id="b.-1" class="section level2">
-<h2>2b.</h2>
-<pre class="r"><code># Implement and interpret heteroskedasticity tests
-
-library(lmtest)
-library(skedastic)
-
-# Your tasks:
-# 1. Conduct the following tests on the model from 2a:
-#    a. Breusch-Pagan test
-#    b. White test (general and special cases)
-#    c. Goldfeld-Quandt test
-#    d. Score/LM test
-
-# 2. For each test:
-#    a. Report the test statistic and p-value
-#    b. Interpret the result
-#    c. Discuss the test&#39;s assumptions and limitations
-
-# 3. Create a residual plot that visualizes the heteroskedasticity pattern
-# 4. Based on both formal tests and visual inspection, would you recommend using robust SEs?
-
-# Advanced: Implement a permutation test for heteroskedasticity</code></pre>
-<p><strong>Questions:</strong> 1. Do the formal tests agree with each
-other? If not, why might this be? 2. What are the limitations of
-pre-testing for heteroskedasticity? 3. Why do many econometricians
-recommend always using robust SEs rather than testing first?</p>
 <div id="section-6" class="section level20">
 <p class="heading"></p>
 </div>
@@ -488,81 +438,32 @@ recommend always using robust SEs rather than testing first?</p>
 <h2>Problem 3</h2>
 <div id="section-7" class="section level20">
 <p class="heading"></p>
-</div>
-</div>
-<div id="a.-2" class="section level2">
-<h2>3a.</h2>
 <pre class="r"><code>library(modelsummary)
 library(fixest)
 library(kableExtra)
 
-# Use the models from Problem 2a to create professional tables
+# Use the results from problem 2 to create professional tables
 
 # Your tasks:
-# 1. Create a table comparing all models from 2a with:
+# 1. Create a table comparing the results from problem 2 with:
 #    a. Proper variable labels (not R variable names)
-#    b. Different standard errors for each model
+#    b. Appropriate standard errors
 #    c. Standard goodness-of-fit statistics
 #    d. Clear model labels
 
-# 2. Create two versions of the table:
-#    a. LaTeXormat (for APSR-style papers)
-#    b. HTML format (for online supplements)
-#    c. Word document format
-
-# 3. Add appropriate table notes:
+# 2. Add appropriate table notes:
 #    a. Explanation of standard errors
 #    b. Data sources
 #    c. Sample description
 
-# 4. Create a &quot;presentation&quot; version with:
-#    a. Color coding for significance
+# 3. Create a &quot;presentation&quot; version with:
+#    a. Some kind of representation of significance levels
 #    b. Rounded coefficients
 #    c. Clean formatting for slides
 
-# Example structure:
-models &lt;- list(
-  &quot;Pooled OLS&quot; = feols(democracy ~ log_gdp + corruption, data = qog_panel),
-  &quot;Country FE&quot; = feols(democracy ~ log_gdp + corruption | country, data = qog_panel),
-  &quot;Two-way FE&quot; = feols(democracy ~ log_gdp + corruption | country + year, data = qog_panel)
-)
 
 # Create the table with proper formatting</code></pre>
-<p><strong>Questions:</strong> 1. What information should always be
-included in a regression table? 2. How do you balance completeness with
-readability in table design? 3. What are common mistakes to avoid when
-creating regression tables?</p>
 </div>
-<div id="b.-2" class="section level2">
-<h2>3b.</h2>
-<pre class="r"><code># Compare different model specifications and presentation styles
-
-# Your tasks:
-# 1. Estimate a series of nested models (adding variables progressively)
-# 2. Create a table that shows:
-#    a. Coefficients with stars for significance
-#    b. Standard errors in parentheses
-#    c. Model fit statistics at the bottom
-#    d. Notes explaining estimation details
-
-# 3. Experiment with different presentation styles:
-#    a. Coefficients with confidence intervals instead of SEs
-#    b. Standardized coefficients (beta coefficients)
-#    c. Marginal effects for nonlinear models
-#    d. Multiple panels (e.g., different samples or periods)
-
-# 4. Create an &quot;appendix table&quot; with:
-#    a. Additional robustness checks
-#    b. Alternative specifications
-#    c. Different estimation methods
-
-# 5. Write a brief methods section (2-3 paragraphs) that would accompany
-#    your table in a journal article, explaining your estimation strategy
-#    and inference procedures</code></pre>
-<p><strong>Questions:</strong> 1. When should you report confidence
-intervals instead of standard errors? 2. How do you decide which
-goodness-of-fit statistics to include? 3. What information belongs in
-the table vs. in the notes vs. in the text?</p>
 </div>
 
 

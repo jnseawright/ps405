@@ -9,28 +9,14 @@
 ## Problem 1      ##
 ####################
 
-## 1a.
+1. Define heteroskedasticity in your own words. Why is it common in political science data? Provide three specific examples from at least two different subfields (e.g., comparative politics, international relations, American politics).
 
-1. Define heteroskedasticity in your own words. Why is it common in political science data? Provide three specific examples from different subfields (e.g., comparative politics, international relations, American politics).
-
-2. Consider the classical linear regression model assumptions. Which assumption does heteroskedasticity violate? What are the consequences for:
-   - Coefficient estimates
-   - Standard errors
-   - Hypothesis tests
-   - Confidence intervals
-
-3. Explain why OLS coefficient estimates remain unbiased under heteroskedasticity, but inference becomes invalid.
-
-## 1b.
-
-1. Why is HC3 generally recommended for political science applications? What are its advantages and disadvantages?
+2. Explain why OLS coefficient estimates remain unbiased under heteroskedasticity, but inference becomes invalid.
 
 
 ####################
 ## Problem 2      ##
 ####################
-
-## 2a.
 
 Using the QOG data on democracy and development:
 
@@ -79,117 +65,35 @@ model <- lm(democracy ~ log_gdp + corruption + log_pop,
 2. How do conclusions about statistical significance change across estimators?
 3. Based on residual analysis, which estimator seems most appropriate for this data?
 
-## 2b.
 
-```{r problem2b, eval=FALSE}
-# Implement and interpret heteroskedasticity tests
-
-library(lmtest)
-library(skedastic)
-
-# Your tasks:
-# 1. Conduct the following tests on the model from 2a:
-#    a. Breusch-Pagan test
-#    b. White test (general and special cases)
-#    c. Goldfeld-Quandt test
-#    d. Score/LM test
-
-# 2. For each test:
-#    a. Report the test statistic and p-value
-#    b. Interpret the result
-#    c. Discuss the test's assumptions and limitations
-
-# 3. Create a residual plot that visualizes the heteroskedasticity pattern
-# 4. Based on both formal tests and visual inspection, would you recommend using robust SEs?
-
-# Advanced: Implement a permutation test for heteroskedasticity
-```
-
-**Questions:**
-1. Do the formal tests agree with each other? If not, why might this be?
-2. What are the limitations of pre-testing for heteroskedasticity?
-3. Why do many econometricians recommend always using robust SEs rather than testing first?
 
 ####################
 ## Problem 3      ##
 ####################
 
-## 3a.
 
 ```{r problem3a, eval=FALSE}
-library(modelsummary)
-library(fixest)
-library(kableExtra)
-
-# Use the models from Problem 2a to create professional tables
+# Use the results from problem 2 to create professional tables
 
 # Your tasks:
-# 1. Create a table comparing all models from 2a with:
+# 1. Create a table displaying the best results from problem 2 with:
 #    a. Proper variable labels (not R variable names)
-#    b. Different standard errors for each model
+#    b. Appropriate standard errors
 #    c. Standard goodness-of-fit statistics
 #    d. Clear model labels
 
-# 2. Create two versions of the table:
-#    a. LaTeXormat (for APSR-style papers)
-#    b. HTML format (for online supplements)
-#    c. Word document format
-
-# 3. Add appropriate table notes:
+# 2. Add appropriate table notes:
 #    a. Explanation of standard errors
 #    b. Data sources
 #    c. Sample description
 
-# 4. Create a "presentation" version with:
-#    a. Color coding for significance
+# 3. Create a "presentation" version with:
+#    a. Some kind of representation of significance levels
 #    b. Rounded coefficients
 #    c. Clean formatting for slides
 
-# Example structure:
-models <- list(
-  "Pooled OLS" = feols(democracy ~ log_gdp + corruption, data = qog_panel),
-  "Country FE" = feols(democracy ~ log_gdp + corruption | country, data = qog_panel),
-  "Two-way FE" = feols(democracy ~ log_gdp + corruption | country + year, data = qog_panel)
-)
 
 # Create the table with proper formatting
 ```
 
-**Questions:**
-1. What information should always be included in a regression table?
-2. How do you balance completeness with readability in table design?
-3. What are common mistakes to avoid when creating regression tables?
 
-## 3b.
-
-```{r problem3b, eval=FALSE}
-# Compare different model specifications and presentation styles
-
-# Your tasks:
-# 1. Estimate a series of nested models (adding variables progressively)
-# 2. Create a table that shows:
-#    a. Coefficients with stars for significance
-#    b. Standard errors in parentheses
-#    c. Model fit statistics at the bottom
-#    d. Notes explaining estimation details
-
-# 3. Experiment with different presentation styles:
-#    a. Coefficients with confidence intervals instead of SEs
-#    b. Standardized coefficients (beta coefficients)
-#    c. Marginal effects for nonlinear models
-#    d. Multiple panels (e.g., different samples or periods)
-
-# 4. Create an "appendix table" with:
-#    a. Additional robustness checks
-#    b. Alternative specifications
-#    c. Different estimation methods
-
-# 5. Write a brief methods section (2-3 paragraphs) that would accompany
-#    your table in a journal article, explaining your estimation strategy
-#    and inference procedures
-```
-
-**Questions:**
-1. When should you report confidence intervals instead of standard errors?
-2. How do you decide which goodness-of-fit statistics to include?
-3. What information belongs in the table vs. in the notes vs. in the text?

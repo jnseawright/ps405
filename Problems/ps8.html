@@ -375,16 +375,7 @@ display: none;
 </div>
 <div id="a." class="section level2">
 <h2>1a.</h2>
-<ol style="list-style-type: decimal">
-<li><p>Explain the three main purposes of variable transformations in
-regression analysis. Provide a political science example for
-each.</p></li>
-<li><p>Compare and contrast the following transformations:</p>
-<ul>
-<li><span class="math inline">\(\log(X)\)</span> vs. <span class="math inline">\(\sqrt{X}\)</span></li>
-<li><span class="math inline">\(\text{asinh}(X)\)</span> vs. <span class="math inline">\(\log(X + 1)\)</span></li>
-</ul></li>
-</ol>
+<p>Compare and contrast the following transformations: - <span class="math inline">\(\log(X)\)</span> vs. <span class="math inline">\(\sqrt{X}\)</span> - <span class="math inline">\(\text{asinh}(X)\)</span> vs. <span class="math inline">\(\log(X + 1)\)</span></p>
 </div>
 <div id="b." class="section level2">
 <h2>1b.</h2>
@@ -402,10 +393,6 @@ data(kidiq)
 # 2. Create a table comparing coefficients
 # 3. Interpret the interaction term in each model
 # 4. Explain why centering matters for interpretation</code></pre>
-<p><strong>Questions:</strong> 1. How does the interpretation of the
-main effect of <code>mom_hs</code> change across models? 2. What is the
-advantage of Gelman’s “divide by 2 SDs” approach? 3. When would you use
-z-scores vs. mean-centering?</p>
 <hr />
 <div id="section-4" class="section level20">
 <p class="heading"></p>
@@ -415,10 +402,6 @@ z-scores vs. mean-centering?</p>
 <h2>Problem 2</h2>
 <div id="section-5" class="section level20">
 <p class="heading"></p>
-</div>
-</div>
-<div id="a.-1" class="section level2">
-<h2>2a.</h2>
 <p>Using QOG data:</p>
 <pre class="r"><code>library(rqog)
 library(dplyr)
@@ -451,8 +434,7 @@ democracy_data &lt;- qog_data %&gt;%
 
 # 2. For each model:
 #    a. Create residual plots
-#    b. Calculate R² and RMSE
-#    c. Interpret coefficients substantively
+#    b. Interpret coefficients substantively
 
 # 3. Create a visualization comparing predicted vs. actual values
 #    for all four models on the original scale
@@ -461,48 +443,8 @@ democracy_data &lt;- qog_data %&gt;%
 #    democracy ~ poly(log_gdp, 2)
 #    democracy ~ poly(log_gdp, 3)</code></pre>
 <p><strong>Questions:</strong> 1. Which transformation provides the best
-fit? Justify using both statistical and substantive criteria. 2. How do
-you interpret the coefficient for <code>log_gdp</code> in the log-X
-model? 3. What are the challenges of using log transformations with
-bounded variables (0-1 scale)?</p>
+fit? Justify using both statistical and substantive criteria.</p>
 </div>
-<div id="b.-handling-zeros-and-special-cases" class="section level2">
-<h2>2b. Handling Zeros and Special Cases</h2>
-<pre class="r"><code># Simulate data with zeros and negative values
-set.seed(123)
-n &lt;- 500
-sim_data &lt;- data.frame(
-  x = rnorm(n, mean = 100, sd = 50),
-  # Create outcome with some zeros and negatives
-  y_raw = 100 + 2*x + rnorm(n, 0, 50),
-  # Add measurement that can be negative (e.g., trade balance)
-  trade_balance = rnorm(n, mean = 0, sd = 1000)
-) %&gt;%
-  mutate(
-    # Create version with zeros (e.g., no conflict)
-    conflict_dummy = ifelse(y_raw &gt; median(y_raw), 1, 0),
-    # Create strictly positive variable with zeros
-    aid_amount = pmax(y_raw, 0),
-    # Create count-like variable
-    protest_count = round(pmax(y_raw/10, 0))
-  )
-
-# Your tasks:
-# 1. Compare transformations for aid_amount (has zeros):
-#    a. log(aid_amount + 1)
-#    b. sqrt(aid_amount)
-#    c. asinh(aid_amount)
-# 2. For trade_balance (can be negative):
-#    a. Why can&#39;t we use log transformation?
-#    b. What alternatives exist?
-# 3. For protest_count (count data):
-#    a. Compare: linear, sqrt, log, and Poisson GLM</code></pre>
-<p><strong>Questions:</strong> 1. When should you use
-<code>asinh()</code> instead of <code>log(x + 1)</code>? 2. What are the
-substantive implications of different transformations for interpreting
-effects? 3. How would you decide between transformations and GLMs for
-count data?</p>
-<hr />
 <div id="section-6" class="section level20">
 <p class="heading"></p>
 </div>
@@ -511,21 +453,7 @@ count data?</p>
 <h2>Problem 3</h2>
 <div id="section-7" class="section level20">
 <p class="heading"></p>
-</div>
-</div>
-<div id="a.-2" class="section level2">
-<h2>3a.</h2>
-<ol style="list-style-type: decimal">
-<li>Explain what each of these diagnostic plots reveals about model
-assumptions:
-<ul>
-<li>Residuals vs. fitted values</li>
-<li>Q-Q plot of residuals</li>
-<li>Scale-location plot</li>
-<li>Residuals vs. leverage plot</li>
-</ul></li>
-<li>Using the democracy models from Problem 2:</li>
-</ol>
+<p>Using the democracy model from Problem 2:</p>
 <pre class="r"><code># Choose the best model from Problem 2
 best_model &lt;- lm(democracy ~ log_gdp, data = democracy_data)
 
@@ -533,45 +461,15 @@ best_model &lt;- lm(democracy ~ log_gdp, data = democracy_data)
 library(ggplot2)
 library(patchwork)
 
-# 1. Create all four diagnostic plots using base R and ggplot2
-# 2. Calculate and plot influence statistics (Cook&#39;s distance, DFFITS)
+# 1. Create all four diagnostic plots (residuals vs. fitted values, Q-Q plot of residuals, scale-location plot, and residuals vs. leverage plot) 
+# 2. Calculate and plot relevant influence statistics (Cook&#39;s distance and/or DFFITS at your discretion)
 # 3. Identify influential observations
-# 4. Test for heteroskedasticity (Breusch-Pagan test)
-# 5. Check for nonlinearity using residual plots against predictors
-
-# Your analysis should include:
-# - Identification of problematic observations
-# - Assessment of whether assumptions are violated
-# - Recommendations for model improvement</code></pre>
+# 4. Test for heteroskedasticity (Breusch-Pagan test)</code></pre>
 <p><strong>Questions:</strong> 1. Which countries are influential
 observations in your model? Why? 2. Is there evidence of
 heteroskedasticity? What are the implications? 3. Are the residuals
 normally distributed? Why does this matter?</p>
 </div>
-<div id="b.-1" class="section level2">
-<h2>3b.</h2>
-<pre class="r"><code># Implement cross-validation for model comparison
-set.seed(123)
-
-# Your tasks:
-# 1. Implement k-fold cross-validation (k=10) for:
-#    a. Linear model: democracy ~ gdp_pc
-#    b. Log model: democracy ~ log_gdp
-#    c. Polynomial model: democracy ~ poly(log_gdp, 2)
-
-# 2. Calculate and compare:
-#    a. Mean squared error (MSE) for each model
-#    b. Mean absolute error (MAE)
-#    c. R² in each fold
-
-# 3. Create visualization comparing cross-validation performance
-
-# 4. Implement leave-one-out cross-validation for the best model
-#    and compare with k-fold results</code></pre>
-<p><strong>Questions:</strong> 1. Which model performs best in
-cross-validation? Does this match in-sample performance? 2. What are the
-advantages of k-fold CV vs. leave-one-out CV? 3. How much does model
-performance vary across folds?</p>
 </div>
 
 

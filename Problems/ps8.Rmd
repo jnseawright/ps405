@@ -13,11 +13,9 @@
 
 ## 1a.
 
-1. Explain the three main purposes of variable transformations in regression analysis. Provide a political science example for each.
-
-2. Compare and contrast the following transformations:
-   - $\log(X)$ vs. $\sqrt{X}$
-   - $\text{asinh}(X)$ vs. $\log(X + 1)$
+Compare and contrast the following transformations:
+ - $\log(X)$ vs. $\sqrt{X}$
+ - $\text{asinh}(X)$ vs. $\log(X + 1)$
 
 ## 1b.
 
@@ -39,10 +37,6 @@ data(kidiq)
 # 4. Explain why centering matters for interpretation
 ```
 
-**Questions:**
-1. How does the interpretation of the main effect of `mom_hs` change across models?
-2. What is the advantage of Gelman's "divide by 2 SDs" approach?
-3. When would you use z-scores vs. mean-centering?
 
 ---
 
@@ -50,7 +44,6 @@ data(kidiq)
 ## Problem 2      ##
 ####################
 
-## 2a.
 
 Using QOG data:
 
@@ -86,8 +79,7 @@ democracy_data <- qog_data %>%
 
 # 2. For each model:
 #    a. Create residual plots
-#    b. Calculate R² and RMSE
-#    c. Interpret coefficients substantively
+#    b. Interpret coefficients substantively
 
 # 3. Create a visualization comparing predicted vs. actual values
 #    for all four models on the original scale
@@ -99,63 +91,14 @@ democracy_data <- qog_data %>%
 
 **Questions:**
 1. Which transformation provides the best fit? Justify using both statistical and substantive criteria.
-2. How do you interpret the coefficient for `log_gdp` in the log-X model?
-3. What are the challenges of using log transformations with bounded variables (0-1 scale)?
 
-## 2b. Handling Zeros and Special Cases
 
-```{r problem2b, eval=FALSE}
-# Simulate data with zeros and negative values
-set.seed(123)
-n <- 500
-sim_data <- data.frame(
-  x = rnorm(n, mean = 100, sd = 50),
-  # Create outcome with some zeros and negatives
-  y_raw = 100 + 2*x + rnorm(n, 0, 50),
-  # Add measurement that can be negative (e.g., trade balance)
-  trade_balance = rnorm(n, mean = 0, sd = 1000)
-) %>%
-  mutate(
-    # Create version with zeros (e.g., no conflict)
-    conflict_dummy = ifelse(y_raw > median(y_raw), 1, 0),
-    # Create strictly positive variable with zeros
-    aid_amount = pmax(y_raw, 0),
-    # Create count-like variable
-    protest_count = round(pmax(y_raw/10, 0))
-  )
-
-# Your tasks:
-# 1. Compare transformations for aid_amount (has zeros):
-#    a. log(aid_amount + 1)
-#    b. sqrt(aid_amount)
-#    c. asinh(aid_amount)
-# 2. For trade_balance (can be negative):
-#    a. Why can't we use log transformation?
-#    b. What alternatives exist?
-# 3. For protest_count (count data):
-#    a. Compare: linear, sqrt, log, and Poisson GLM
-```
-
-**Questions:**
-1. When should you use `asinh()` instead of `log(x + 1)`?
-2. What are the substantive implications of different transformations for interpreting effects?
-3. How would you decide between transformations and GLMs for count data?
-
----
 
 ####################
 ## Problem 3      ##
 ####################
 
-## 3a.
-
-1. Explain what each of these diagnostic plots reveals about model assumptions:
-   - Residuals vs. fitted values
-   - Q-Q plot of residuals
-   - Scale-location plot
-   - Residuals vs. leverage plot
-
-2. Using the democracy models from Problem 2:
+Using the democracy model from Problem 2:
 
 ```{r problem3a, eval=FALSE}
 # Choose the best model from Problem 2
@@ -165,16 +108,12 @@ best_model <- lm(democracy ~ log_gdp, data = democracy_data)
 library(ggplot2)
 library(patchwork)
 
-# 1. Create all four diagnostic plots using base R and ggplot2
-# 2. Calculate and plot influence statistics (Cook's distance, DFFITS)
+# 1. Create all four diagnostic plots (residuals vs. fitted values, Q-Q plot of residuals, scale-location plot, and residuals vs. leverage plot) 
+# 2. Calculate and plot relevant influence statistics (Cook's distance and/or DFFITS at your discretion)
 # 3. Identify influential observations
 # 4. Test for heteroskedasticity (Breusch-Pagan test)
-# 5. Check for nonlinearity using residual plots against predictors
 
-# Your analysis should include:
-# - Identification of problematic observations
-# - Assessment of whether assumptions are violated
-# - Recommendations for model improvement
+
 ```
 
 **Questions:**
@@ -182,30 +121,4 @@ library(patchwork)
 2. Is there evidence of heteroskedasticity? What are the implications?
 3. Are the residuals normally distributed? Why does this matter?
 
-## 3b.
 
-```{r problem3b, eval=FALSE}
-# Implement cross-validation for model comparison
-set.seed(123)
-
-# Your tasks:
-# 1. Implement k-fold cross-validation (k=10) for:
-#    a. Linear model: democracy ~ gdp_pc
-#    b. Log model: democracy ~ log_gdp
-#    c. Polynomial model: democracy ~ poly(log_gdp, 2)
-
-# 2. Calculate and compare:
-#    a. Mean squared error (MSE) for each model
-#    b. Mean absolute error (MAE)
-#    c. R² in each fold
-
-# 3. Create visualization comparing cross-validation performance
-
-# 4. Implement leave-one-out cross-validation for the best model
-#    and compare with k-fold results
-```
-
-**Questions:**
-1. Which model performs best in cross-validation? Does this match in-sample performance?
-2. What are the advantages of k-fold CV vs. leave-one-out CV?
-3. How much does model performance vary across folds?
