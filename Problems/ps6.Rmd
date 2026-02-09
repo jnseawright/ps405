@@ -32,7 +32,7 @@ model1 <- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)),
 1. Extract and compare the standard errors. Which are larger?
 2. Calculate the t-statistics manually (i.e., using a calculator or direct math in R and not just summary): $t = \frac{\hat{\beta}}{SE(\hat{\beta})}$
 3. Compute p-values for both sets of standard errors
-4. At α = 0.05, would you reject the null hypothesis for each coefficient in both models?
+4. At $\alpha$ = 0.05, would you reject the null hypothesis for each coefficient in both models?
 
 
 **1b.**

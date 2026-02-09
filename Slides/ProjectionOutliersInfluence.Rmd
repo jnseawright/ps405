@@ -173,7 +173,7 @@ $$\hat\beta= (\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}^TY$$
 
 $$\hat Y = \mathbb{X} (\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}^TY$$
 
-We call $(\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}$ the *projection matrix* ($\mathbb{P_X}$) or the *hat matrix* ($\mathbb{H}$).
+We call $\mathbb{X} (\mathbb{X}^T\mathbb{X})^{-1}\mathbb{X}^T$ the *projection matrix* ($\mathbb{P_X}$) or the *hat matrix* ($\mathbb{H}$).
 
 ---
 
