@@ -4,6 +4,10 @@
 
 [Syllabus](https://jnseawright.github.io/ps405/syllabus.html)
 
+### Quizzes
+
+* [Quiz 1 (Feb. 12-13)](https://canvas.northwestern.edu/courses/245562/quizzes/290025)
+
 ### Slides and Code from Seminar
 
 * [1: Introduction](https://jnseawright.github.io/ps405/Slides/Intro.html#1)
