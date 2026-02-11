@@ -369,9 +369,8 @@ collaborate with others or use external code without citation.</p>
 inference</em>. Provide a political science example for each.</li>
 <li>What does it mean for OLS to be the “Best Linear Unbiased Estimator”
 (BLUE)? Under what assumptions does this hold?</li>
-<li>Describe two ways in which omitted variable bias can threaten causal
-claims in political science. Give an example from a real or hypothetical
-study.</li>
+<li>How can omitted variable bias threaten regressions? Give an example
+from a real or hypothetical study.</li>
 </ol>
 <hr />
 </div>
@@ -383,13 +382,8 @@ Y_i = \beta_0 + \beta_1 X_i + \varepsilon_i
 \]</span></p>
 <p>where <span class="math inline">\(\varepsilon_i \sim N(0,
 \sigma^2)\)</span>.</p>
-<ol style="list-style-type: decimal">
-<li>What are the conditions needed for this model to be unbiased,
-consistent, the best linear unbiased estimator, and the best unbiased
-estimator?</li>
-<li>Explain in words what the Gauss-Markov theorem guarantees about the
-OLS estimator in this context.</li>
-</ol>
+<p>Explain in words what the Gauss-Markov theorem guarantees about the
+OLS estimator in this context.</p>
 <hr />
 </div>
 <div id="problem-3-multiple-regression-interpretation-20" class="section level2">
@@ -416,8 +410,8 @@ and demographic variables.</p>
 <li>Estimate a linear model where <code>turnout</code> is the dependent
 variable and <code>uninsued_pct</code>, <code>college</code>, and
 <code>cig_tax</code> are independent variables.</li>
-<li>Interpret each coefficient in substantive terms. How would you
-explain the relationship between income and turnout to a non-technical
+<li>Interpret the results in substantive terms. How would you explain
+the relationship between income and turnout to a non-technical
 audience?</li>
 <li>Assess multicollinearity using Variance Inflation Factors (VIFs).
 Discuss whether it is a concern here.</li>
@@ -437,8 +431,6 @@ Discuss whether it is a concern here.</li>
 <li>Conduct a Breusch-Pagan test for heteroskedasticity. If present,
 re-estimate the model with robust standard errors using
 <code>sandwich</code> and <code>lmtest</code>.</li>
-<li>Compare the model fit (using <code>broom::glance</code>) before and
-after adjusting for heteroskedasticity. What changes?</li>
 </ol>
 <hr />
 </div>

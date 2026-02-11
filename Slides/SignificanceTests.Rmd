@@ -186,7 +186,7 @@ $$\frac{1}{\sqrt{n}}\sum_{i=1}^{n}(X_{i} \epsilon_{i}) \overset{d}{\to} \mathcal
 
 Doing the matrix math, it turns out that we can connect this back to what we really care about, the OLS estimator:
 
-$$\sqrt{n}(\hat \beta_{OLS} - \beta) \overset{d}{\to} \mathcal{N}(0,\text{E}(X_{i} X_{i}^T)^{-1} \text{E}(e_i^2 X_{i} X_{i}^T)\text{E}(X_{i} X_{i}^T)^{-1}$$
+$$\small\sqrt{n}(\hat \beta_{OLS} - \beta) \overset{d}{\to} \mathcal{N}(0,\text{E}(X_{i} X_{i}^T)^{-1} \text{E}(e_i^2 X_{i} X_{i}^T)\text{E}(X_{i} X_{i}^T)^{-1})$$
 
 This is all very enlightening, but without estimates of the key quantities, it may not be too useful.
 
@@ -259,6 +259,11 @@ library(rqog)
 library(lmtest)
 library(sandwich)
 qogts <- read_qog(which_data="standard", data_type = "time-series")
+```
+
+---
+
+```{r, echo = TRUE, eval=TRUE, out.width="90%", fig.retina = 1, fig.align='center'}
 deminternet.lm <- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)), data=qogts)
 robust_deminternet_vcov <- vcovHC(deminternet.lm, type = "HC3")
 coeftest(deminternet.lm, vcov = robust_deminternet_vcov)
@@ -281,6 +286,8 @@ Perhaps it's true that the actual CEF is linear! Let's assume the following:
 $$Y = \mathbf{X}\beta + \epsilon$$
 
 $$\text{E}(\epsilon | \mathbf{X}) = 0$$
+
+$$\text{cov}(\epsilon_{i},  \epsilon_{j}) = 0 \forall i \neq j$$
 
 Let's also impose that $\text{E}(X X^T) > 0$ and is invertible, i.e., positive definite.
 
@@ -353,9 +360,9 @@ So, let's review.
 
 ---
 
-4. If we add homoskedasticity, we get simpler estimates of standard errors and the result that regression is the best linear unbiased estimator (BLUE).
+4\. If we add homoskedasticity, we get simpler estimates of standard errors and the result that regression is the best linear unbiased estimator (BLUE).
 
-5. If we assume that errors are conditionally normally distributed, we get exact distributions for test statistics.
+5\. If we assume that errors are conditionally normally distributed, we get exact distributions for test statistics.
 
 ---
 

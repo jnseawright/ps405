@@ -174,7 +174,7 @@ Then the theorem implies:
 
 Doing the matrix math, it turns out that we can connect this back to what we really care about, the OLS estimator:
 
-`$$\sqrt{n}(\hat \beta_{OLS} - \beta) \overset{d}{\to} \mathcal{N}(0,\text{E}(X_{i} X_{i}^T)^{-1} \text{E}(e_i^2 X_{i} X_{i}^T)\text{E}(X_{i} X_{i}^T)^{-1}$$`
+`$$\small\sqrt{n}(\hat \beta_{OLS} - \beta) \overset{d}{\to} \mathcal{N}(0,\text{E}(X_{i} X_{i}^T)^{-1} \text{E}(e_i^2 X_{i} X_{i}^T)\text{E}(X_{i} X_{i}^T)^{-1})$$`
 
 This is all very enlightening, but without estimates of the key quantities, it may not be too useful.
 
@@ -272,12 +272,15 @@ qogts &lt;- read_qog(which_data="standard", data_type = "time-series")
 ## Local file not found. 
 ## Downloading QoG qog_std_ts_jan23.csv data 
 ## from http://www.qogdata.pol.gu.se/data/qog_std_ts_jan23.csv
-## in file: C:\Users\jnsno\AppData\Local\Temp\RtmpaYb7On/rqog/qog_std_ts_jan23.csv
+## in file: C:\Users\jws780\AppData\Local\Temp\Rtmp6XNV0L/rqog/qog_std_ts_jan23.csv
 ```
 
 ```
-## Reading cache file C:\Users\jnsno\AppData\Local\Temp\RtmpaYb7On/rqog/qog_std_ts_jan23.csv
+## Reading cache file C:\Users\jws780\AppData\Local\Temp\Rtmp6XNV0L/rqog/qog_std_ts_jan23.csv
 ```
+
+---
+
 
 ``` r
 deminternet.lm &lt;- lm(vdem_libdem ~ wdi_broadb + I(log(wdi_gdpcappppcon2017)), data=qogts)
@@ -337,6 +340,8 @@ Perhaps it's true that the actual CEF is linear! Let's assume the following:
 `$$Y = \mathbf{X}\beta + \epsilon$$`
 
 `$$\text{E}(\epsilon | \mathbf{X}) = 0$$`
+
+`$$\text{cov}(\epsilon_{i},  \epsilon_{j}) = 0 \forall i \neq j$$`
 
 Let's also impose that `\(\text{E}(X X^T) &gt; 0\)` and is invertible, i.e., positive definite.
 
@@ -409,9 +414,9 @@ So, let's review.
 
 ---
 
-4. If we add homoskedasticity, we get simpler estimates of standard errors and the result that regression is the best linear unbiased estimator (BLUE).
+4\. If we add homoskedasticity, we get simpler estimates of standard errors and the result that regression is the best linear unbiased estimator (BLUE).
 
-5. If we assume that errors are conditionally normally distributed, we get exact distributions for test statistics.
+5\. If we assume that errors are conditionally normally distributed, we get exact distributions for test statistics.
 
 ---
 

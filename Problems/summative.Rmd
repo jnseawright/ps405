@@ -12,7 +12,7 @@ In your own words, answer the following:
 
 1. Explain the difference between using regression for *description*, *prediction*, and *causal inference*. Provide a political science example for each.
 2. What does it mean for OLS to be the "Best Linear Unbiased Estimator" (BLUE)? Under what assumptions does this hold?
-3. Describe two ways in which omitted variable bias can threaten causal claims in political science. Give an example from a real or hypothetical study.
+3. How can omitted variable bias threaten regressions? Give an example from a real or hypothetical study.
 
 ---
 
@@ -26,8 +26,7 @@ Y_i = \beta_0 + \beta_1 X_i + \varepsilon_i
 
 where \(\varepsilon_i \sim N(0, \sigma^2)\).
 
-1. What are the conditions needed for this model to be unbiased, consistent, the best linear unbiased estimator, and the best unbiased estimator? 
-2. Explain in words what the Gauss-Markov theorem guarantees about the OLS estimator in this context.
+Explain in words what the Gauss-Markov theorem guarantees about the OLS estimator in this context.
 
 ---
 
@@ -50,7 +49,7 @@ data("states")
 ```
 
 1. Estimate a linear model where `turnout` is the dependent variable and `uninsued_pct`, `college`, and `cig_tax` are independent variables.
-2. Interpret each coefficient in substantive terms. How would you explain the relationship between income and turnout to a non-technical audience?
+2. Interpret the results in substantive terms. How would you explain the relationship between income and turnout to a non-technical audience?
 3. Assess multicollinearity using Variance Inflation Factors (VIFs). Discuss whether it is a concern here.
 
 ---
@@ -64,7 +63,7 @@ Using the model from Problem 3:
    - Q-Q plot of residuals
    - Scale-Location plot
 2. Conduct a Breusch-Pagan test for heteroskedasticity. If present, re-estimate the model with robust standard errors using `sandwich` and `lmtest`.
-3. Compare the model fit (using `broom::glance`) before and after adjusting for heteroskedasticity. What changes?
+
 
 ---
 
@@ -87,5 +86,5 @@ Prepare a publication-quality regression table and figure.
    - The model from Problem 3 (without nonlinarity)
    - Any changes to the model from Problem 5 (potentially with nonlinearity)
    - Include robust standard errors in parentheses.
-2. Create a professional scatterplot with a regression line (using `ggplot2`) showing the relationship between `uninsured_pct` and `college.`
+2. Create a professional scatterplot with a regression line (using `ggplot2`) showing the relationship between `college` and `turnout.`
 3. Write a short abstract (≤150 words) summarizing one key finding from your analysis, as if for a political science journal.

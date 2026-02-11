@@ -189,11 +189,11 @@ When will cases have large scores of $|\hat \beta_{-i} - \hat \beta|$?
 
 ---
 
-1. Cases with $\mathbf{X}_i$ near $\bar{\mathbf{X}}$ have low *leverage* because regression with an intercept minimizes squared residuals subject to passing through $(\bar{\mathbf{X}},\bar{\mathbf{y}})$. Imagine a seesaw pivoted at its center—weights near the pivot have less effect on its tilt than weights at the ends. Similarly, observations near the multidimensional mean provide less 'leverage' to change regression coefficients.
+1\. Cases with $\mathbf{X}_i$ near $\bar{\mathbf{X}}$ have low *leverage* because regression with an intercept minimizes squared residuals subject to passing through $(\bar{\mathbf{X}},\bar{\mathbf{y}})$. Imagine a seesaw pivoted at its center—weights near the pivot have less effect on its tilt than weights at the ends. Similarly, observations near the multidimensional mean provide less 'leverage' to change regression coefficients.
 
 ---
 
-2. The size of the residual in the full model is also a key component of the influence an observation has on the regression. Observations with large residuals are often called *outliers*.
+2\. The size of the residual in the full model is also a key component of the influence an observation has on the regression. Observations with large residuals are often called *outliers*.
 
 ---
 
