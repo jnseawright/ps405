@@ -322,49 +322,6 @@ When you measure many related outcomes, combine them into an index:
 
 ---
 
-```{r index-example, echo=TRUE, eval=TRUE, fig.height=4}
-set.seed(123)
-n <- 200
-k <- 5
-treatment <- sample(0:1, n, replace = TRUE)
-
-# Generate correlated outcomes using factor model (simpler approach)
-common_factor <- rnorm(n)  # Common factor induces correlation
-outcomes <- matrix(NA, n, k)
-
-# Each outcome = common factor + unique component + treatment effect
-for (j in 1:k) {
-  outcomes[, j] <- 0.7 * common_factor + 0.3 * rnorm(n) + treatment * 0.3
-}
-
-# Create mean effects index
-control_mean <- colMeans(outcomes[treatment == 0, ])
-control_sd <- apply(outcomes[treatment == 0, ], 2, sd)
-
-z_scores <- sweep(outcomes, 2, control_mean) / control_sd
-index <- rowMeans(z_scores)
-
-# Compare individual tests vs. index
-cat("Testing each outcome individually:\n")
-individual_pvals <- numeric(k)
-for (j in 1:k) {
-  individual_pvals[j] <- summary(lm(outcomes[, j] ~ treatment))$coefficients[2, 4]
-  cat(paste0("Outcome ", j, ": p = ", round(individual_pvals[j], 4), "\n"))
-}
-
-cat("\nTesting composite index:\n")
-index_model <- lm(index ~ treatment)
-index_p <- summary(index_model)$coefficients[2, 4]
-cat("Index p-value:", round(index_p, 4), "\n")
-cat("Index estimate:", round(coef(index_model)[2], 3), "\n")
-
-# Bonferroni correction for individual tests
-cat("\nBonferroni-corrected thresholds (α=0.05/5=0.01):\n")
-cat("Significant after Bonferroni:", sum(individual_pvals < 0.01), "out of", k, "\n")
-```
-
----
-
 ### Design-Based Approaches
 
 **Pre-analysis plans (PAPs):**
@@ -410,44 +367,4 @@ cat("Significant after Bonferroni:", sum(individual_pvals < 0.01), "out of", k, 
 ---
 
 ![Results2](Images/Castorena4.png)
-
----
-
-### Practical Recommendations
-
-1. **Specify your family of tests** before analysis
-2. **Use appropriate correction** based on your goals:
-   - FWER for strong control (Holm > Bonferroni)
-   - FDR for exploratory work
-3. **Consider indexing** for related outcomes
-4. **Document all tests** conducted (even non-significant ones)
-5. **Be transparent** about corrections (or lack thereof)
-
-```{r final-summary, echo=FALSE, eval=TRUE}
-# Quick reference table
-methods_df <- data.frame(
-  Method = c("Bonferroni", "Holm", "Benjamini-Hochberg", "Indexing", "PAPs"),
-  Controls = c("FWER", "FWER", "FDR", "Reduces tests", "Design-based"),
-  When_To_Use = c("Few tests, independent", "Few tests, any dependency", 
-                   "Many tests, exploratory", "Related outcomes", 
-                   "Pre-registered studies"),
-  R_Function = c('p.adjust(, "bonf")', 'p.adjust(, "holm")', 
-                 'p.adjust(, "BH")', 'Custom function', 'NA')
-)
-
-knitr::kable(methods_df, caption = "Multiple Comparisons Toolkit")
-```
-
----
-
-### Resources for Further Learning
-
-1. **R functions:** `p.adjust()` in base R
-2. **Packages:** `multcomp`, `qvalue`, `onlineFDR`
-3. **Reading:** 
-   - Benjamini & Hochberg (1995) *Journal of the Royal Statistical Society*
-   - Anderson (2008) *Multiple Inference and Gender Differences...*
-   - EGAP's "10 Things to Know About Multiple Comparisons"
-
-**Remember:** No correction method is perfect. The best approach combines statistical correction with thoughtful design and transparent reporting.
 
