@@ -690,19 +690,19 @@ p4
 
 When designing a study:
 
-1. *Increase signal strength first*. This can involve designing experimental treatments to be as strong as possible, choosing participants to be as susceptible to the cause of interest as you can, etc. Increasing the distance between the population parameter and zero quickly increases your power and reduces the winner's curse.
+1\. *Increase signal strength first*. This can involve designing experimental treatments to be as strong as possible, choosing participants to be as susceptible to the cause of interest as you can, etc. Increasing the distance between the population parameter and zero quickly increases your power and reduces the winner's curse.
 
 ---
 
 When designing a study:
 
-2. *Minimize noise through design.* Randomness isn't always a given, any more than effect size is. You can use clever sampling strategies, improve measurement, or compare before and after within the same subjects to reduce overall variation. Reducing variation is another great way to increase power.
+2\. *Minimize noise through design.* Randomness isn't always a given, any more than effect size is. You can use clever sampling strategies, improve measurement, or compare before and after within the same subjects to reduce overall variation. Reducing variation is another great way to increase power.
 
 ---
 
 When designing a study:
 
-3. *Increase sample size.* When other choices are unavailable, increasing sample size is an expensive but still valid way to avoid the problems of low power and resulting low credibility.
+3\. *Increase sample size.* When other choices are unavailable, increasing sample size is an expensive but still valid way to avoid the problems of low power and resulting low credibility.
 
 ---
 ### Reading Published Research
