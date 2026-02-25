@@ -7,6 +7,7 @@
 ### Quizzes
 
 * [Quiz 1 (Feb. 12-13)](https://canvas.northwestern.edu/courses/245562/quizzes/290025)
+* [Quiz 2 (Feb. 25-27)](https://canvas.northwestern.edu/courses/245562/quizzes/290822)
 
 ### Slides and Code from Seminar
 
