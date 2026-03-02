@@ -7,6 +7,7 @@
 ### Quizzes
 
 * [Quiz 1 (Feb. 12-13)](https://canvas.northwestern.edu/courses/245562/quizzes/290025)
+* [Quiz 2 (Feb. 25-27)](https://canvas.northwestern.edu/courses/245562/quizzes/290822)
 
 ### Slides and Code from Seminar
 
@@ -37,7 +38,9 @@
 * [Problem Set 3](https://jnseawright.github.io/ps405/Problems/ps3.html)
 * [Problem Set 3 Solution](https://jnseawright.github.io/ps405/Problems/ps3-answers.pdf)
 * [Problem Set 4](https://jnseawright.github.io/ps405/Problems/ps4.html)
+* [Problem Set 4 Solution](https://jnseawright.github.io/ps405/Problems/ps4-answers.pdf)
 * [Problem Set 5](https://jnseawright.github.io/ps405/Problems/ps5.html)
+* [Problem Set 5 Solution](https://jnseawright.github.io/ps405/Problems/ps5-answers.pdf)
 * [Problem Set 6](https://jnseawright.github.io/ps405/Problems/ps6.html)
 * [Problem Set 7](https://jnseawright.github.io/ps405/Problems/ps7.html)
 * [Problem Set 8](https://jnseawright.github.io/ps405/Problems/ps8.html)
