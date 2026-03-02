@@ -71,10 +71,11 @@ stateattacklist <- table(usterrorism$provstate[usterrorism$iyear>2015])
 
 election2016$Stateterrorism <- 0
 
-for (i in 1:nrow(election2016)){
-    if (election2016$State[i] %in% names(stateattacklist))
-        election2016$Stateterrorism[i] <- stateattacklist[election2016$State[i] ==names(stateattacklist)]
-}
+election2016$Stateterrorism <- ifelse(
+  election2016$State %in% names(stateattacklist),
+  stateattacklist[ election2016$State ],
+  election2016$Stateterrorism
+)
 
 election2016$TrumpShare <- as.numeric(str_replace(election2016$TrumpShare, "%", ""))
 

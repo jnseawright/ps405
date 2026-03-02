@@ -349,6 +349,399 @@ loo_compare(loo_result, loo2)
 - Rule of thumb: `elpd_diff > 4` suggests meaningful difference
 
 ---
+
+class: inverse
+## Multicollinearity
+
+### Definition
+- High correlation among predictors.
+- Not a violation of assumptions, but a data problem that affects precision.
+
+### Consequences
+- Large standard errors → coefficients may become insignificant even if important.
+- Coefficients sensitive to small changes in data/model.
+- Interpretation becomes difficult (partial effects not well estimated).
+
+---
+
+### Detecting Multicollinearity
+
+**1. Variance Inflation Factor (VIF)**
+
+\[
+\text{VIF}_j = \frac{1}{1 - R_j^2}
+\]
+
+where \(R_j^2\) is from regressing \(X_j\) on all other predictors.
+
+- Rule of thumb: VIF > 5–10 indicates problematic collinearity.
+- Equivalent: tolerance \(< 0.1\)–0.2.
+
+```{r vif-example}
+# Using mtcars dataset
+library(car)
+data(mtcars)
+fit_mpg <- lm(mpg ~ disp + hp + wt + qsec, data = mtcars)
+vif(fit_mpg)  # from car package
+```
+
+---
+
+### Detecting Multicollinearity (cont.)
+
+**2. Condition Index** (from eigen decomposition of scaled X'X)
+- Condition index > 30 suggests moderate to strong collinearity.
+- Available via `collin.diag()` in `perturb` package or manually.
+
+**3. Correlation Matrix** (simple pairwise correlations)
+- High pairwise correlations (> 0.8) are a red flag, but multicollinearity can involve more than two predictors.
+
+```{r cor-example}
+cor(mtcars[, c("disp", "hp", "wt", "qsec")])
+```
+
+---
+
+### Remedies for Multicollinearity
+
+- **Do nothing** if only interested in prediction (VIF doesn't affect predictions).
+- **Drop one of the correlated predictors** (theory-driven).
+- **Combine variables** (e.g., index, PCA, factor analysis).
+- **Ridge regression** (penalized estimation) or **LASSO**.
+- **Collect more data** (often impractical).
+
+---
+
+class: inverse
+## Autocorrelation (Serial Correlation)
+
+### Definition
+- Errors are correlated across observations (time series: ε_t correlated with ε_{t-1}; spatial: neighbors correlated).
+- Violates **independence of errors** assumption.
+
+### Consequences
+- Standard errors biased (usually downward for positive autocorrelation) → t-statistics inflated → spurious significance.
+- Coefficients remain unbiased but inefficient.
+
+---
+
+### Detecting Autocorrelation
+
+**1. Residual Plot vs. Time/Order**
+- Look for patterns (runs of positive/negative residuals).
+
+```{r acf-plot, fig.height=4, fig.width=6}
+# Example using economics dataset (from ggplot2)
+data(economics)
+economics$date <- as.Date(economics$date)
+fit_ue <- lm(unemploy ~ pce + pop, data = economics)
+economics$resid <- resid(fit_ue)
+
+ggplot(economics, aes(x = date, y = resid)) +
+  geom_line() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(title = "Residuals over time")
+```
+
+---
+
+**2. Durbin–Watson Test**
+- Tests for AR(1) autocorrelation.
+- H₀: no autocorrelation (ρ = 0).
+- Test statistic d ≈ 2(1 - ρ̂). d near 2 → no AR(1); d < 2 → positive autocorrelation; d > 2 → negative.
+- But only detects first-order autocorrelation.
+
+```{r dwtest}
+library(lmtest)
+dwtest(fit_ue)  # Durbin-Watson test
+```
+
+---
+
+**3. Breusch–Godfrey Test**
+- More general: tests for higher-order autocorrelation (AR(p) or MA(q)).
+- Regress residuals on lagged residuals and original predictors.
+- H₀: no autocorrelation up to order p.
+
+```{r bgtest}
+bgtest(fit_ue, order = 2)  # test for AR(2) autocorrelation
+```
+
+**4. ACF/PACF Plots of Residuals**
+```{r acfplot, fig.height=4, fig.width=6}
+acf(resid(fit_ue), main = "ACF of Residuals")
+pacf(resid(fit_ue), main = "PACF of Residuals")
+```
+
+---
+
+### Remedies for Autocorrelation
+
+- **Include lagged dependent variable** (but careful with interpretation).
+- **Use autoregressive error models** (e.g., `gls` with AR structure in `nlme`).
+- **Newey-West standard errors** (HAC: heteroskedasticity and autocorrelation consistent).
+- **First-differencing** for strong unit-root type persistence.
+- **Panel data**: use fixed effects with clustered standard errors.
+
+---
+
+class: inverse
+## Nonlinearity
+
+### Definition
+- The true relationship between Y and X is not linear, but we fit a linear model.
+- Violates **linearity** and **additivity** assumptions.
+
+### Consequences
+- Biased coefficients and poor predictions.
+- Misspecified functional form.
+
+---
+
+### Detecting Nonlinearity
+
+**1. Residuals vs. Fitted Plot**
+- Already covered: curved pattern suggests nonlinearity.
+
+**2. Partial Residual Plots (Component + Residual)**
+- Show relationship between Y and one X after accounting for other predictors.
+- Smoother helps visualize nonlinearity.
+
+```{r crplots, fig.height=4, fig.width=6}
+fit_mpg2 <- lm(mpg ~ disp + hp + wt, data = mtcars)
+crPlots(fit_mpg2, terms = ~ disp)  # partial residual for disp
+```
+
+---
+
+**3. Ramsey's RESET Test (Regression Specification Error Test)**
+- Adds powers of fitted values to the model and tests if they improve fit.
+- H₀: model is correctly specified (no nonlinearity/omitted variables).
+
+```{r reset}
+resettest(fit_mpg2, power = 2:3, type = "fitted")
+# significant p-value -> evidence of misspecification
+```
+
+**4. Visualizing with Scatterplots + Smoothers**
+```{r scatter-smooth, fig.height=4, fig.width=6}
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +
+  geom_smooth(method = "lm", color = "red", se = FALSE)
+```
+
+---
+
+### Remedies for Nonlinearity
+
+- **Transform predictors** (log, square root, Box–Cox).
+- **Add polynomial terms** (e.g., X², X³) – beware of overfitting.
+- **Use splines** (e.g., `bs()` or `ns()` in `splines` package).
+- **Generalized additive models (GAMs)** for flexible smooth terms.
+- **Theory-driven nonlinear specifications** (e.g., diminishing returns).
+
+---
+
+class: inverse
+## Normality of Errors
+
+### Importance
+- **Not required for unbiasedness or consistency** of OLS coefficients.
+- Required for **exact finite-sample inference** (t- and F-tests) – but with large N, CLT kicks in.
+- Violations can affect efficiency and prediction intervals.
+
+### When to worry
+- Small samples (n < 30–50).
+- Extreme skew or heavy tails (outliers) that influence standard errors.
+
+---
+
+### Detecting Non‑Normality
+
+**1. Q–Q Plot (Quantile–Quantile)**
+- Plots sample quantiles against theoretical normal quantiles.
+- Points follow line → normality.
+
+```{r qqplot, fig.height=4, fig.width=6}
+qqnorm(resid(fit_mpg2))
+qqline(resid(fit_mpg2), col = "red")
+```
+
+**2. Shapiro–Wilk Test**
+- Formal test; sensitive in large samples (often rejects even for trivial deviations).
+- H₀: normally distributed.
+
+```{r shapiro}
+shapiro.test(resid(fit_mpg2))
+```
+
+---
+
+**3. Histogram / Density Plot**
+```{r dens, fig.height=4, fig.width=6}
+ggplot(data.frame(resid = resid(fit_mpg2)), aes(x = resid)) +
+  geom_histogram(aes(y = ..density..), bins = 20, fill = "skyblue", color = "black") +
+  stat_function(fun = dnorm, args = list(mean = mean(resid(fit_mpg2)),
+                                         sd = sd(resid(fit_mpg2))),
+                color = "red", size = 1)
+```
+
+---
+
+### Remedies for Non‑Normality
+
+- **Transform the outcome variable** (log, Box–Cox) to make errors more normal.
+- **Use robust standard errors** (already handle heteroscedasticity, but not non‑normality per se).
+- **Bootstrapping** for inference (does not assume normality).
+- **Quantile regression** (if interested in conditional quantiles, not just mean).
+- In small samples, consider **nonparametric tests**.
+
+Below are RMarkdown slides (using **xaringan**) covering **heteroscedasticity diagnostics**. They follow the style of your existing seminar and include definitions, detection methods (graphical and formal tests), and remedies. These can be inserted after your slides on outliers/influence.
+
+---
+
+## Detecting Heteroscedasticity
+
+### 1. Graphical Checks
+
+- **Residuals vs. Fitted** (already in your toolkit)  
+  Look for a funnel shape: spread increases (or decreases) with fitted values.
+- **Scale‑Location Plot** (√|standardized residuals| vs. fitted)  
+  A rising line suggests heteroscedasticity.
+
+```{r scale-location, fig.height=4, fig.width=6}
+# Using a real dataset
+la_electoral <- read.csv("https://raw.githubusercontent.com/jnseawright/ps405/refs/heads/main/Data/laelectoral.csv")
+fit <- lm(voteswoninc ~ gdpgrowthlag + votesinclag, data = la_electoral)
+
+# Base R scale-location plot (which = 3)
+plot(fit, which = 3)
+```
+
+---
+
+### 2. Formal Tests
+
+#### Breusch–Pagan / Cook–Weisberg Test
+- Regress squared residuals on predictors (or fitted values).
+- H₀: homoscedasticity (all slope coefficients = 0).
+- If p < 0.05, evidence of heteroscedasticity.
+
+```{r bptest}
+library(lmtest)
+bptest(fit)  # studentized version (default)
+# alternative: car::ncvTest(fit) – slightly different but similar idea
+```
+
+---
+
+#### Goldfeld–Quandt Test
+- Split data into two groups (e.g., low vs. high X).
+- Compare error variances between groups.
+- Useful when heteroscedasticity is related to a specific variable.
+
+```{r gqtest}
+gqtest(fit, order.by = ~ gdpgrowthlag, fraction = 0.2, alternative = "greater")
+# orders by gdpgrowthlag, drops middle 20% of observations
+```
+
+---
+
+#### White Test
+- More general: regress squared residuals on predictors, their squares, and cross‑products.
+- Detects both heteroscedasticity and nonlinearity.
+- Implemented via `bptest(fit, ~ fitted(fit) + I(fitted(fit)^2))` or using `whitestrap` package.
+
+```{r white-test, eval=FALSE}
+# Manual White test (simplified)
+bptest(fit, ~ poly(fitted(fit), 2))  # using fitted values as proxy
+```
+
+---
+
+## What to Do If Heteroscedasticity Is Present?
+
+### 1. Heteroscedasticity‑Consistent Standard Errors (HCSE)
+- Also called **robust standard errors** (Huber‑White, sandwich estimator).
+- Correct standard errors without changing coefficients.
+- Easy in R: `lmtest::coeftest(fit, vcov = vcovHC(fit))`
+
+```{r robust-se}
+library(sandwich)
+library(lmtest)
+
+coeftest(fit, vcov = vcovHC(fit, type = "HC1"))  # HC1 is common
+```
+
+Compare with ordinary SEs:
+
+```{r compare-se}
+summary(fit)$coefficients          # original
+coeftest(fit, vcov = vcovHC(fit))  # robust
+```
+
+---
+
+### 2. Weighted Least Squares (WLS)
+- If you know the form of heteroscedasticity (e.g., variance proportional to X), you can weight observations.
+- Estimate weights (often from OLS residuals) then use `lm(..., weights = 1/var_hat)`.
+
+```{r wls-example, eval=FALSE}
+# Example: variance proportional to gdpgrowthlag
+wts <- 1 / fitted(lm(abs(resid(fit)) ~ gdpgrowthlag, data = la_electoral))^2
+fit_wls <- lm(voteswoninc ~ gdpgrowthlag + votesinclag, 
+              data = la_electoral, weights = wts)
+```
+
+---
+
+### 3. Transform the Outcome Variable
+- Log, square root, or Box‑Cox transformation can stabilize variance.
+- Especially useful when variance increases with the mean (common in count or positive‑skewed data).
+
+```{r log-transform, eval=FALSE}
+fit_log <- lm(log(voteswoninc) ~ gdpgrowthlag + votesinclag, data = la_electoral)
+bptest(fit_log)  # check if heteroscedasticity reduced
+```
+
+---
+
+### 4. Use Generalised Least Squares (GLS)
+- Model the error variance explicitly (e.g., `nlme::gls` with `weights = varPower()`).
+- More flexible but requires specifying variance structure.
+
+```{r gls-example, eval=FALSE}
+library(nlme)
+fit_gls <- gls(voteswoninc ~ gdpgrowthlag + votesinclag,
+               data = la_electoral,
+               weights = varPower(form = ~ fitted(.)))
+```
+
+---
+
+## Summary: Heteroscedasticity
+
+- **Detect**: Residual plots, Breusch–Pagan, Goldfeld–Quandt, White test.
+- **Consequences**: Biased standard errors, invalid inference.
+- **Remedies**:
+  - Robust standard errors (quick fix, widely accepted)
+  - Weighted Least Squares (if variance structure known)
+  - Transform Y (log, Box‑Cox)
+  - Model variance explicitly (GLS)
+
+**Rule of thumb**: Always check for heteroscedasticity in cross‑sectional data. If present, report robust standard errors as a matter of course.
+
+
+---
+# Outliers/Influential Cases
+
+We have already covered this; diagnostics include:
+
+*   Cook's Distance
+*   DFBETA
+
+---
 # $R^2$ and Explained Variance
 
 $$R^2 = 1 - \frac{\sum_{i=1}^{n} e_{i}^2}{\sum_{i=1}^{n} y_{i}^2}$$
