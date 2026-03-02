@@ -368,14 +368,14 @@ class: inverse
 
 **1. Variance Inflation Factor (VIF)**
 
-\[
-\text{VIF}_j = \frac{1}{1 - R_j^2}
-\]
+$$\text{VIF}_j = \frac{1}{1 - R_j^2}$$
 
-where \(R_j^2\) is from regressing \(X_j\) on all other predictors.
+where $(R_j^2)$ is from regressing $(X_j)$ on all other predictors.
 
 - Rule of thumb: VIF > 5–10 indicates problematic collinearity.
-- Equivalent: tolerance \(< 0.1\)–0.2.
+- Equivalent: tolerance $(< 0.1)–0.2$.
+
+---
 
 ```{r vif-example}
 # Using mtcars dataset
@@ -395,6 +395,8 @@ vif(fit_mpg)  # from car package
 
 **3. Correlation Matrix** (simple pairwise correlations)
 - High pairwise correlations (> 0.8) are a red flag, but multicollinearity can involve more than two predictors.
+
+---
 
 ```{r cor-example}
 cor(mtcars[, c("disp", "hp", "wt", "qsec")])
@@ -430,6 +432,8 @@ class: inverse
 **1. Residual Plot vs. Time/Order**
 - Look for patterns (runs of positive/negative residuals).
 
+---
+
 ```{r acf-plot, fig.height=4, fig.width=6}
 # Example using economics dataset (from ggplot2)
 data(economics)
@@ -451,6 +455,8 @@ ggplot(economics, aes(x = date, y = resid)) +
 - Test statistic d ≈ 2(1 - ρ̂). d near 2 → no AR(1); d < 2 → positive autocorrelation; d > 2 → negative.
 - But only detects first-order autocorrelation.
 
+---
+
 ```{r dwtest}
 library(lmtest)
 dwtest(fit_ue)  # Durbin-Watson test
@@ -462,6 +468,8 @@ dwtest(fit_ue)  # Durbin-Watson test
 - More general: tests for higher-order autocorrelation (AR(p) or MA(q)).
 - Regress residuals on lagged residuals and original predictors.
 - H₀: no autocorrelation up to order p.
+
+---
 
 ```{r bgtest}
 bgtest(fit_ue, order = 2)  # test for AR(2) autocorrelation
@@ -507,6 +515,8 @@ class: inverse
 - Show relationship between Y and one X after accounting for other predictors.
 - Smoother helps visualize nonlinearity.
 
+---
+
 ```{r crplots, fig.height=4, fig.width=6}
 fit_mpg2 <- lm(mpg ~ disp + hp + wt, data = mtcars)
 crPlots(fit_mpg2, terms = ~ disp)  # partial residual for disp
@@ -517,6 +527,8 @@ crPlots(fit_mpg2, terms = ~ disp)  # partial residual for disp
 **3. Ramsey's RESET Test (Regression Specification Error Test)**
 - Adds powers of fitted values to the model and tests if they improve fit.
 - H₀: model is correctly specified (no nonlinearity/omitted variables).
+
+---
 
 ```{r reset}
 resettest(fit_mpg2, power = 2:3, type = "fitted")
@@ -563,6 +575,8 @@ class: inverse
 - Plots sample quantiles against theoretical normal quantiles.
 - Points follow line → normality.
 
+---
+
 ```{r qqplot, fig.height=4, fig.width=6}
 qqnorm(resid(fit_mpg2))
 qqline(resid(fit_mpg2), col = "red")
@@ -571,6 +585,8 @@ qqline(resid(fit_mpg2), col = "red")
 **2. Shapiro–Wilk Test**
 - Formal test; sensitive in large samples (often rejects even for trivial deviations).
 - H₀: normally distributed.
+
+---
 
 ```{r shapiro}
 shapiro.test(resid(fit_mpg2))
@@ -597,8 +613,6 @@ ggplot(data.frame(resid = resid(fit_mpg2)), aes(x = resid)) +
 - **Quantile regression** (if interested in conditional quantiles, not just mean).
 - In small samples, consider **nonparametric tests**.
 
-Below are RMarkdown slides (using **xaringan**) covering **heteroscedasticity diagnostics**. They follow the style of your existing seminar and include definitions, detection methods (graphical and formal tests), and remedies. These can be inserted after your slides on outliers/influence.
-
 ---
 
 ## Detecting Heteroscedasticity
@@ -609,6 +623,8 @@ Below are RMarkdown slides (using **xaringan**) covering **heteroscedasticity di
   Look for a funnel shape: spread increases (or decreases) with fitted values.
 - **Scale‑Location Plot** (√|standardized residuals| vs. fitted)  
   A rising line suggests heteroscedasticity.
+
+---
 
 ```{r scale-location, fig.height=4, fig.width=6}
 # Using a real dataset
@@ -628,10 +644,11 @@ plot(fit, which = 3)
 - H₀: homoscedasticity (all slope coefficients = 0).
 - If p < 0.05, evidence of heteroscedasticity.
 
+---
+
 ```{r bptest}
 library(lmtest)
 bptest(fit)  # studentized version (default)
-# alternative: car::ncvTest(fit) – slightly different but similar idea
 ```
 
 ---
@@ -641,8 +658,10 @@ bptest(fit)  # studentized version (default)
 - Compare error variances between groups.
 - Useful when heteroscedasticity is related to a specific variable.
 
+---
+
 ```{r gqtest}
-gqtest(fit, order.by = ~ gdpgrowthlag, fraction = 0.2, alternative = "greater")
+gqtest(fit, order.by = ~ la_electoral$gdpgrowthlag, fraction = 0.2, alternative = "greater")
 # orders by gdpgrowthlag, drops middle 20% of observations
 ```
 
@@ -653,8 +672,9 @@ gqtest(fit, order.by = ~ gdpgrowthlag, fraction = 0.2, alternative = "greater")
 - Detects both heteroscedasticity and nonlinearity.
 - Implemented via `bptest(fit, ~ fitted(fit) + I(fitted(fit)^2))` or using `whitestrap` package.
 
+---
+
 ```{r white-test, eval=FALSE}
-# Manual White test (simplified)
 bptest(fit, ~ poly(fitted(fit), 2))  # using fitted values as proxy
 ```
 
@@ -667,12 +687,16 @@ bptest(fit, ~ poly(fitted(fit), 2))  # using fitted values as proxy
 - Correct standard errors without changing coefficients.
 - Easy in R: `lmtest::coeftest(fit, vcov = vcovHC(fit))`
 
+---
+
 ```{r robust-se}
 library(sandwich)
 library(lmtest)
 
 coeftest(fit, vcov = vcovHC(fit, type = "HC1"))  # HC1 is common
 ```
+
+---
 
 Compare with ordinary SEs:
 
@@ -687,6 +711,8 @@ coeftest(fit, vcov = vcovHC(fit))  # robust
 - If you know the form of heteroscedasticity (e.g., variance proportional to X), you can weight observations.
 - Estimate weights (often from OLS residuals) then use `lm(..., weights = 1/var_hat)`.
 
+---
+
 ```{r wls-example, eval=FALSE}
 # Example: variance proportional to gdpgrowthlag
 wts <- 1 / fitted(lm(abs(resid(fit)) ~ gdpgrowthlag, data = la_electoral))^2
@@ -700,6 +726,8 @@ fit_wls <- lm(voteswoninc ~ gdpgrowthlag + votesinclag,
 - Log, square root, or Box‑Cox transformation can stabilize variance.
 - Especially useful when variance increases with the mean (common in count or positive‑skewed data).
 
+---
+
 ```{r log-transform, eval=FALSE}
 fit_log <- lm(log(voteswoninc) ~ gdpgrowthlag + votesinclag, data = la_electoral)
 bptest(fit_log)  # check if heteroscedasticity reduced
@@ -710,6 +738,8 @@ bptest(fit_log)  # check if heteroscedasticity reduced
 ### 4. Use Generalised Least Squares (GLS)
 - Model the error variance explicitly (e.g., `nlme::gls` with `weights = varPower()`).
 - More flexible but requires specifying variance structure.
+
+---
 
 ```{r gls-example, eval=FALSE}
 library(nlme)
@@ -795,23 +825,6 @@ knitr::kable(examples, format = "html") %>%
   kableExtra::kable_styling(full_width = FALSE)
 ```
 
----
-
-### **Bayesian $R^2$**
-- Mathematicaly different because the variance of Bayesian predicted values can sometimes be higher than the variance of the original data
-
----
-
-```{r bayes-r2-code, eval=TRUE}
-# Bayesian R2 with uncertainty
-bayes_R2(fit)  # Returns posterior distribution
-```
-
----
-
-```{r bayes-r2-code-2, eval=TRUE}
-summary(bayes_R2(fit))
-```
 
 ---
 
